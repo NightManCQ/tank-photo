@@ -1,0 +1,133 @@
+import OkHttpClient from "okhttp3.OkHttpClient";
+import Request from "okhttp3.Request";
+import Response from "okhttp3.Response";
+import Callback from "okhttp3.Callback";
+import Call from "okhttp3.Call";
+// import CookieManager from "java.net.CookieManager";
+// import CookiePolicy from "java.net.CookiePolicy";
+// import CookieStore from "java.net.CookieStore";
+// import HttpCookie from "java.net.HttpCookie";
+// import JavaNetCookieJar from "okhttp3.JavaNetCookieJar";
+// import MutableList from "kotlin.collections.MutableList";
+// import Cookie from "okhttp3.Cookie";
+// import CookieJar from "okhttp3.CookieJar";
+// import HttpUrl from "okhttp3.HttpUrl";
+
+import { responseType, httpCallbacksType } from "../interface.uts"
+import IOException from "java.io.IOException";
+import { CookieJarImpl } from "./CookieJarImpl.entity.uts"
+
+
+
+// 错误：error: android.os.NetworkOnMainThreadException‌
+// 不要在主线程中进行网络请求
+
+
+
+
+export type paramsType<T1> = {
+	url : string;
+	data : any;
+	method : RequestMethod;
+	success : httpCallbacksType<T1>
+	fail : httpCallbacksType<T1>
+}
+
+// 初始化 okhttp
+const client : OkHttpClient = new OkHttpClient.Builder()
+	.cookieJar(new CookieJarImpl()).build();;
+
+
+
+
+
+
+
+
+
+
+
+class CallbackIm<T1> implements Callback {
+
+
+
+	private success : httpCallbacksType<T1>
+
+	override  onFailure(call : Call, e : IOException) {
+		console.log("Error", e);
+	}
+
+
+	override  onResponse(call : Call, response : Response) {
+
+
+		// console.log("成功 call", call);
+		// console.log("成功 response", response.code, response.message, response.headers.toString());//http状态码
+		const retObj : responseType<T1> = {
+			status: response.code,
+			data: JSON.parse(response.body!!.string()) as T1,
+			message: response.message
+		}
+
+		this.success(retObj)
+
+	}
+
+
+	constructor(success : httpCallbacksType<T1>) {
+		this.success = success
+	}
+}
+
+
+// export function okHttpGet(url : string) {
+
+
+
+
+
+
+// 	const getRequest = new Request.Builder()
+// 		.url(url)
+// 		.build();
+// 	client.newCall(getRequest).enqueue(new CallbackIm())
+// }
+
+
+
+
+
+// function aaaaaaaa(res:any){
+
+// }
+
+
+export class xxOkHttp {
+	static request<T1>(params : paramsType<T1>) : void {
+		const getRequest = new Request.Builder()
+			.url(params.url)
+			.build();
+		client.newCall(getRequest).enqueue(new CallbackIm<T1>(params.success))
+	}
+}
+
+// export const xxOkHttpaaaaa : xxOkHttpType<T1> = function<T1> (params : RequestOptions<T1>) {
+// export
+
+
+
+// export function xxOkHttp<T1, T2>(params : RequestOptions<T1>) : Promise<T2> {
+
+// 	return new Promise((resolve, reject) => {
+
+
+
+
+
+
+// 		const getRequest = new Request.Builder()
+// 			.url(params.url)
+// 			.build();
+// 		client.newCall(getRequest).enqueue(new CallbackIm())
+// 	})
+// }

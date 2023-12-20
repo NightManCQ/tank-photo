@@ -1,0 +1,77 @@
+
+import { albumUtil, Album } from "@/uni_modules/photo-util";
+import { uni_XXPermissions } from "@/uni_modules/xx-XXPermissions"
+import { globalData } from "@/store/global.data"
+
+
+
+type albumListDataType = {
+	albumStyle : string
+}
+
+// 读取缓存
+const cl2 = uni.getStorageSync("clumn2")
+// console.log("-------------------clumn2", cl2)
+export const albumListData = reactive({
+	albumStyle: `width: ${cl2}px;height: ${cl2}px;`
+} as albumListDataType)
+
+
+
+
+
+export class albumListLoadData {
+
+
+	static permission = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
+
+	static authorizationStatus = true
+
+
+	static albumArray : Array<Array<Album>> = []
+
+	static clumnsCount = 2//展示多少列
+
+
+
+
+
+	/**
+	 * 加载图相册列表数据
+	 */
+	static getalbums() {
+		const albumArray : Array<Album> = albumUtil.getAlbum()
+
+		const { permission } = albumListLoadData
+		if (albumArray.length == 0) {
+			// 判断有无权限
+			albumListLoadData.authorizationStatus = uni_XXPermissions.checkSystemPermissionGranted(permission)
+		} else {
+			// uni x 的多列布局实现性能较低，所以采用官方的组件以提高性能，但官方还有没出多列布局，所以采用这种迂回的办法（20231129）
+			const arr = albumListLoadData.albumArray
+			const clumnsCount = albumListLoadData.clumnsCount
+			for (let i = 0; i < albumArray.length; i++) {
+				const yNum = i / clumnsCount
+				const item = albumArray[i]
+				if (i % clumnsCount == 0) {
+					arr.push([])
+					arr[yNum].push(item)
+				} else {
+					arr[yNum].push(item)
+				}
+			}
+		}
+	}
+
+	// constructor(arg) {
+
+	// }
+
+	static calcStyle() {
+		const { windowInfo } = globalData
+		const res = (windowInfo.windowWidth - 48) / 2
+		albumListData.albumStyle = `width: ${res}px;height: ${res}px;`
+		uni.setStorageSync("clumn2", res)
+	}
+
+}

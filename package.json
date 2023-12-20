@@ -1,0 +1,19 @@
+{
+    "id": "uni-navbar-lite",
+    "name": "轻量自定义导航栏",
+    "displayName": "轻量自定义导航栏",
+    "version": "1.0.2",
+    "description": "轻量自定义导航栏组件，适用于 vue 和 uvue",
+    "keywords": [
+        "navbar",
+        "uts",
+        "vue",
+        "导航栏"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    }
+}

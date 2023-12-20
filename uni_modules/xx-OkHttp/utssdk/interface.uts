@@ -1,0 +1,13 @@
+
+
+
+// response 类型，响应类型，无论成功与否均返回此类型
+export type responseType<dataType> = {
+	status : number
+	data : dataType
+	message : string
+}
+
+
+// http 回调函数使用的类型
+export type httpCallbacksType<dataType> = (res : responseType<dataType>) => void

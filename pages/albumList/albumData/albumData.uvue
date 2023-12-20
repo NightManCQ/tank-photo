@@ -1,0 +1,64 @@
+<template>
+
+
+
+
+
+
+	<list-view ref="listView" :id=id class="container_al" :rebound="false" :scroll-y="true"
+		:custom-nested-scroll="true">
+		<list-item :type="4" style="margin-top: 20px;"></list-item>
+		<list-item class="ab_it" v-for="(itemArr,index) in dataList" :key="index">
+			<image :style="photoStyle" class="ab_img" :src="item.uri" v-for="(item,indexT) in itemArr" :key="indexT">
+			</image>
+			<!-- <text class="text">{{item.name}} {{item.count}}</text> -->
+		</list-item>
+	</list-view>
+
+</template>
+
+<script>
+	import { albumData, albumDataData } from "./adLoadData.logic"
+	import { mediaFile } from "@/uni_modules/photo-util";
+	export default {
+		data() {
+			return {
+				id: "ashlkjl0i3jkagpjgml12",
+			};
+		},
+		computed: {
+			dataList() : Array<Array<mediaFile>> {
+				return albumDataData.photoList
+			},
+			photoStyle() : string {
+				return albumDataData.photoStyle
+			}
+		},
+		onLoad() {
+			if (albumDataData.album != null) {
+				albumData.loadAlbumData()
+				uni.setNavigationBarTitle({
+					title: albumDataData.album!.name,
+				})
+			} else {
+				uni.switchTab({
+					url: "/pages/index/index"
+				})
+			}
+
+		}
+	}
+</script>
+
+<style lang="scss">
+	.ab_it {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin-bottom: 10px;
+
+		.ab_img {
+			margin-left: 10px;
+		}
+	}
+</style>

@@ -1,0 +1,33 @@
+import MediaStore from "android.provider.MediaStore";
+import ContentResolver from "android.content.ContentResolver";
+import Cursor from "android.database.Cursor";
+export class videoUtil {
+
+	// 查询文件制作相册时需要的属性
+	static albumOption = arrayOf(
+		// 所属相册id
+		MediaStore.Video.Media.BUCKET_ID,
+		// 所属相册名称
+		MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
+		// 添加日期
+		MediaStore.Video.Media.DATE_ADDED,
+		// 磁盘路径
+		MediaStore.Video.Media.DATA
+	)
+
+	static getAllVideo(contentResolver : ContentResolver) : Cursor {
+		const { albumOption } = videoUtil
+		// 查询图片文件
+		const cursorImg : Cursor = contentResolver.query(
+			MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+			albumOption,//列
+			"",//查询条件
+			null,
+			MediaStore.Video.Media.DATE_ADDED + " DESC"
+		) as Cursor
+		
+		return cursorImg
+	}
+
+
+}

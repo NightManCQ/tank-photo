@@ -1,0 +1,539 @@
+<template>
+
+
+	<view class="container_abl" :style="conStyle">
+
+		<view class="con_main" :class="conClass">
+
+			<uni-navbar-lite title="Tank 相册" :leftIcon="false" nbStyle="height:50px;">
+
+				<template #right>
+					<view class="head_img" @click="drawerSwitch">N</view>
+				</template>
+
+			</uni-navbar-lite>
+
+
+
+
+
+			<view v-if="authorizationStatus == false" class="req_perssion">
+				<button type="primary" @click="requestPermissions">
+					授权读写相册
+				</button>
+			</view>
+
+			<list-view style="flex:1;" ref="listView" :id=id :rebound="false" :scroll-y="true"
+				:custom-nested-scroll="true">
+				<list-item :type="2" style="margin-top: 20px;"></list-item>
+				<list-item class="album_list_sub" v-for="(itArr,index) in albumArray" :key="index">
+					<view class="ab_it" v-for="(item,indexTwo) in itArr" :key="indexTwo  + item.id +''">
+
+						<!-- 问题代码，触发方式：长按,然后下滑，边框会加在屏幕外面的元素上 -->
+						<!-- 						<image class="ab_img" :class="pattern ==2?'bor_all':''" :style="albumStyle" :src="item.coverImg"
+							@click="getAlbumData(item)" @touchstart="touchstart($event as TouchEvent)"
+							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
+							@touchcancel="touchend">
+						</image> -->
+
+
+						<!-- 以下是正常的代码，需要实现长按加边框，需要先赋值一个边框占位置 -->
+						<!-- 						<image class="ab_img" :class="pattern ==2?'bor_all':'bor_all1'" :style="albumStyle"
+							:src="item.coverImg" @click="getAlbumData(item)"
+							@touchstart="touchstart($event as TouchEvent)"
+							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
+							@touchcancel="touchend">
+						</image> -->
+
+
+
+						<!-- 单个元素边框 正常代码 -->
+						<image class="ab_img" :class="item.check == true?'bor_all':'bor_all1'" :style="albumStyle"
+							:src="item.coverImg" @click="getAlbumData(item)"
+							@touchstart="touchstart($event as TouchEvent)"
+							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
+							@touchcancel="touchend">
+						</image>
+
+
+
+
+						<text class="text">{{item.name}} {{item.count}}</text>
+					</view>
+				</list-item>
+				<list-item :type="99" style="height: 20px;"></list-item>
+			</list-view>
+			<!-- 			<view style="flex:1;" class="album_list_sub" v-for="(itArr,index) in albumArray" :key="index">
+				<view class="ab_it" v-for="(item,indexTwo) in itArr" :key="indexTwo  + item.id +''">
+					<image class="ab_img" :class="pattern == 1?'bor_all':''" :style="albumStyle" :src="item.coverImg"
+						@click="getAlbumData(item)" @touchstart="touchstart($event as TouchEvent,item)"
+						@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend" @touchcancel="touchend">
+					</image>
+					<text class="text">{{item.name}} {{item.count}}</text>
+				</view>
+			</view> -->
+
+
+
+		</view>
+
+
+
+		<view class="con_bottom" @click="drawerSwitch">
+
+
+
+			<view class="c_b_con">
+
+				<image :src="user.avatarUrl" class="m_hd_img"></image>
+
+				<text class="usr_title">{{user.username}}</text>
+
+
+
+				<view class="opt_lab " :class="{
+					opt_lab_check: optLabCheck == 9
+				}" @click.stop="optionSwitch(9)">
+					<text class="txt">相册</text>
+				</view>
+				<!-- v-if="user.uuid == ''" -->
+				<view class="opt_lab " :class="{
+					opt_lab_check: optLabCheck == 1
+				}" @click.stop="optionSwitch(1)">
+					<text class="txt">登录</text>
+				</view>
+				<view class="opt_lab" :class="{
+					opt_lab_check: optLabCheck == 3
+				}" @click.stop="optionSwitch(3)" v-if="user.uuid != ''">
+					<text class="txt">设置</text>
+				</view>
+				<view class="opt_lab" :class="{
+					opt_lab_check: optLabCheck == 2
+				}" @click.stop="optionSwitch(2)" v-if="user.uuid != ''">
+					<text class="txt">退出登录</text>
+				</view>
+
+
+			</view>
+		</view>
+	</view>
+
+</template>
+
+<script>
+	import { Album } from "@/uni_modules/photo-util";
+	import { uni_XXPermissions } from "@/uni_modules/xx-XXPermissions"
+	import { albumListLoadData, albumListData } from "@/pages/albumList/abLoadData.logic"
+	import { albumDataData } from "@/pages/albumList/albumData/adLoadData.logic"
+	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
+	import { globalData } from "@/store/global.data.uts";
+	import { IRootType, userInfoType } from "@/pages/login/login.logic.uts";
+	import { albumData } from "@/pages/albumList/albumData/adLoadData.logic.uts"
+	import { xxOkHttp,paramsType } from "@/uni_modules/xx-OkHttp"
+
+
+
+
+	type userLoginType = {
+		username : string,
+		password : string
+	}
+	export default {
+		components: {
+			uniNavbarLite
+		},
+		data() {
+			const { screenHeight, screenWidth } = globalData.windowInfo
+			return {
+				id: "ajsdjg0lkasdjglfka",
+				authorizationStatus: albumListLoadData.authorizationStatus,
+				albumArray: albumListLoadData.albumArray as Array<Array<Album>>,
+				conStyle: `height:${screenHeight}px;width:${screenWidth}px;`,
+				conClass: "tf_st",
+				optLabCheck: 9,
+				touchTimeStamp: 0,
+				pattern: 1
+			};
+		},
+		computed: {
+			user() : userInfoType {
+				return globalData.user
+			},
+			albumStyle() : string {
+				return albumListData.albumStyle
+			}
+		},
+		onLoad() {
+			// console.log("????", uni.getStorageSync("windowHeight"));
+			this.getWindowInfo()
+			this.getSystemInfo()
+
+			this.reqTest()
+
+
+
+		},
+
+		methods: {
+			async reqTest() : Promise<void> {
+				// okHttpGet("https://pan.promise.pink:442/api/user/login?username=bunny&password=hong159874@.@")
+
+				// 
+				xxOkHttp.request<IRootType>({
+					url: "https://pan.promise.pink:442/api/user/login?username=bunny&password=hong159874@.@",
+					method: "GET",
+					data: {
+						username: "bunny",
+						password: "hong159874@.@"
+					},
+					success(res) {
+						console.log("成功", res);
+					},
+					fail(err){
+						
+					}
+				} as paramsType<IRootType>)
+
+
+				// xxOkHttpaaaaa({
+				// 	paramA: true,
+				// 	success(res:any) {
+				// 		console.log("?????", res);
+				// 	}
+				// } as RequestOptions)
+
+
+
+
+				// setTimeout(() => {
+				// 	okHttpGet("https://pan.promise.pink:442/api/user/info")
+				// }, 2000)
+			},
+			touchstart(e : TouchEvent) {
+				this.touchTimeStamp = e.timeStamp
+			},
+			touchmove(e : TouchEvent, item : Album) : void {
+				if (item.check) {
+					return
+				}
+				if (e.timeStamp - this.touchTimeStamp > 200) {
+					this.pattern = 2
+					if (item.check == false) {
+						item.check = true
+						this.$forceUpdate()
+						console.log('正在', this.pattern, item.check)
+					}
+				}
+			},
+			touchend() {
+
+				console.log('结束')
+			},
+			/**
+			 * cookies 测试
+			 */
+			getSystemInfo() {
+				// uni.request<any>({
+				// 	url: globalData.server + "/api/preference/fetch",
+				// 	method: "POST",
+				// 	success(res) {
+				// 		console.log("获取后端系统信息", res)
+
+				// 	},
+				// 	fail(err) {
+				// 		console.log("获取后端系统信息 失败", err)
+				// 	}
+				// })
+				uni.request<IRootType>({
+					url: globalData.server + "/api/user/login",
+					data: {
+						username: "bunny",
+						password: "hong159874@.@"
+					},
+					success(res) {
+						console.log("登录成功", res);
+
+
+						// res.header 返回的数据示例
+						// "header": {
+						//     "cache-control": "[no-cache, no-cache]",
+						//     "connection": "keep-alive",
+						//     "content-length": "715",
+						//     "content-type": "application/json;charset=UTF-8",
+						//     "date": "Mon, 18 Dec 2023 03:26:35 GMT",
+						//     "expires": "0",
+						//     "pragma": "No-cache",
+						//     "server": "nginx",
+						//     "set-cookie": "_ak=911cca12-d1fd-4030-57ff-8e982c6ace01; Path=/; Expires=Wed, 17 Jan 2024 03:26:35 GMT"
+						// },
+
+
+
+
+						// 使用cookie\session鉴权的用户信息接口
+						uni.request<any>({
+							url: globalData.server + "/api/user/info",
+							method: "GET",
+							success(res) {
+								console.log("获取用户信息", res)
+
+							},
+							fail(err) {
+								console.log("获取后端系统信息 失败", err)
+							}
+						})
+					}
+				} as RequestOptions<IRootType>)
+			},
+			getUserInfo() {
+
+				console.log("开始获取用户信息");
+				uni.request<any>({
+					url: globalData.server + "/api/user/info",
+					method: "GET",
+
+					// header:{
+					// 	Cookis:"_ak=614134d9-e887-445a-6611-a4b5ec21ede9"
+					// },
+					success(res) {
+						console.log("1111111获取用户信息", res)
+					},
+					fail(err) {
+
+						console.log("1111111获取用户信息 失败", err)
+					}
+
+				})
+			},
+			/**
+			 * 首次启动计算屏幕宽高数据，之后检测缓存，如果有则无需计算
+			 */
+			getWindowInfo() {
+				const sh = uni.getStorageSync("screenHeight")
+				if (sh == "") {
+					const res = uni.getWindowInfo();
+					const { windowInfo } = globalData
+					windowInfo.windowHeight = res["windowHeight"] as number
+					windowInfo.windowWidth = res["windowWidth"] as number
+					windowInfo.screenWidth = res["screenWidth"] as number
+					windowInfo.screenHeight = res["screenHeight"] as number
+					uni.setStorageSync("windowWidth", windowInfo.windowWidth)
+					uni.setStorageSync("windowHeight", windowInfo.windowHeight)
+					uni.setStorageSync("screenHeight", windowInfo.screenHeight)
+					uni.setStorageSync("screenWidth", windowInfo.screenWidth)
+					// console.log("赋值", windowInfo.screenHeight)
+					albumListLoadData.calcStyle()
+					albumData.calcStyle()
+				}
+			},
+			/**
+			 * 抽屉导航
+			 */
+			optionSwitch(sheckValue : number) {
+				this.optLabCheck = sheckValue
+				switch (sheckValue) {
+					case 1:
+						uni.navigateTo({
+							url: "/pages/login/login"
+						})
+						break;
+					case 2:
+						break;
+					case 3:
+						this.getUserInfo()
+						break;
+
+				}
+			},
+			/**
+			 * 抽屉开关
+			 */
+			drawerSwitch() {
+				if (this.conClass == "tf_st") {
+					this.conClass = "tf_en"
+				} else {
+					this.conClass = "tf_st"
+				}
+
+				console.log("========", this.conClass);
+			},
+			/**
+			 * 前往相册详情页
+			 */
+			getAlbumData(album : Album) {
+				albumDataData.album = album
+				uni.navigateTo({
+					url: "/pages/albumList/albumData/albumData"
+				})
+
+			},
+			/**
+			 * 权限申请
+			 */
+			requestPermissions() {
+				let permission = ["android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
+				const that = this
+				uni_XXPermissions.requestSystemPermission(permission, function (allRight : boolean, grantedList : string[]) {
+					if (allRight) {
+						// 用户同意了全部权限
+						console.log("用户同意了全部权限", grantedList);
+						albumListLoadData.getalbums()
+						that.authorizationStatus = true
+						// that.albumArray = albumListLoadData.albumArray
+					} else {
+						// 用户仅同意了 grantedList中的权限
+						console.log("用户仅同意了 grantedList中的权限");
+					}
+				}, function (doNotAskAgain : boolean, grantedList : string[]) {
+					// 用户拒绝了部分权限，仅允许了grantedList中的权限
+					if (doNotAskAgain) {
+						// 用户拒绝了权限，并且选择不再询问
+						console.log("用户拒绝了权限，并且选择不再询问");
+					}
+					console.log("用户拒绝了部分权限，仅允许了grantedList中的权限", grantedList);
+				})
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.bor_all {
+		border: $uni-color-primary 2px solid;
+	}
+
+	.bor_all1 {
+		border: rgb(255, 255, 255, 0) 2px solid;
+	}
+
+	.container_abl {
+		display: flex;
+		position: relative;
+		transition-property: transform;
+		transition-duration: 600;
+
+		.con_main {
+			width: 100%;
+			height: 100%;
+			background-color: $uni-bg-color;
+			position: absolute;
+			z-index: 1;
+			box-shadow: 0px 3px 10px rgba(0, 0, 0, 1);
+
+			.head_img {
+				width: 70rpx;
+				height: 70rpx;
+				border-radius: 50rpx;
+				background-color: $uni-color-primary;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				margin-right: 16px;
+			}
+
+			.req_perssion {
+				margin: 0 auto;
+				margin-top: 20px;
+				width: 400rpx;
+			}
+
+			.album_list_sub {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				margin-bottom: 50rpx;
+
+
+				.ab_it {
+					// border: 1px solid red;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+
+
+
+					.ab_img {
+						// width: 156px;
+						// border: 1px solid red;
+						// height: 156px;
+						border-radius: 35rpx;
+						margin-bottom: 10px;
+						// padding-right: 16px;
+						margin-left: 16px;
+					}
+				}
+			}
+		}
+
+		.tf_st {
+			transform: scale(1, 1) translateX(0);
+		}
+
+		.tf_en {
+			transform: scale(0.9, 0.9) translateX(450rpx);
+			border-radius: 30px;
+		}
+
+
+
+		.con_bottom {
+			width: 100%;
+			height: 100%;
+			background-color: $uni-color-primary;
+			display: flex;
+			flex-direction: row;
+
+
+			.c_b_con {
+				width: 490rpx;
+				height: 100%;
+				// border: 1px solid red;
+				display: flex;
+				// justify-content: space-between;
+				// justify-content: center;
+				// align-items: center;
+
+				.m_hd_img {
+					width: 200rpx;
+					height: 200rpx;
+					border-radius: 200rpx;
+					border: 1rpx solid $uni-bg-color;
+					padding: 2px;
+					margin: 0 auto;
+					margin-top: 100rpx;
+				}
+
+				.usr_title {
+					font-size: 50rpx;
+					font-weight: 400;
+					color: $uni-bg-color;
+					margin: 0 auto;
+					margin-top: 30rpx;
+					margin-bottom: 300rpx;
+				}
+
+				.opt_lab {
+					display: flex;
+					flex-direction: row;
+					// padding-right: 32rpx;
+					padding: 40rpx 0 40rpx 40rpx;
+
+					.txt {
+						color: $uni-bg-color;
+					}
+
+				}
+
+				.opt_lab_check {
+					background-color: rgb(255, 255, 255, 0.1);
+				}
+
+				.login_btn {
+					width: 60%;
+					margin: 0 auto;
+				}
+			}
+
+		}
+	}
+</style>

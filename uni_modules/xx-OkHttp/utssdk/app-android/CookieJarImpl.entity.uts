@@ -1,0 +1,62 @@
+import CookieManager from "java.net.CookieManager";
+import CookiePolicy from "java.net.CookiePolicy";
+import CookieStore from "java.net.CookieStore";
+import HttpCookie from "java.net.HttpCookie";
+import MutableList from "kotlin.collections.MutableList";
+import Cookie from "okhttp3.Cookie";
+import CookieJar from "okhttp3.CookieJar";
+import HttpUrl from "okhttp3.HttpUrl";
+
+
+
+
+
+export class CookieJarImpl implements CookieJar {
+
+	private cookieStore : CookieStore
+
+	constructor() {
+		this.cookieStore = CookieManager(null, CookiePolicy.ACCEPT_ALL).cookieStore
+	}
+
+
+	/**
+	 * 接受cookies，并进行操作
+	 */
+	override saveFromResponse(url : HttpUrl, cookies : List<Cookie>) : void {
+		const uri = url.toUri()
+		cookies.forEach((res : Cookie) => {
+			// console.log(" 存储 cookies ", res.name, res.value, res.domain, res.path);
+			const httpCookie = new HttpCookie(res.name, res.value)
+			httpCookie.domain = res.domain //对象的 domain 属性为 null，则说明该 HttpCookie 对象是一个不特定于域名的 Cookie
+			httpCookie.path = res.path
+			this.cookieStore.add(uri, httpCookie)
+		})
+		// cookies 的持久化
+	}
+
+	/**
+	 * 加载cookies，放到每一个请求当中
+	 */
+	override  loadForRequest(url : HttpUrl) : List<Cookie> {
+		// const emptyCookieList : List<Cookie> = emptyList() 空的 List 对象，但是不能添加数据
+		const uri = url.toUri()
+		const httpCookies : List<HttpCookie> = this.cookieStore.get(uri)
+		const cookies : MutableList<Cookie> = mutableListOf()
+		httpCookies.forEach((res : HttpCookie) => {
+			// console.log("一个 httpCookie 对象", res.maxAge);
+			const cookie = new Cookie.Builder()
+				.name(res.name)
+				.value(res.value)
+				.domain(res.domain)
+				.path(res.path)
+				.expiresAt(res.maxAge)
+				.secure()
+				.httpOnly()
+				.build()
+			cookies.add(cookie)
+		})
+		// console.log(`加载 ${httpCookies.size} 个 cookies`);
+		return cookies
+	}
+}

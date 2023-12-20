@@ -1,0 +1,92 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		// {
+		// 	"path": "pages/search/search",
+		// 	"style": {
+		// 		"navigationBarTitleText": "",
+		// 		"enablePullDownRefresh": false
+		// 	}
+		// },
+		// {
+		// 	"path": "pages/albumList/albumList",
+		// 	"style": {
+		// 		// "navigationBarTitleText": "Tank 相册",
+		// 		"navigationStyle": "custom",
+		// 		"enablePullDownRefresh": false
+		// 	}
+		// },
+		// {
+		// 	"path": "pages/share/share",
+		// 	"style": {
+		// 		"navigationBarTitleText": "",
+		// 		"enablePullDownRefresh": false
+		// 	}
+		// },
+		{
+			"path": "pages/albumList/albumData/albumData",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path" : "pages/setting/setting",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"enablePullDownRefresh" : false
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app x",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	// "tabBar": {
+	// 	"color": "#7A7E83",
+	// 	"selectedColor": "#007AFF",
+	// 	"borderStyle": "black",
+	// 	"backgroundColor": "#F8F8F8",
+	// 	"list": [{
+	// 			"pagePath": "pages/index/index",
+	// 			"iconPath": "static/component.png",
+	// 			"selectedIconPath": "static/componentHL.png",
+	// 			"text": "照片"
+	// 		},
+	// 		{
+	// 			"pagePath": "pages/search/search",
+	// 			"iconPath": "static/api.png",
+	// 			"selectedIconPath": "static/apiHL.png",
+	// 			"text": "搜索"
+	// 		},
+	// 		{
+	// 			"pagePath": "pages/share/share",
+	// 			"iconPath": "static/css.png",
+	// 			"selectedIconPath": "static/cssHL.png",
+	// 			"text": "分享"
+	// 		},
+	// 		{
+	// 			"pagePath": "pages/albumList/albumList",
+	// 			"iconPath": "static/template.png",
+	// 			"selectedIconPath": "static/templateHL.png",
+	// 			"text": "媒体库"
+	// 		}
+	// 	]
+	// },
+	"uniIdRouter": {}
+}

@@ -1,0 +1,217 @@
+import { UTSAndroid } from "io.dcloud.uts";
+import MediaStore from "android.provider.MediaStore";
+import ContentResolver from "android.content.ContentResolver";
+import Cursor from "android.database.Cursor";
+import Uri from "android.net.Uri";
+import WindowManager from "android.view.WindowManager";
+// import ContentUris from "android.content.ContentUris";
+
+
+
+
+
+// 统计相册照片数量
+type photoListType = HashMap<number, number>
+
+
+// 媒体文件类 
+export class mediaFile {
+	id : number = 0;
+	name : string = "";
+	uri : Uri;
+	// 是否被选中
+	check : boolean = false;
+	type : number;//1 图片 2: 视频
+	constructor(uri : Uri, type : number) {
+		this.uri = uri
+		this.type = type
+	}
+}
+// 相册类
+export class Album {
+	id : number;
+	name : string;
+	// 封面图路径
+	coverImg : Uri;
+	// 文件数量
+	count : number;
+
+	// 选中
+	check : boolean;
+	constructor(id : number, name : string, coverImg : Uri) {
+		this.id = id;
+		this.name = name;
+		// this.bucketDisplayName = bucketDisplayName
+		this.coverImg = coverImg
+		this.count = 0
+		this.check = false
+	}
+}
+
+
+// MediaStore.Files.getContentUri("external") 查询整个外部存储库
+class fileClumns {
+	// 主键id
+	static _ID = MediaStore.Files.FileColumns._ID
+	// 所属相册id
+	static BUCKET_ID = MediaStore.Files.FileColumns.BUCKET_ID
+	// 所属相册名称
+	static BUCKET_DISPLAY_NAME = MediaStore.Files.FileColumns.BUCKET_DISPLAY_NAME;
+	// 添加日期
+	static DATE_ADDED = MediaStore.Files.FileColumns.DATE_ADDED;
+	// 磁盘路径
+	static DATA = MediaStore.Files.FileColumns.DATA
+}
+
+
+// 相册工具类
+export class albumUtil {
+
+	// 需要的媒体文件属性
+	static mediaFileOption = arrayOf(
+		//获取ID列的数据
+		fileClumns._ID,
+		// 所属相册id
+		fileClumns.BUCKET_ID,
+		// 添加日期
+		fileClumns.DATE_ADDED,
+		// 磁盘路径
+		fileClumns.DATA,
+	)
+
+
+	// 相册列表
+	static albums : Array<Album> = [];
+
+
+
+	// 查询文件制作相册时需要的属性
+	static albumsOption = arrayOf(
+		// 所属相册id
+		fileClumns.BUCKET_ID,
+		// 所属相册名称
+		fileClumns.BUCKET_DISPLAY_NAME,
+		// 添加日期
+		fileClumns.DATE_ADDED,
+		// 磁盘路径
+		fileClumns.DATA
+	)
+
+
+
+	/**
+	 * 获取视频、照片文件
+	 */
+	static getAlbum() : Array<Album> {
+		const { albums } = albumUtil
+		if (albums.length == 0) {
+			const photoList : photoListType = hashMapOf()
+			let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
+			albumUtil.queryAlbumsPro(contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, albums, photoList)
+			albumUtil.queryAlbumsPro(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, albums, photoList)
+			return albums
+		}
+		return albums
+	}
+
+
+
+	/**
+	 * 分析出相册列表
+	 */
+	static queryAlbumsPro(contentResolver : ContentResolver, uri : Uri, albums : Array<Album>, photoList : photoListType) {
+		const { albumsOption } = albumUtil
+		// 查询图片文件
+		const cursor : Cursor = contentResolver.query(
+			uri,
+			albumsOption,//列
+			"",//查询条件
+			null,
+			MediaStore.Video.Media.DATE_ADDED + " DESC"
+		) as Cursor
+
+
+
+
+		let fileBucketId = cursor.getColumnIndexOrThrow(fileClumns.BUCKET_ID)
+		let fileBucketDisplayName = cursor.getColumnIndexOrThrow(fileClumns.BUCKET_DISPLAY_NAME)
+		let fileUrl = cursor.getColumnIndexOrThrow(fileClumns.DATA)
+		while (cursor.moveToNext()) {
+			let bucketId : Long = cursor.getLong(fileBucketId)
+			let bucketDisplayName : string = cursor.getString(fileBucketDisplayName)
+			let url : Uri = Uri.parse(cursor.getString(fileUrl)) //转换。直接获取，有些图片获取不了
+			const item = photoList[bucketId]
+			if (item == null) {
+				photoList[bucketId] = 1
+				albums.push(new Album(bucketId, bucketDisplayName, url));
+				// // 获取缩略图
+				// let thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
+				//     contentResolver,
+				//     imageId,
+				//     MediaStore.Images.Thumbnails.MINI_KIND,
+				//     null
+				// )
+			} else {
+				photoList[bucketId] = item + 1
+			}
+		}
+		// 获取文件个数
+		for (let i = 0; i < albums.length; i++) {
+			const item = albums[i]
+			item.count = photoList[item.id]!!
+		}
+
+
+		// console.log("-=-=-=-====",UTSAndroid.getUniActivity()!.windowManager)
+
+	}
+
+
+
+
+
+
+	/**
+	 * 根据相册 id 获取里面的照片（包括gif）和视频
+	 */
+	static getAlbumsData(bucketId : number) : Array<mediaFile> {
+		const uriList : Array<mediaFile> = []
+		let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
+		const { BUCKET_ID, DATE_ADDED, DATA } = fileClumns
+		// 查询图片
+		let cursor : Cursor = contentResolver.query(
+			MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+			albumUtil.mediaFileOption,//列
+			BUCKET_ID + "='" + bucketId + "'",//查询条件
+			null,
+			DATE_ADDED + " DESC"
+		) as Cursor
+
+		let fileUrl = cursor.getColumnIndexOrThrow(DATA)
+		while (cursor.moveToNext()) {
+			let uri : Uri = Uri.parse(cursor.getString(fileUrl)) //转换
+			uriList.push(new mediaFile(uri, 1))
+		}
+
+
+		// 查询视频
+		let cursorVideo : Cursor = contentResolver.query(
+			MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+			albumUtil.mediaFileOption,//列
+			BUCKET_ID + "='" + bucketId + "'",//查询条件
+			null,
+			DATE_ADDED + " DESC"
+		) as Cursor
+
+		let fileVideoUrl = cursor.getColumnIndexOrThrow(DATA)
+		while (cursorVideo.moveToNext()) {
+			let uri : Uri = Uri.parse(cursorVideo.getString(fileVideoUrl)) //转换
+			uriList.push(new mediaFile(uri, 2))
+		}
+		return uriList
+	}
+
+
+
+
+}

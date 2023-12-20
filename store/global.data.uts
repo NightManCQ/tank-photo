@@ -1,0 +1,63 @@
+import { userInfoType } from "../pages/login/login.logic.uts"
+
+
+type windowInfoType = {
+	windowWidth : number,
+	windowHeight : number
+	screenWidth : number,
+	screenHeight : number
+}
+
+type globalDataType = {
+	windowInfo : windowInfoType,
+	server : string
+	user : userInfoType
+}
+const wh = uni.getStorageSync("windowHeight")
+const ww = uni.getStorageSync("windowWidth")
+const sw = uni.getStorageSync("screenWidth")
+const sh = uni.getStorageSync("screenHeight")
+// const user = uni.getStorageSync("userInfo")
+// let userInfoDef : userInfoType = 
+
+
+// console.log("================", user)
+// const userInfo = user == "" ? userInfoDef : user as userInfoType
+
+export const globalData = reactive({
+	windowInfo: {
+		windowHeight: wh != "" ? wh as number : 772,
+		windowWidth: ww != "" ? ww as number : 362,
+		screenWidth: sw != "" ? sw as number : 362,
+		screenHeight: sh != "" ? sh as number : 772,
+	},
+	server: uni.getStorageSync("serverUrl") as string,
+	user: {
+		lastTime: "",
+		role: uni.getStorageSync("role") as string,
+		spaceUuid: uni.getStorageSync("spaceUuid") as string,
+		createTime: "",
+		avatarUrl: uni.getStorageSync("avatarUrl") as string,
+		lastIp: "",
+		updateTime: "",
+		sort: 0,
+		uuid: uni.getStorageSync("uuid") as string,
+		space: {
+			sizeLimit: 0,
+			totalSize: 0,
+			createTime: "",
+			name: "",
+			userUuid: "",
+			totalSizeLimit: 0,
+			updateTime: "",
+			sort: 0,
+			type: "",
+			uuid: "",
+			user: null
+		},
+		username: uni.getStorageSync("userName") as string,
+		status: "",
+	} 
+
+
+} as globalDataType)

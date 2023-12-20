@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+	package="io.dcloud.uni_modules.photoUtil">
+
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<!-- 兼容安卓13以下的权限 -->
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<!-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> -->
+
+	<!-- 		    /**
+		     * 读取图片权限（Android 13.0 新增的权限）
+		     *
+		     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
+		     */ -->
+	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+	<!-- 		    /**
+		     * 读取视频权限（Android 13.0 新增的权限）
+		     *
+		     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
+		     */ -->
+	<uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+	<!-- 	<uses-permission android:name="" />
+	<uses-permission android:name="" /> -->
+
+	<application android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true">
+
+		<!-- 表示当前项目已经适配了分区存储特性 -->
+		<meta-data android:name="ScopedStorage" android:value="true" />
+	</application>
+</manifest>

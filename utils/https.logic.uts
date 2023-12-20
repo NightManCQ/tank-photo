@@ -1,0 +1,33 @@
+import { globalData } from "../store/global.data.uts"
+
+
+
+
+/**
+ * 获取request 前置配置
+ */
+export function getHttpsOption(url : string) {
+	return {
+		url: globalData.server + url,
+		method: "GET"
+	}
+}
+
+
+/**
+ * 发起一个请求
+ */
+export function https<T>(url : string, method : "GET" | "POST", data : any) : Promise<RequestSuccess<any>> {
+	return new Promise((resolve, reject) => {
+		uni.request<any>({
+			url: globalData.server + url,
+			method,
+			data,
+			success(res) {
+				resolve(res)
+			}, fail(err) {
+				reject(err)
+			}
+		})
+	})
+}

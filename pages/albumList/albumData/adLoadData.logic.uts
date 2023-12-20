@@ -1,0 +1,55 @@
+
+import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
+import { globalData } from "@/store/global.data"
+
+
+
+
+type albumDataDataType = {
+	photoList : Array<Array<mediaFile>>
+	photoStyle : string
+	album ?: Album
+}
+
+// 读取缓存
+const cl3 = uni.getStorageSync("clumn3")
+export const albumDataData = reactive({
+	photoList: [],
+	photoStyle: `width: ${cl3}7px;height: ${cl3}px;`,
+} as albumDataDataType)
+
+
+export class albumData {
+
+	static clumns = 3
+
+	static calcStyle() {
+		const { windowInfo } = globalData
+		const { clumns } = albumData
+		const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
+		albumDataData.photoStyle = `width: ${res}px;height: ${res}px;`
+		uni.setStorageSync("clumn3", res)
+	}
+
+	static loadAlbumData() {
+		// @ts-ignore
+		const { id } = albumDataData.album!!
+		if (id != 0) {
+			const arr : Array<Array<mediaFile>> = []
+			const { clumns } = albumData
+			const value = albumUtil.getAlbumsData(id)
+			for (let i = 0; i < value.length; i++) {
+				const yNum = i / clumns
+				const item = value[i]
+				if (i % clumns == 0) {
+					arr.push([])
+					arr[yNum].push(item)
+				} else {
+					arr[yNum].push(item)
+				}
+			}
+			albumDataData.photoList = arr
+		}
+	}
+
+}

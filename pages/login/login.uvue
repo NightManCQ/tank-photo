@@ -1,0 +1,170 @@
+<template>
+	<!-- #ifdef APP -->
+	<scroll-view style="flex:1">
+	<!-- #endif -->
+		<view class="container_login" :style="conStyle">
+
+			<text class="app_title">Tank 相册</text>
+
+			<input placeholder="服务器地址" class="input_v" v-model="serverUrl" type="text" />
+			<input placeholder="账号" class="input_v" v-model="username" type="text" />
+			<input placeholder="密码" class="input_v" type="password" v-model="password" />
+
+
+			<button class="login_ing_btn" @click.stop="loginIng">
+				登录
+			</button>
+
+
+
+
+		</view>
+	<!-- #ifdef APP -->
+	</scroll-view>
+	<!-- #endif -->
+</template>
+
+<script>
+	import { globalData } from '../../store/global.data.uts';
+	import { IRootType, loginUrl, userLoginPro } from "./login.logic"
+	import { getHttpsOption } from "@/utils/https.logic"
+
+	let loginWorkIng = false
+	export default {
+		data() {
+			return {
+				conStyle: `width:${uni.getStorageSync("screenWidth")}px;height:${uni.getStorageSync("screenHeight") as number - 80}px;`,
+				serverUrl: "",
+				username: "",
+				password: ""
+			};
+		},
+		onLoad() {
+
+			this.serverUrl = uni.getStorageSync("serverUrl") as string
+			this.password = uni.getStorageSync("password") as string
+			this.username = uni.getStorageSync("username") as string
+			globalData.server = this.serverUrl
+		},
+		methods: {
+			loginIng() {
+				if (loginWorkIng == true) {
+					return
+				}
+				uni.showLoading({
+					title: "登录中..."
+				})
+				loginWorkIng = true
+
+				uni.setStorageSync("serverUrl", this.serverUrl)
+				globalData.server = this.serverUrl
+				uni.setStorageSync("username", this.username)
+				uni.setStorageSync("password", this.password)
+
+				// console.log("登录信息", globalData.server + "/api/user/login", this.username, this.password);
+
+
+
+				// 目前最优解决办法，直接写
+				uni.request<IRootType>({
+					url: globalData.server + "/api/user/login",
+					data: {
+						username: this.username,
+						password: this.password
+					},
+					success(res) {
+						// const cookie = res.header as UTSJSONObject
+						
+						// console.log("????", res)
+						const user = res.data?.data!
+						const { user: userInfo } = globalData
+						userInfo.avatarUrl = user.avatarUrl
+						userInfo.role = user.role
+						userInfo.spaceUuid = user.spaceUuid
+						userInfo.uuid = user.uuid
+						userInfo.username = user.username
+						uni.setStorageSync("userName", user.username)
+						uni.setStorageSync("uuid", user.uuid)
+						uni.setStorageSync("spaceUuid", user.spaceUuid)
+						uni.setStorageSync("role", user.role)
+						uni.setStorageSync("avatarUrl", user.avatarUrl)
+						uni.setStorageSync("userInfo", user)
+
+
+						console.log("登录成功", userInfo.role, userInfo.username)
+						loginWorkIng = false
+						uni.hideLoading()
+						uni.navigateBack()
+						// resolve(res)
+					}, fail(err) {
+						console.log("登录失败", err)
+						loginWorkIng = false
+						uni.hideLoading()
+						// reject(err)
+					}
+				})
+
+
+
+
+				// userLogin(this.username, this.password).then<void>((res) => {
+				// 	console.log("=====", res.data instanceof UTSJSONObject)
+				// 	const data = res.data as UTSJSONObject
+				// 	console.log("登录数据", data["data"]);
+				// 	// const userInfo = data["data"] as userInfoType
+				// 	const aaaa = data["data"] as UTSJSONObject
+
+				// 	console.log("转换数据",  aaaa["data"]);
+				// 	// let data : RequestSuccess<IRootType> = res as RequestSuccess<IRootType>
+				// 	// console.log(",,,,,", data)
+				// 	// console.log("登录成功", res)
+				// 	// if (data.statusCode == 200) {
+				// 	// 	console.log("登录成功", data.data!["data"])
+				// 	// 	uni.removeStorageSync("userInfo")
+				// 	// 	// uni.setStorageSync("userInfo", data.data?.data!!)
+				// 	// 	// const userInfo = data.data
+				// 	// 	// globalData.user = data.data?.data!!
+				// 	// }
+				// 	uni.hideLoading()
+				// })
+				// .catch<void>((err : any | null) => {
+				// 	uni.hideLoading()
+				// 	console.log("======err ", err)
+				// })
+
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.container_login {
+		display: flex;
+		align-items: center;
+		// border: 1px solid red;
+		justify-content: center;
+
+		.app_title {
+			font-size: 80rpx;
+			font-weight: 700;
+			color: $uni-color-primary;
+			margin-bottom: 200rpx;
+		}
+
+		.input_v {
+			border: 1px solid $uni-text-color-grey;
+			// margin: 40rpx 60rpx 0 60rpx;
+			width: 80%;
+			margin-bottom: 40rpx;
+			padding: 40rpx;
+			border-radius: 10rpx;
+		}
+
+		.login_ing_btn {
+			background-color: $uni-color-primary;
+			border-radius: 10rpx;
+			color: $uni-bg-color;
+			width: 80%;
+		}
+	}
+</style>

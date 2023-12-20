@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+	package="io.dcloud.nativeresouce">
+	<!--permissions-->
+	<uses-permission android:name="android.permission.INTERNET" />
+
+	<application>
+		<!--meta-data-->
+		<!-- <meta-data android:name="My_Custom_Key" android:value="My_Custom_Value"/> -->
+
+	</application>
+</manifest>
