@@ -3,6 +3,8 @@ import Request from "okhttp3.Request";
 import Response from "okhttp3.Response";
 import Callback from "okhttp3.Callback";
 import Call from "okhttp3.Call";
+import Gson from "com.google.gson.Gson";
+import TypeToken from "com.google.gson.reflect.TypeToken";
 // import CookieManager from "java.net.CookieManager";
 // import CookiePolicy from "java.net.CookiePolicy";
 // import CookieStore from "java.net.CookieStore";
@@ -13,7 +15,7 @@ import Call from "okhttp3.Call";
 // import CookieJar from "okhttp3.CookieJar";
 // import HttpUrl from "okhttp3.HttpUrl";
 
-import { responseType, httpCallbacksType } from "../interface.uts"
+import { responseType, httpCallbacksType, paramsType } from "../interface.uts"
 import IOException from "java.io.IOException";
 import { CookieJarImpl } from "./CookieJarImpl.entity.uts"
 
@@ -25,24 +27,20 @@ import { CookieJarImpl } from "./CookieJarImpl.entity.uts"
 
 
 
-export type paramsType<T1> = {
-	url : string;
-	data : any;
-	method : RequestMethod;
-	success : httpCallbacksType<T1>
-	fail : httpCallbacksType<T1>
-}
+
 
 // 初始化 okhttp
 const client : OkHttpClient = new OkHttpClient.Builder()
 	.cookieJar(new CookieJarImpl()).build();;
 
+const gson = new Gson()
 
 
 
 
+class aaaaa<T1> extends TypeToken<T1>{
 
-
+}
 
 
 
@@ -63,13 +61,22 @@ class CallbackIm<T1> implements Callback {
 
 		// console.log("成功 call", call);
 		// console.log("成功 response", response.code, response.message, response.headers.toString());//http状态码
-		const retObj : responseType<T1> = {
-			status: response.code,
-			data: JSON.parse(response.body!!.string()) as T1,
-			message: response.message
-		}
+		// const type = object : TypeToken<T1>() { }.type
+		
+		
+		// responseType<T1> 
+		
+		// const type = new aaaaa<T1>().getType();
+		// const person = gson.fromJson(response.body!!.string(), type)
 
-		this.success(retObj)
+
+		// const retObj : responseType<T1> = {
+		// 	status: response.code,
+		// 	data: person as T1,
+		// 	message: response.message
+		// }
+
+		// this.success(retObj)
 
 	}
 

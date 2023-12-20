@@ -1,5 +1,5 @@
-import { https } from "@/utils/https.logic.uts"
-import { globalData } from "../../store/global.data.uts"
+import { https, requestOptions } from "@/utils/https.logic.uts"
+import { responseType, } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
 type Space = {
 	sizeLimit : number;
@@ -39,57 +39,55 @@ export type IRootType = {
 export const loginUrl = "/api/user/login"
 
 
-// export function getRequestOption<T>() : RequestOptions<T> {
-// 	return {
-// 		url: globalData.server + "/api/user/login",
-// 		data: {
-// 			username: this.username,
-// 			password: this.password
-// 		},
-// 		success(res) {
-// 			// console.log("登录成功", res.data!.data)
-// 			// resolve(res)
-// 		}, fail(err) {
-// 			console.log("登录失败", err)
-// 			// reject(err)
-// 		}
-// 	}
-// }
 
-
-export function userLogin(username : string, password : string) : Promise<RequestSuccess<any>> {
-	return https<IRootType>("/api/user/login", "GET", {
-		username,
-		password
-	})
+export type userLoginRequestOptionType = {
+	username : string
+	password : string
 }
 
-type cllbackType = (res : RequestSuccess<IRootType>) => void
-
-type errorType = (res : any) => void
-
-
-
-
-
-
-
-export function userLoginPro(username : string, password : string, succeed : cllbackType, error : errorType) {
-	uni.request<IRootType>({
-		url: globalData.server + "/api/user/login",
+export function userLoginFun<resDataType>(username : string, password : string) : Promise<responseType<resDataType>> {
+	const requestBody : requestOptions = {
+		url: "/api/user/login?username=bunny&password=hong159874@.@",
+		method: "GET",
 		data: {
 			username: username,
 			password: password
-		},
-		success(res) {
-			succeed(res)
-		}, fail(err) {
-			// cllback(err)
-			// reject(err)
-			error(err)
 		}
-	} as RequestOptions<IRootType>)
+	}
+
+	// console.log("???", requestBody);
+	return https<resDataType>(requestBody)
 }
+
+
+
+
+// type cllbackType = (res : RequestSuccess<IRootType>) => void
+
+// type errorType = (res : any) => void
+
+
+
+
+
+
+
+// export function userLoginPro(username : string, password : string, succeed : cllbackType, error : errorType) {
+// 	uni.request<IRootType>({
+// 		url: globalData.server + "/api/user/login",
+// 		data: {
+// 			username: username,
+// 			password: password
+// 		},
+// 		success(res) {
+// 			succeed(res)
+// 		}, fail(err) {
+// 			// cllback(err)
+// 			// reject(err)
+// 			error(err)
+// 		}
+// 	} as RequestOptions<IRootType>)
+// }
 
 
 // class HTTPS {
@@ -116,6 +114,5 @@ export function userLoginPro(username : string, password : string, succeed : cll
 
 // class userLoginClass extends HTTPS {
 // 	userLogin(){
-		
 // 	}
 // }

@@ -26,8 +26,7 @@
 
 <script>
 	import { globalData } from '../../store/global.data.uts';
-	import { IRootType, loginUrl, userLoginPro } from "./login.logic"
-	import { getHttpsOption } from "@/utils/https.logic"
+	import { IRootType, userLoginFun } from "./login.logic"
 
 	let loginWorkIng = false
 	export default {
@@ -47,7 +46,7 @@
 			globalData.server = this.serverUrl
 		},
 		methods: {
-			loginIng() {
+			async loginIng() : Promise<void> {
 				if (loginWorkIng == true) {
 					return
 				}
@@ -62,47 +61,84 @@
 				uni.setStorageSync("password", this.password)
 
 				// console.log("登录信息", globalData.server + "/api/user/login", this.username, this.password);
+				const { username, password } = this
+				const res = await userLoginFun<IRootType>(username, password)
+				// .catch((err)=>{
+				// 这样写就不是同步执行了？？？
+				// })
+
+				console.log("----", res);
+
+				console.log("?????", res.status, res.status == 200);
+				if (res.status == 200) {
+					console.log("进来了", res.data["data"]);
+				}
+				// if (res.status == 200) {
+				// 	console.log("进来了",res.data.data);
+				// 	const user = res.data?.data!
+
+				// 	const { user: userInfo } = globalData
+				// 	userInfo.avatarUrl = user.avatarUrl
+				// 	userInfo.role = user.role
+				// 	userInfo.spaceUuid = user.spaceUuid
+				// 	userInfo.uuid = user.uuid
+				// 	userInfo.username = user.username
+				// 	uni.setStorageSync("userName", user.username)
+				// 	uni.setStorageSync("uuid", user.uuid)
+				// 	uni.setStorageSync("spaceUuid", user.spaceUuid)
+				// 	uni.setStorageSync("role", user.role)
+				// 	uni.setStorageSync("avatarUrl", user.avatarUrl)
+				// 	uni.setStorageSync("userInfo", user)
 
 
+				// 	console.log("登录成功", userInfo.role, userInfo.username)
+				// 	loginWorkIng = false
+				// 	uni.hideLoading()
+				// 	uni.navigateBack()
+				// } else {
+				// 	console.log("登录失败", res.data)
+				// 	loginWorkIng = false
+				// 	uni.hideLoading()
+				// }
 
-				// 目前最优解决办法，直接写
-				uni.request<IRootType>({
-					url: globalData.server + "/api/user/login",
-					data: {
-						username: this.username,
-						password: this.password
-					},
-					success(res) {
-						// const cookie = res.header as UTSJSONObject
-						
-						// console.log("????", res)
-						const user = res.data?.data!
-						const { user: userInfo } = globalData
-						userInfo.avatarUrl = user.avatarUrl
-						userInfo.role = user.role
-						userInfo.spaceUuid = user.spaceUuid
-						userInfo.uuid = user.uuid
-						userInfo.username = user.username
-						uni.setStorageSync("userName", user.username)
-						uni.setStorageSync("uuid", user.uuid)
-						uni.setStorageSync("spaceUuid", user.spaceUuid)
-						uni.setStorageSync("role", user.role)
-						uni.setStorageSync("avatarUrl", user.avatarUrl)
-						uni.setStorageSync("userInfo", user)
+				// // 目前最优解决办法，直接写
+				// uni.request<IRootType>({
+				// 	url: globalData.server + "/api/user/login",
+				// 	data: {
+				// 		username: this.username,
+				// 		password: this.password
+				// 	},
+				// 	success(res) {
+				// 		// const cookie = res.header as UTSJSONObject
+
+				// 		// console.log("????", res)
+				// 		const user = res.data?.data!
+				// 		const { user: userInfo } = globalData
+				// 		userInfo.avatarUrl = user.avatarUrl
+				// 		userInfo.role = user.role
+				// 		userInfo.spaceUuid = user.spaceUuid
+				// 		userInfo.uuid = user.uuid
+				// 		userInfo.username = user.username
+				// 		uni.setStorageSync("userName", user.username)
+				// 		uni.setStorageSync("uuid", user.uuid)
+				// 		uni.setStorageSync("spaceUuid", user.spaceUuid)
+				// 		uni.setStorageSync("role", user.role)
+				// 		uni.setStorageSync("avatarUrl", user.avatarUrl)
+				// 		uni.setStorageSync("userInfo", user)
 
 
-						console.log("登录成功", userInfo.role, userInfo.username)
-						loginWorkIng = false
-						uni.hideLoading()
-						uni.navigateBack()
-						// resolve(res)
-					}, fail(err) {
-						console.log("登录失败", err)
-						loginWorkIng = false
-						uni.hideLoading()
-						// reject(err)
-					}
-				})
+				// 		console.log("登录成功", userInfo.role, userInfo.username)
+				// 		loginWorkIng = false
+				// 		uni.hideLoading()
+				// 		uni.navigateBack()
+				// 		// resolve(res)
+				// 	}, fail(err) {
+				// 		console.log("登录失败", err)
+				// 		loginWorkIng = false
+				// 		uni.hideLoading()
+				// 		// reject(err)
+				// 	}
+				// })
 
 
 

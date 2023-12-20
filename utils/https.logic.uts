@@ -1,4 +1,36 @@
 import { globalData } from "../store/global.data.uts"
+import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
+import { paramsType, responseType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
+
+export type requestOptions = {
+	url : string
+	method : RequestMethod
+	data : any
+}
+
+export function https<resDataType>(params : requestOptions) : Promise<responseType<resDataType>> {
+	return new Promise((resolve, reject) => {
+		xxOkHttp.request<resDataType>({
+			url: globalData.server + params.url,
+			method: params.method,
+			data: params.data,
+			success(res) {
+				resolve(res)
+			},
+			fail(err) {
+				reject(err)
+			}
+		} as paramsType<resDataType>)
+	})
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -14,20 +46,20 @@ export function getHttpsOption(url : string) {
 }
 
 
-/**
- * 发起一个请求
- */
-export function https<T>(url : string, method : "GET" | "POST", data : any) : Promise<RequestSuccess<any>> {
-	return new Promise((resolve, reject) => {
-		uni.request<any>({
-			url: globalData.server + url,
-			method,
-			data,
-			success(res) {
-				resolve(res)
-			}, fail(err) {
-				reject(err)
-			}
-		})
-	})
-}
+// /**
+//  * 发起一个请求
+//  */
+// export function https<T>(url : string, method : "GET" | "POST", data : any) : Promise<RequestSuccess<any>> {
+// 	return new Promise((resolve, reject) => {
+// 		uni.request<any>({
+// 			url: globalData.server + url,
+// 			method,
+// 			data,
+// 			success(res) {
+// 				resolve(res)
+// 			}, fail(err) {
+// 				reject(err)
+// 			}
+// 		})
+// 	})
+// }

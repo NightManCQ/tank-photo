@@ -11,3 +11,13 @@ export type responseType<dataType> = {
 
 // http 回调函数使用的类型
 export type httpCallbacksType<dataType> = (res : responseType<dataType>) => void
+
+
+// 参数type
+export type paramsType<T1> = {
+	url : string;
+	data : any;
+	method : RequestMethod;
+	success : httpCallbacksType<T1>
+	fail : httpCallbacksType<T1>
+}
