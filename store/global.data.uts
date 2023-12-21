@@ -31,7 +31,8 @@ export const globalData = reactive({
 		screenWidth: sw != "" ? sw as number : 362,
 		screenHeight: sh != "" ? sh as number : 772,
 	},
-	server: uni.getStorageSync("serverUrl") as string,
+	// uni.getStorageSync("serverUrl") as string ?
+	server: "https://pan.promise.pink:442",
 	user: {
 		lastTime: "",
 		role: uni.getStorageSync("role") as string,
@@ -57,7 +58,7 @@ export const globalData = reactive({
 		},
 		username: uni.getStorageSync("userName") as string,
 		status: "",
-	} 
+	}
 
 
 } as globalDataType)

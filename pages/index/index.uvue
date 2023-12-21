@@ -171,15 +171,17 @@
 			this.getWindowInfo()
 			// this.getSystemInfo()
 
-			this.reqTest()
+
 
 
 
 		},
+		onShow() {
+			this.reqTest()
+		},
 
 		methods: {
 			async reqTest() : Promise<void> {
-
 				const res = await userLoginFun<IRootType>("bunny", "hong159874@.@")
 				console.log("---", res.data);
 

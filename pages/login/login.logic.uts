@@ -54,8 +54,6 @@ export function userLoginFun<resDataType>(username : string, password : string) 
 			password: password
 		}
 	}
-
-	// console.log("???", requestBody);
 	return https<resDataType>(requestBody)
 }
 

@@ -2,10 +2,17 @@
 
 
 // response 类型，响应类型，无论成功与否均返回此类型
-export type responseType<dataType> = {
-	status : number
-	data : dataType
-	message : string
+export class responseType<dataType>  {
+	status : number = 0
+	data : dataType | null = null
+	message : string = ""
+
+	// constructor() {
+	// 	this.data = null
+	// }
+	// setStatus(status : number) {
+	// 	this.status = status
+	// }
 }
 
 

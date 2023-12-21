@@ -5,6 +5,7 @@ import Callback from "okhttp3.Callback";
 import Call from "okhttp3.Call";
 import Gson from "com.google.gson.Gson";
 import TypeToken from "com.google.gson.reflect.TypeToken";
+import Serializable from "java.io.Serializable";
 // import CookieManager from "java.net.CookieManager";
 // import CookiePolicy from "java.net.CookiePolicy";
 // import CookieStore from "java.net.CookieStore";
@@ -36,18 +37,28 @@ const client : OkHttpClient = new OkHttpClient.Builder()
 const gson = new Gson()
 
 
+class CustomTypeToken<T> extends TypeToken<T> {
+	constructor() {
+		super();
+	}
+}
 
 
-class aaaaa<T1> extends TypeToken<T1>{
+// type TestEntity = {
+// 	aa : number
+// 	bb : string
+// }
 
+
+class TestEntity {
+	aa : number = 1
+	bb : string = "钮海"
 }
 
 
 
 
-class CallbackIm<T1> implements Callback {
-
-
+class CallbackIm<T1> extends Callback {
 
 	private success : httpCallbacksType<T1>
 
@@ -57,31 +68,75 @@ class CallbackIm<T1> implements Callback {
 
 
 	override  onResponse(call : Call, response : Response) {
+		const resBody = response.body!!.string()
+		// console.log("body", resBody);
 
 
-		// console.log("成功 call", call);
-		// console.log("成功 response", response.code, response.message, response.headers.toString());//http状态码
-		// const type = object : TypeToken<T1>() { }.type
-		
-		
-		// responseType<T1> 
-		
-		// const type = new aaaaa<T1>().getType();
-		// const person = gson.fromJson(response.body!!.string(), type)
+
+		// 产生utsObject 
+		let retObj = new responseType<T1>()
+		retObj.status = response.code
+		retObj.data = resBody as T1
+		retObj.message = response.message
+		// const aaaa : T1 = retObj.data as T1
+		// // console.log("????", aaaa);
+		// retObj.data = aaaa
+
+		// 希望产生kotlin对象
+		// const str = gson.toJson(retObj)
+		// console.log("转换后的字符串", str);
+		// const type = new CustomTypeToken<responseType<T1>>().type
+		// // console.log("type", type);
+		// const bb = gson.fromJson<responseType<T1>>(str, type)
+		// console.log("====对象", bb);
 
 
-		// const retObj : responseType<T1> = {
+
+
+
+		// 测试
+		// const testStr : TestEntity = {
+		// 	aa: 1,
+		// 	bb: "nihao"
+		// }
+		const testText = `{"aa":1,"bb":"nihao"}`
+		// console.log("---测试 字符串", gson.toJson(testStr));
+		// const testObj : TestEntity = gson.fromJson(testText, new CustomTypeToken<TestEntity>().type)
+		const aa = gson.fromJson(testText, new CustomTypeToken<TestEntity>().type) as TestEntity
+		console.log("---测试 对象", aa)
+
+
+		// const str = "{\n" +
+		// 	"    \"code\":0,\n" +
+		// 	"    \"message\":\"\",\n" +
+		// 	"    \"content\":{\n" +
+		// 	"        \"city\":\"cheng du\",\n" +
+		// 	"        \"weather\":\"sunny\",\n" +
+		// 	"        \"tem\":16,\n" +
+		// 	"        \"date\":\"2020-10-19\"\n" +
+		// 	"    }\n" +
+		// 	"}";
+
+		// console.log("?????str", str);
+		// const ttK = new CustomTypeToken<responseTypeTwo>()
+		// const type = ttK.getType()
+		// const gsonObj : responseTypeTwo = new Gson().fromJson<responseTypeTwo>(str, type)
+		// console.log("转换后的对象", gsonObj);
+
+
+		// {
 		// 	status: response.code,
-		// 	data: person as T1,
+		// 	data: JSON.parse(response.body!!.string()) as T1,
 		// 	message: response.message
 		// }
 
-		// this.success(retObj)
+		this.success(retObj)
 
 	}
 
 
 	constructor(success : httpCallbacksType<T1>) {
+		super();
 		this.success = success
 	}
 }
