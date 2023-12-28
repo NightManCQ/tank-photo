@@ -2,6 +2,7 @@ import { globalData } from "../store/global.data.uts"
 import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
 import { paramsType, responseType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
+import { IRootType, userInfoType, userLoginFun } from "@/pages/login/login.logic.uts";
 export type requestOptions = {
 	url : string
 	method : RequestMethod
@@ -25,7 +26,51 @@ export function https<resDataType>(params : requestOptions) : Promise<responseTy
 }
 
 
+type testType<T> = {
+	msg : string;
+	code : number;
+	data : userInfoType;
+}
+export function UniHttps<resDataType>(params : requestOptions) : Promise<IRootType> {
+	return new Promise((resolve, reject) => {
+		uni.request<IRootType>({
+			url: globalData.server + "/api/user/login",
+			data: {
+				username: "bunny",
+				password: "hong159874@.@"
+			},
+			success(res) {
+				// const cookie = res.header as UTSJSONObject
+				const aaaaa : IRootType = {
+					msg: "",
+					code: res.statusCode + "",
+					data: res.data!.data as userInfoType
+				}
 
+
+				// const user = res.data?.data!
+				// console.log("????", aaaaa)
+				resolve(aaaaa)
+
+			}, fail(err) {
+				console.log("登录失败", err)
+
+				// reject(err)
+			}
+		})
+		// xxOkHttp.request<resDataType>({
+		// 	url: globalData.server + params.url,
+		// 	method: params.method,
+		// 	data: params.data,
+		// 	success(res) {
+		// 		resolve(res)
+		// 	},
+		// 	fail(err) {
+		// 		reject(err)
+		// 	}
+		// } as paramsType<resDataType>)
+	})
+}
 
 
 

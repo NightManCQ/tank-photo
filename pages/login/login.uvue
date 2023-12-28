@@ -71,7 +71,7 @@
 
 				console.log("?????", res.status, res.status == 200);
 				if (res.status == 200) {
-					console.log("进来了", res.data["data"]);
+					console.log("进来了", res.data);
 				}
 				// if (res.status == 200) {
 				// 	console.log("进来了",res.data.data);

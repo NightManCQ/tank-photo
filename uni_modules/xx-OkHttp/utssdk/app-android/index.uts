@@ -102,8 +102,10 @@ class CallbackIm<T1> extends Callback {
 		const testText = `{"aa":1,"bb":"nihao"}`
 		// console.log("---测试 字符串", gson.toJson(testStr));
 		// const testObj : TestEntity = gson.fromJson(testText, new CustomTypeToken<TestEntity>().type)
-		const aa = gson.fromJson(testText, new CustomTypeToken<TestEntity>().type) as TestEntity
-		console.log("---测试 对象", aa)
+		// const aa = gson.fromJson(testText, new CustomTypeToken<TestEntity>().type) as TestEntity
+		console.log("---测试 对象", gson.fromJson(testText, new CustomTypeToken<TestEntity>().type) as TestEntity)
+		// console.log("---测试 对象", testText.toJavaObject(TestEntity.javaClass))
+		
 
 
 		// const str = "{\n" +

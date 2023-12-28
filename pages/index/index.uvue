@@ -129,6 +129,7 @@
 	import { globalData } from "@/store/global.data.uts";
 	import { IRootType, userInfoType, userLoginFun } from "@/pages/login/login.logic.uts";
 	import { albumData } from "@/pages/albumList/albumData/adLoadData.logic.uts"
+	import { requestOptions, UniHttps } from "../../utils/https.logic.uts";
 	// import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
 	// import { paramsType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
@@ -140,6 +141,12 @@
 	// 	password : string
 	// }
 
+
+	type testType<T> = {
+		msg : string;
+		code : string;
+		data : T;
+	}
 
 	export default {
 		components: {
@@ -172,6 +179,35 @@
 			// this.getSystemInfo()
 
 
+			// promise+uni.request 封装+类型提示测试。
+			// 无法转转换一个泛型
+			UniHttps<userInfoType>({
+				url: "",
+				method: "GET",
+				data: {}
+			} as requestOptions).then((res) => {
+				console.log("000000000000", res);
+			})
+			// uni.request<testType<userInfoType>>({
+			// 	url: globalData.server + "/api/user/login",
+			// 	data: {
+			// 		username: "bunny",
+			// 		password: "hong159874@.@"
+			// 	},
+			// 	success(res) {
+			// 		// const cookie = res.header as UTSJSONObject
+
+
+			// 		const user = res.data?.data!
+			// 		console.log("????", res)
+
+
+			// 	}, fail(err) {
+			// 		console.log("登录失败", err)
+
+			// 		// reject(err)
+			// 	}
+			// })
 
 
 
