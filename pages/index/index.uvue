@@ -130,6 +130,7 @@
 	import { IRootType, userInfoType, userLoginFun } from "@/pages/login/login.logic.uts";
 	import { albumData } from "@/pages/albumList/albumData/adLoadData.logic.uts"
 	import { requestOptions, UniHttps } from "../../utils/https.logic.uts";
+	import { xGlide } from "@/uni_modules/x-Glide"
 	// import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
 	// import { paramsType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
@@ -177,7 +178,7 @@
 			// console.log("????", uni.getStorageSync("windowHeight"));
 			this.getWindowInfo()
 			// this.getSystemInfo()
-
+			xGlide.log()
 
 			// promise+uni.request 封装+类型提示测试。
 			// 无法转转换一个泛型

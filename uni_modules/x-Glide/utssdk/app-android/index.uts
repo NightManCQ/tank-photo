@@ -1,0 +1,10 @@
+
+//  function xGlide() {
+// 	console.log("?????", xGlide)
+// }
+
+export class xGlide {
+	static log() {
+		console.log("----------xGlide");
+	}
+}
