@@ -474,7 +474,7 @@
 		display: flex;
 		position: relative;
 		transition-property: transform;
-		transition-duration: 600;
+		transition-duration: 3;
 
 		.con_main {
 			width: 100%;
