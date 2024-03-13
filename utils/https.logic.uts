@@ -1,5 +1,5 @@
 import { globalData } from "../store/global.data.uts"
-import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
+// import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
 import { paramsType, responseType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
 import { IRootType, userInfoType, userLoginFun } from "@/pages/login/login.logic.uts";
@@ -11,17 +11,17 @@ export type requestOptions = {
 
 export function https<resDataType>(params : requestOptions) : Promise<responseType<resDataType>> {
 	return new Promise((resolve, reject) => {
-		xxOkHttp.request<resDataType>({
-			url: globalData.server + params.url,
-			method: params.method,
-			data: params.data,
-			success(res) {
-				resolve(res)
-			},
-			fail(err) {
-				reject(err)
-			}
-		} as paramsType<resDataType>)
+		// xxOkHttp.request<resDataType>({
+		// 	url: globalData.server + params.url,
+		// 	method: params.method,
+		// 	data: params.data,
+		// 	success(res) {
+		// 		resolve(res)
+		// 	},
+		// 	fail(err) {
+		// 		reject(err)
+		// 	}
+		// } as paramsType<resDataType>)
 	})
 }
 
