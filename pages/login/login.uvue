@@ -26,16 +26,16 @@
 
 <script>
 	import { globalData } from '../../store/global.data.uts';
-	import { IRootType, userLoginFun } from "./login.logic"
+	import { IRootType } from "./login.logic"
 
 	let loginWorkIng = false
 	export default {
 		data() {
 			return {
 				conStyle: `width:${uni.getStorageSync("screenWidth")}px;height:${uni.getStorageSync("screenHeight") as number - 80}px;`,
-				serverUrl: "",
-				username: "",
-				password: ""
+				serverUrl: "https://pan.promise.pink:442",
+				username: "bunny",
+				password: "hong123456"
 			};
 		},
 		onLoad() {
@@ -62,17 +62,49 @@
 
 				// console.log("登录信息", globalData.server + "/api/user/login", this.username, this.password);
 				const { username, password } = this
-				const res = await userLoginFun<IRootType>(username, password)
+
+
+				uni.request<IRootType>({
+					url: globalData.server + "/api/user/login",
+					data: {
+						username,
+						password
+					},
+					success(res) {
+						// const cookie = res.header as UTSJSONObject
+						// const aaaaa : IRootType = {
+						// 	msg: "",
+						// 	code: res.statusCode + "",
+						// 	data: res.data!.data as userInfoType
+						// }
+
+
+						// const user = res.data?.data!
+						if (res.statusCode == 200) {
+							console.log("登录成功", res.data)
+
+						}
+
+					}, fail(err) {
+						console.log("登录失败", err)
+
+					},
+					complete() {
+						loginWorkIng = false
+						uni.hideLoading()
+					}
+				})
+				// const res = await userLoginFun<IRootType>(username, password)
 				// .catch((err)=>{
 				// 这样写就不是同步执行了？？？
 				// })
 
-				console.log("----", res);
+				// console.log("----", res);
 
-				console.log("?????", res.status, res.status == 200);
-				if (res.status == 200) {
-					console.log("进来了", res.data);
-				}
+				// console.log("?????", res.status, res.status == 200);
+				// if (res.status == 200) {
+				// 	console.log("进来了", res.data);
+				// }
 				// if (res.status == 200) {
 				// 	console.log("进来了",res.data.data);
 				// 	const user = res.data?.data!

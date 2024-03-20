@@ -1,7 +1,7 @@
 
 import { albumUtil, Album } from "@/uni_modules/photo-util";
 import { uni_XXPermissions } from "@/uni_modules/xx-XXPermissions"
-import { globalData } from "@/store/global.data"
+import { globalData, staticData } from "@/store/global.data"
 
 
 
@@ -68,7 +68,7 @@ export class albumListLoadData {
 	// }
 
 	static calcStyle() {
-		const { windowInfo } = globalData
+		const { windowInfo } = staticData
 		const res = (windowInfo.windowWidth - 48) / 2
 		albumListData.albumStyle = `width: ${res}px;height: ${res}px;`
 		uni.setStorageSync("clumn2", res)

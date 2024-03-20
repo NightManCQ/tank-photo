@@ -22,6 +22,31 @@ export function https<resDataType>(params : requestOptions) : Promise<responseTy
 		// 		reject(err)
 		// 	}
 		// } as paramsType<resDataType>)
+		uni.request<IRootType>({
+			url: globalData.server + "/api/user/login",
+			data: {
+				username: "bunny",
+				password: "hong159874@.@"
+			},
+			success(res:responseType<IRootType>) {
+				// const cookie = res.header as UTSJSONObject
+				// const aaaaa : IRootType = {
+				// 	msg: "",
+				// 	code: res.statusCode + "",
+				// 	data: res.data!.data as userInfoType
+				// }
+
+
+				// const user = res.data?.data!
+				// console.log("????", aaaaa)
+				resolve(res)
+
+			}, fail(err) {
+				console.log("登录失败", err)
+
+				// reject(err)
+			}
+		})
 	})
 }
 
@@ -33,31 +58,31 @@ type testType<T> = {
 }
 export function UniHttps<resDataType>(params : requestOptions) : Promise<IRootType> {
 	return new Promise((resolve, reject) => {
-		uni.request<IRootType>({
-			url: globalData.server + "/api/user/login",
-			data: {
-				username: "bunny",
-				password: "hong159874@.@"
-			},
-			success(res) {
-				// const cookie = res.header as UTSJSONObject
-				const aaaaa : IRootType = {
-					msg: "",
-					code: res.statusCode + "",
-					data: res.data!.data as userInfoType
-				}
+		// uni.request<IRootType>({
+		// 	url: globalData.server + "/api/user/login",
+		// 	data: {
+		// 		username: "bunny",
+		// 		password: "hong159874@.@"
+		// 	},
+		// 	success(res) {
+		// 		// const cookie = res.header as UTSJSONObject
+		// 		const aaaaa : IRootType = {
+		// 			msg: "",
+		// 			code: res.statusCode + "",
+		// 			data: res.data!.data as userInfoType
+		// 		}
 
 
-				// const user = res.data?.data!
-				// console.log("????", aaaaa)
-				resolve(aaaaa)
+		// 		// const user = res.data?.data!
+		// 		// console.log("????", aaaaa)
+		// 		resolve(aaaaa)
 
-			}, fail(err) {
-				console.log("登录失败", err)
+		// 	}, fail(err) {
+		// 		console.log("登录失败", err)
 
-				// reject(err)
-			}
-		})
+		// 		// reject(err)
+		// 	}
+		// })
 		// xxOkHttp.request<resDataType>({
 		// 	url: globalData.server + params.url,
 		// 	method: params.method,

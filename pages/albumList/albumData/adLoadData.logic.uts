@@ -1,6 +1,6 @@
 
 import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
-import { globalData } from "@/store/global.data"
+import { globalData, staticData } from "@/store/global.data"
 
 
 
@@ -24,11 +24,11 @@ export class albumData {
 	static clumns = 3
 
 	static calcStyle() {
-		const { windowInfo } = globalData
+		const { windowInfo } = staticData
 		const { clumns } = albumData
 		const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
 		albumDataData.photoStyle = `width: ${res}px;height: ${res}px;`
-		uni.setStorageSync("clumn3", res)
+		console.log("?????元素样式", albumDataData);
 	}
 
 	static loadAlbumData() {

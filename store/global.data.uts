@@ -9,8 +9,7 @@ type windowInfoType = {
 }
 
 type globalDataType = {
-	windowInfo : windowInfoType,
-	server : string
+
 	user : userInfoType
 }
 const wh = uni.getStorageSync("windowHeight")
@@ -24,7 +23,19 @@ const sh = uni.getStorageSync("screenHeight")
 // console.log("================", user)
 // const userInfo = user == "" ? userInfoDef : user as userInfoType
 
-export const globalData = reactive({
+
+type staticDataTyep = {
+	windowInfo : windowInfoType
+	server : string
+}
+
+
+
+
+/**
+ * 静态全局数据
+ */
+export const staticData : staticDataTyep = {
 	windowInfo: {
 		windowHeight: wh != "" ? wh as number : 772,
 		windowWidth: ww != "" ? ww as number : 362,
@@ -33,6 +44,15 @@ export const globalData = reactive({
 	},
 	// uni.getStorageSync("serverUrl") as string ?
 	server: "https://pan.promise.pink:442",
+}
+
+
+
+/**
+ * 响应式全局数据
+ */
+export const globalData = reactive({
+
 	user: {
 		lastTime: "",
 		role: uni.getStorageSync("role") as string,

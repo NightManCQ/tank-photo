@@ -1,5 +1,6 @@
 <script lang="uts">
-	import {albumListLoadData} from "@/pages/albumList/abLoadData.logic"
+	import { staticData } from "./store/global.data"
+	import { albumListLoadData } from "@/pages/albumList/abLoadData.logic"
 
 
 	// function jest_getWindowInfo() : GetWindowInfoResult {
@@ -10,7 +11,17 @@
 		onLaunch: function () {
 			console.log('App Launch')
 			albumListLoadData.getalbums()
+			uni.request<any>({
+				url: staticData.server + "/api/preference/fetch",
+				method: "POST",
+				success(res) {
+					console.log("获取后端系统信息", res)
 
+				},
+				fail(err) {
+					console.log("获取后端系统信息 失败", err)
+				}
+			})
 
 
 
@@ -42,6 +53,7 @@
 		},
 		onShow: function () {
 			console.log('App Show')
+
 			// 获取系统信息
 			// const res = uni.getWindowInfo();
 			// uni.getWindowInfo()

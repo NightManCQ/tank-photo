@@ -5,7 +5,7 @@
 
 
 
-	<list-view ref="listView" :id=id class="container_al" :rebound="false" :scroll-y="true"
+	<list-view ref="listView" :id="id" class="container_al" :rebound="false" :scroll-y="true"
 		:custom-nested-scroll="true">
 		<list-item :type="4" style="margin-top: 20px;"></list-item>
 		<list-item class="ab_it" v-for="(itemArr,index) in dataList" :key="index">
@@ -18,8 +18,11 @@
 </template>
 
 <script>
+	import { staticData } from "../../../store/global.data";
+	import { clumn3KeyName } from "../../../store/storage.key";
 	import { albumData, albumDataData } from "./adLoadData.logic"
 	import { mediaFile } from "@/uni_modules/photo-util";
+	type PST = string | null
 	export default {
 		data() {
 			return {
@@ -31,7 +34,32 @@
 				return albumDataData.photoList
 			},
 			photoStyle() : string {
-				return albumDataData.photoStyle
+
+
+				// var a : string | null = uni.getStorageSync(clumn3KeyName)
+				// a?.let(it => {
+				// 	// it必然是string
+
+				// 	console.log("本地数据",it);
+				// })
+
+
+
+				let photoStyle = uni.getStorageSync(clumn3KeyName)!
+
+
+
+				if (photoStyle != "") {
+					console.log("返回本地数据", photoStyle);
+					return photoStyle as string
+				}
+				// let photoStyle = ""
+				const { windowInfo } = staticData
+				const { clumns } = albumData
+				const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
+				photoStyle = `width: ${res}px;height: ${res}px;`
+				uni.setStorageSync(clumn3KeyName, photoStyle)
+				return photoStyle
 			}
 		},
 		onLoad() {
@@ -40,6 +68,7 @@
 				uni.setNavigationBarTitle({
 					title: albumDataData.album!.name,
 				})
+				console.log(`进来了 ${albumDataData.album!.name} 相册`);
 			} else {
 				uni.switchTab({
 					url: "/pages/index/index"

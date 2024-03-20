@@ -29,34 +29,13 @@
 				<list-item class="album_list_sub" v-for="(itArr,index) in albumArray" :key="index">
 					<view class="ab_it" v-for="(item,indexTwo) in itArr" :key="indexTwo  + item.id +''">
 
-						<!-- 问题代码，触发方式：长按,然后下滑，边框会加在屏幕外面的元素上 -->
-						<!-- 						<image class="ab_img" :class="pattern ==2?'bor_all':''" :style="albumStyle" :src="item.coverImg"
-							@click="getAlbumData(item)" @touchstart="touchstart($event as TouchEvent)"
-							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
-							@touchcancel="touchend">
-						</image> -->
 
-
-						<!-- 以下是正常的代码，需要实现长按加边框，需要先赋值一个边框占位置 -->
-						<!-- 						<image class="ab_img" :class="pattern ==2?'bor_all':'bor_all1'" :style="albumStyle"
-							:src="item.coverImg" @click="getAlbumData(item)"
-							@touchstart="touchstart($event as TouchEvent)"
-							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
-							@touchcancel="touchend">
-						</image> -->
-
-
-
-						<!-- 单个元素边框 正常代码 -->
-						<image class="ab_img" :class="item.check == true?'bor_all':'bor_all1'" :style="albumStyle"
+						<image class="ab_img" :class="pattern ==2?'bor_all':'bor_all1'" :style="albumStyle"
 							:src="item.coverImg" @click="getAlbumData(item)"
 							@touchstart="touchstart($event as TouchEvent)"
 							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
 							@touchcancel="touchend">
 						</image>
-
-
-
 
 						<text class="text">{{item.name}} {{item.count}}</text>
 					</view>
@@ -126,11 +105,11 @@
 	import { albumListLoadData, albumListData } from "@/pages/albumList/abLoadData.logic"
 	import { albumDataData } from "@/pages/albumList/albumData/adLoadData.logic"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
-	import { globalData } from "@/store/global.data.uts";
+	import { globalData, staticData } from "@/store/global.data.uts";
 	import { IRootType, userInfoType, userLoginFun } from "@/pages/login/login.logic.uts";
 	import { albumData } from "@/pages/albumList/albumData/adLoadData.logic.uts"
-	import { requestOptions, UniHttps } from "../../utils/https.logic.uts";
-	import { xGlide } from "@/uni_modules/x-Glide"
+	// import { requestOptions, UniHttps } from "../../utils/https.logic.uts";
+	// import { xGlide } from "@/uni_modules/x-Glide"
 	// import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
 	// import { paramsType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
@@ -154,7 +133,7 @@
 			uniNavbarLite
 		},
 		data() {
-			const { screenHeight, screenWidth } = globalData.windowInfo
+			const { screenHeight, screenWidth } = staticData.windowInfo
 			return {
 				id: "ajsdjg0lkasdjglfka",
 				authorizationStatus: albumListLoadData.authorizationStatus,
@@ -177,18 +156,18 @@
 		onLoad() {
 			// console.log("????", uni.getStorageSync("windowHeight"));
 			this.getWindowInfo()
-			// this.getSystemInfo()
-			xGlide.log()
+			this.getSystemInfo()
+			// xGlide.log()
 
 			// promise+uni.request 封装+类型提示测试。
 			// 无法转转换一个泛型
-			UniHttps<userInfoType>({
-				url: "",
-				method: "GET",
-				data: {}
-			} as requestOptions).then((res) => {
-				console.log("000000000000", res);
-			})
+			// UniHttps<userInfoType>({
+			// 	url: "",
+			// 	method: "GET",
+			// 	data: {}
+			// } as requestOptions).then((res) => {
+			// 	console.log("000000000000", res);
+			// })
 			// uni.request<testType<userInfoType>>({
 			// 	url: globalData.server + "/api/user/login",
 			// 	data: {
@@ -297,63 +276,53 @@
 			 * cookies 测试
 			 */
 			getSystemInfo() {
-				// uni.request<any>({
-				// 	url: globalData.server + "/api/preference/fetch",
-				// 	method: "POST",
-				// 	success(res) {
-				// 		console.log("获取后端系统信息", res)
 
+				// uni.request<IRootType>({
+				// 	url: staticData.server + "/api/user/login",
+				// 	data: {
+				// 		username: "bunny",
+				// 		password: "hong159874@.@"
 				// 	},
-				// 	fail(err) {
-				// 		console.log("获取后端系统信息 失败", err)
+				// 	success(res) {
+				// 		console.log("登录成功", res);
+
+
+				// 		// res.header 返回的数据示例
+				// 		// "header": {
+				// 		//     "cache-control": "[no-cache, no-cache]",
+				// 		//     "connection": "keep-alive",
+				// 		//     "content-length": "715",
+				// 		//     "content-type": "application/json;charset=UTF-8",
+				// 		//     "date": "Mon, 18 Dec 2023 03:26:35 GMT",
+				// 		//     "expires": "0",
+				// 		//     "pragma": "No-cache",
+				// 		//     "server": "nginx",
+				// 		//     "set-cookie": "_ak=911cca12-d1fd-4030-57ff-8e982c6ace01; Path=/; Expires=Wed, 17 Jan 2024 03:26:35 GMT"
+				// 		// },
+
+
+
+
+				// 		// 使用cookie\session鉴权的用户信息接口
+				// 		uni.request<any>({
+				// 			url: staticData.server + "/api/user/info",
+				// 			method: "GET",
+				// 			success(res) {
+				// 				console.log("获取用户信息", res)
+
+				// 			},
+				// 			fail(err) {
+				// 				console.log("获取后端系统信息 失败", err)
+				// 			}
+				// 		})
 				// 	}
-				// })
-				uni.request<IRootType>({
-					url: globalData.server + "/api/user/login",
-					data: {
-						username: "bunny",
-						password: "hong159874@.@"
-					},
-					success(res) {
-						console.log("登录成功", res);
-
-
-						// res.header 返回的数据示例
-						// "header": {
-						//     "cache-control": "[no-cache, no-cache]",
-						//     "connection": "keep-alive",
-						//     "content-length": "715",
-						//     "content-type": "application/json;charset=UTF-8",
-						//     "date": "Mon, 18 Dec 2023 03:26:35 GMT",
-						//     "expires": "0",
-						//     "pragma": "No-cache",
-						//     "server": "nginx",
-						//     "set-cookie": "_ak=911cca12-d1fd-4030-57ff-8e982c6ace01; Path=/; Expires=Wed, 17 Jan 2024 03:26:35 GMT"
-						// },
-
-
-
-
-						// 使用cookie\session鉴权的用户信息接口
-						uni.request<any>({
-							url: globalData.server + "/api/user/info",
-							method: "GET",
-							success(res) {
-								console.log("获取用户信息", res)
-
-							},
-							fail(err) {
-								console.log("获取后端系统信息 失败", err)
-							}
-						})
-					}
-				} as RequestOptions<IRootType>)
+				// } as RequestOptions<IRootType>)
 			},
 			getUserInfo() {
 
 				console.log("开始获取用户信息");
 				uni.request<any>({
-					url: globalData.server + "/api/user/info",
+					url: staticData.server + "/api/user/info",
 					method: "GET",
 
 					// header:{
@@ -376,7 +345,7 @@
 				const sh = uni.getStorageSync("screenHeight")
 				if (sh == "") {
 					const res = uni.getWindowInfo();
-					const { windowInfo } = globalData
+					const { windowInfo } = staticData
 					windowInfo.windowHeight = res["windowHeight"] as number
 					windowInfo.windowWidth = res["windowWidth"] as number
 					windowInfo.screenWidth = res["screenWidth"] as number
@@ -475,6 +444,7 @@
 		position: relative;
 		transition-property: transform;
 		transition-duration: 3;
+		// border: 1rpx solid red;
 
 		.con_main {
 			width: 100%;
