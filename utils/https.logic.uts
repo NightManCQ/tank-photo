@@ -1,135 +1,135 @@
-import { globalData } from "../store/global.data.uts"
-// import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
-import { paramsType, responseType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
+// import { globalData } from "../store/global.data.uts"
+// // import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
+// import { paramsType, responseType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
-import { IRootType, userInfoType, userLoginFun } from "@/pages/login/login.logic.uts";
-export type requestOptions = {
-	url : string
-	method : RequestMethod
-	data : any
-}
+// import { IRootType, userInfoType, userLoginFun } from "@/pages/login/login.logic.uts";
+// export type requestOptions = {
+// 	url : string
+// 	method : RequestMethod
+// 	data : any
+// }
 
-export function https<resDataType>(params : requestOptions) : Promise<responseType<resDataType>> {
-	return new Promise((resolve, reject) => {
-		// xxOkHttp.request<resDataType>({
-		// 	url: globalData.server + params.url,
-		// 	method: params.method,
-		// 	data: params.data,
-		// 	success(res) {
-		// 		resolve(res)
-		// 	},
-		// 	fail(err) {
-		// 		reject(err)
-		// 	}
-		// } as paramsType<resDataType>)
-		uni.request<IRootType>({
-			url: globalData.server + "/api/user/login",
-			data: {
-				username: "bunny",
-				password: "hong159874@.@"
-			},
-			success(res:responseType<IRootType>) {
-				// const cookie = res.header as UTSJSONObject
-				// const aaaaa : IRootType = {
-				// 	msg: "",
-				// 	code: res.statusCode + "",
-				// 	data: res.data!.data as userInfoType
-				// }
-
-
-				// const user = res.data?.data!
-				// console.log("????", aaaaa)
-				resolve(res)
-
-			}, fail(err) {
-				console.log("登录失败", err)
-
-				// reject(err)
-			}
-		})
-	})
-}
-
-
-type testType<T> = {
-	msg : string;
-	code : number;
-	data : userInfoType;
-}
-export function UniHttps<resDataType>(params : requestOptions) : Promise<IRootType> {
-	return new Promise((resolve, reject) => {
-		// uni.request<IRootType>({
-		// 	url: globalData.server + "/api/user/login",
-		// 	data: {
-		// 		username: "bunny",
-		// 		password: "hong159874@.@"
-		// 	},
-		// 	success(res) {
-		// 		// const cookie = res.header as UTSJSONObject
-		// 		const aaaaa : IRootType = {
-		// 			msg: "",
-		// 			code: res.statusCode + "",
-		// 			data: res.data!.data as userInfoType
-		// 		}
-
-
-		// 		// const user = res.data?.data!
-		// 		// console.log("????", aaaaa)
-		// 		resolve(aaaaa)
-
-		// 	}, fail(err) {
-		// 		console.log("登录失败", err)
-
-		// 		// reject(err)
-		// 	}
-		// })
-		// xxOkHttp.request<resDataType>({
-		// 	url: globalData.server + params.url,
-		// 	method: params.method,
-		// 	data: params.data,
-		// 	success(res) {
-		// 		resolve(res)
-		// 	},
-		// 	fail(err) {
-		// 		reject(err)
-		// 	}
-		// } as paramsType<resDataType>)
-	})
-}
-
-
-
-
-
-
-
-
-
-/**
- * 获取request 前置配置
- */
-export function getHttpsOption(url : string) {
-	return {
-		url: globalData.server + url,
-		method: "GET"
-	}
-}
-
-
-// /**
-//  * 发起一个请求
-//  */
-// export function https<T>(url : string, method : "GET" | "POST", data : any) : Promise<RequestSuccess<any>> {
+// export function https<resDataType>(params : requestOptions) : Promise<responseType<resDataType>> {
 // 	return new Promise((resolve, reject) => {
-// 		uni.request<any>({
-// 			url: globalData.server + url,
-// 			method,
-// 			data,
-// 			success(res) {
+// 		// xxOkHttp.request<resDataType>({
+// 		// 	url: globalData.server + params.url,
+// 		// 	method: params.method,
+// 		// 	data: params.data,
+// 		// 	success(res) {
+// 		// 		resolve(res)
+// 		// 	},
+// 		// 	fail(err) {
+// 		// 		reject(err)
+// 		// 	}
+// 		// } as paramsType<resDataType>)
+// 		uni.request<IRootType>({
+// 			url: globalData.server + "/api/user/login",
+// 			data: {
+// 				username: "bunny",
+// 				password: "hong159874@.@"
+// 			},
+// 			success(res:responseType<IRootType>) {
+// 				// const cookie = res.header as UTSJSONObject
+// 				// const aaaaa : IRootType = {
+// 				// 	msg: "",
+// 				// 	code: res.statusCode + "",
+// 				// 	data: res.data!.data as userInfoType
+// 				// }
+
+
+// 				// const user = res.data?.data!
+// 				// console.log("????", aaaaa)
 // 				resolve(res)
+
 // 			}, fail(err) {
-// 				reject(err)
+// 				console.log("登录失败", err)
+
+// 				// reject(err)
 // 			}
 // 		})
 // 	})
 // }
+
+
+// type testType<T> = {
+// 	msg : string;
+// 	code : number;
+// 	data : userInfoType;
+// }
+// export function UniHttps<resDataType>(params : requestOptions) : Promise<IRootType> {
+// 	return new Promise((resolve, reject) => {
+// 		// uni.request<IRootType>({
+// 		// 	url: globalData.server + "/api/user/login",
+// 		// 	data: {
+// 		// 		username: "bunny",
+// 		// 		password: "hong159874@.@"
+// 		// 	},
+// 		// 	success(res) {
+// 		// 		// const cookie = res.header as UTSJSONObject
+// 		// 		const aaaaa : IRootType = {
+// 		// 			msg: "",
+// 		// 			code: res.statusCode + "",
+// 		// 			data: res.data!.data as userInfoType
+// 		// 		}
+
+
+// 		// 		// const user = res.data?.data!
+// 		// 		// console.log("????", aaaaa)
+// 		// 		resolve(aaaaa)
+
+// 		// 	}, fail(err) {
+// 		// 		console.log("登录失败", err)
+
+// 		// 		// reject(err)
+// 		// 	}
+// 		// })
+// 		// xxOkHttp.request<resDataType>({
+// 		// 	url: globalData.server + params.url,
+// 		// 	method: params.method,
+// 		// 	data: params.data,
+// 		// 	success(res) {
+// 		// 		resolve(res)
+// 		// 	},
+// 		// 	fail(err) {
+// 		// 		reject(err)
+// 		// 	}
+// 		// } as paramsType<resDataType>)
+// 	})
+// }
+
+
+
+
+
+
+
+
+
+// /**
+//  * 获取request 前置配置
+//  */
+// export function getHttpsOption(url : string) {
+// 	return {
+// 		url: globalData.server + url,
+// 		method: "GET"
+// 	}
+// }
+
+
+// // /**
+// //  * 发起一个请求
+// //  */
+// // export function https<T>(url : string, method : "GET" | "POST", data : any) : Promise<RequestSuccess<any>> {
+// // 	return new Promise((resolve, reject) => {
+// // 		uni.request<any>({
+// // 			url: globalData.server + url,
+// // 			method,
+// // 			data,
+// // 			success(res) {
+// // 				resolve(res)
+// // 			}, fail(err) {
+// // 				reject(err)
+// // 			}
+// // 		})
+// // 	})
+// // }

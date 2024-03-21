@@ -25,9 +25,8 @@
 </template>
 
 <script>
-	import { globalData } from '../../store/global.data.uts';
-	import { IRootType } from "./login.logic"
-
+	import { globalData } from "@/store/global.data.uts"
+	import { IRootType } from "./login.logic.uts"
 	let loginWorkIng = false
 	export default {
 		data() {
@@ -61,14 +60,14 @@
 				uni.setStorageSync("password", this.password)
 
 				// console.log("登录信息", globalData.server + "/api/user/login", this.username, this.password);
-				const { username, password } = this
+				// const { username, password } = this
 
 
 				uni.request<IRootType>({
 					url: globalData.server + "/api/user/login",
 					data: {
-						username,
-						password
+						username: this.username,
+						password: this.password
 					},
 					success(res) {
 						// const cookie = res.header as UTSJSONObject

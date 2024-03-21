@@ -106,7 +106,7 @@
 	import { albumDataData } from "@/pages/albumList/albumData/adLoadData.logic"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
 	import { globalData, staticData } from "@/store/global.data.uts";
-	import { IRootType, userInfoType, userLoginFun } from "@/pages/login/login.logic.uts";
+	import { userInfoType } from "@/pages/login/login.logic.uts";
 	import { albumData } from "@/pages/albumList/albumData/adLoadData.logic.uts"
 	// import { requestOptions, UniHttps } from "../../utils/https.logic.uts";
 	// import { xGlide } from "@/uni_modules/x-Glide"
@@ -193,65 +193,66 @@
 
 		},
 		onShow() {
-			this.reqTest()
+			// this.reqTest()
 		},
 
 		methods: {
-			async reqTest() : Promise<void> {
-				const res = await userLoginFun<IRootType>("bunny", "hong159874@.@")
-				console.log("---", res.data);
+			// async reqTest() : Promise<void> {
+			// 	const res = await userLoginFun<IRootType>("bunny", "hong159874@.@")
+			// 	console.log("---", res.data);
 
-				// okHttpGet("https://pan.promise.pink:442/api/user/login?username=bunny&password=hong159874@.@")
+			// 	// okHttpGet("https://pan.promise.pink:442/api/user/login?username=bunny&password=hong159874@.@")
 
-				// 
-				// xxOkHttp.request<IRootType>({
-				// 	url: "https://pan.promise.pink:442/api/user/login?username=bunny&password=hong159874@.@",
-				// 	method: "GET",
-				// 	data: {
-				// 		username: "bunny",
-				// 		password: "hong159874@.@"
-				// 	},
-				// 	success(res) {
-				// 		console.log("成功", res);
-
-
-
-				// 		// xxOkHttp.request<IRootType>({
-				// 		// 	url: "https://pan.promise.pink:442/api/user/info",
-				// 		// 	method: "GET",
-				// 		// 	data:{},
-				// 		// 	success(res) {
-				// 		// 		console.log("成功", res);
-				// 		// 	},
-				// 		// 	fail(err) {
-
-				// 		// 	}
-				// 		// } as paramsType<IRootType>)
+			// 	// 
+			// 	// xxOkHttp.request<IRootType>({
+			// 	// 	url: "https://pan.promise.pink:442/api/user/login?username=bunny&password=hong159874@.@",
+			// 	// 	method: "GET",
+			// 	// 	data: {
+			// 	// 		username: "bunny",
+			// 	// 		password: "hong159874@.@"
+			// 	// 	},
+			// 	// 	success(res) {
+			// 	// 		console.log("成功", res);
 
 
 
+			// 	// 		// xxOkHttp.request<IRootType>({
+			// 	// 		// 	url: "https://pan.promise.pink:442/api/user/info",
+			// 	// 		// 	method: "GET",
+			// 	// 		// 	data:{},
+			// 	// 		// 	success(res) {
+			// 	// 		// 		console.log("成功", res);
+			// 	// 		// 	},
+			// 	// 		// 	fail(err) {
 
-				// 	},
-				// 	fail(err) {
-
-				// 	}
-				// } as paramsType<IRootType>)
-
-
-				// xxOkHttpaaaaa({
-				// 	paramA: true,
-				// 	success(res:any) {
-				// 		console.log("?????", res);
-				// 	}
-				// } as RequestOptions)
+			// 	// 		// 	}
+			// 	// 		// } as paramsType<IRootType>)
 
 
 
 
-				// setTimeout(() => {
-				// 	okHttpGet("https://pan.promise.pink:442/api/user/info")
-				// }, 2000)
-			},
+			// 	// 	},
+			// 	// 	fail(err) {
+
+			// 	// 	}
+			// 	// } as paramsType<IRootType>)
+
+
+			// 	// xxOkHttpaaaaa({
+			// 	// 	paramA: true,
+			// 	// 	success(res:any) {
+			// 	// 		console.log("?????", res);
+			// 	// 	}
+			// 	// } as RequestOptions)
+
+
+
+
+			// 	// setTimeout(() => {
+			// 	// 	okHttpGet("https://pan.promise.pink:442/api/user/info")
+			// 	// }, 2000)
+			// },
+
 			touchstart(e : TouchEvent) {
 				this.touchTimeStamp = e.timeStamp
 			},

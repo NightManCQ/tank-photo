@@ -1,5 +1,5 @@
-import { https, requestOptions } from "@/utils/https.logic.uts"
-import { responseType, } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
+// import { https, requestOptions } from "@/utils/https.logic.uts"
+// import { responseType, } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
 type Space = {
 	sizeLimit : number;
@@ -45,44 +45,44 @@ export type userLoginRequestOptionType = {
 	password : string
 }
 
-export function userLoginFun<resDataType>(username : string, password : string) : Promise<RequestSuccess<resDataType>> {
-	const requestBody : requestOptions = {
-		url: "/api/user/login?username=bunny&password=hong159874@.@",
-		method: "GET",
-		data: {
-			username: username,
-			password: password
-		}
-	}
-	return new Promise((resolve, reject) => {
-		// uni.request<IRootType>({
-		// 	url: globalData.server + "/api/user/login",
-		// 	data: {
-		// 		username: "bunny",
-		// 		password: "hong159874@.@"
-		// 	},
-		// 	success(res) {
-		// 		// const cookie = res.header as UTSJSONObject
-		// 		// const aaaaa : IRootType = {
-		// 		// 	msg: "",
-		// 		// 	code: res.statusCode + "",
-		// 		// 	data: res.data!.data as userInfoType
-		// 		// }
+// export function userLoginFun<resDataType>(username : string, password : string) : Promise<RequestSuccess<resDataType>> {
+// 	const requestBody : requestOptions = {
+// 		url: "/api/user/login?username=bunny&password=hong159874@.@",
+// 		method: "GET",
+// 		data: {
+// 			username: username,
+// 			password: password
+// 		}
+// 	}
+// 	return new Promise((resolve, reject) => {
+// 		// uni.request<IRootType>({
+// 		// 	url: globalData.server + "/api/user/login",
+// 		// 	data: {
+// 		// 		username: "bunny",
+// 		// 		password: "hong159874@.@"
+// 		// 	},
+// 		// 	success(res) {
+// 		// 		// const cookie = res.header as UTSJSONObject
+// 		// 		// const aaaaa : IRootType = {
+// 		// 		// 	msg: "",
+// 		// 		// 	code: res.statusCode + "",
+// 		// 		// 	data: res.data!.data as userInfoType
+// 		// 		// }
 
 
-		// 		// const user = res.data?.data!
-		// 		console.log("登录成功", res)
-		// 		resolve(res)
+// 		// 		// const user = res.data?.data!
+// 		// 		console.log("登录成功", res)
+// 		// 		resolve(res)
 
-		// 	}, fail(err) {
-		// 		console.log("登录失败", err)
+// 		// 	}, fail(err) {
+// 		// 		console.log("登录失败", err)
 
-		// 		reject(err)
-		// 	}
-		// })
-	})
-	// return https<resDataType>(requestBody)
-}
+// 		// 		reject(err)
+// 		// 	}
+// 		// })
+// 	})
+// 	// return https<resDataType>(requestBody)
+// }
 
 
 
