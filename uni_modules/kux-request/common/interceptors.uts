@@ -1,0 +1,42 @@
+import { Interceptors, RequestInterceptor, RequestInterceptorSync, ResponseInterceptor, ResponseInterceptorSync } from "../utssdk/interface.uts";
+import { setInterceptors } from './store/index';
+
+export class InterceptorManager {
+	private interceptors: Interceptors;
+	
+	constructor () {
+		this.interceptors = {
+			request: [] as RequestInterceptor[],
+			response: [] as ResponseInterceptor[],
+			requestSync: null,
+			responseSync: null
+		} as Interceptors;
+	}
+	
+	useRequest (interceptor: RequestInterceptor): InterceptorManager {
+		this.interceptors.request.push(interceptor);
+		setInterceptors(this.interceptors);
+		return this;
+	}
+	
+	useRequestSync (interceptor: RequestInterceptorSync): InterceptorManager {
+		this.interceptors.requestSync = interceptor;
+		setInterceptors(this.interceptors);
+		return this;
+	}
+	
+	useResponse (interceptor: ResponseInterceptor): InterceptorManager {
+		this.interceptors.response.push(interceptor);
+		setInterceptors(this.interceptors);
+		return this;
+	}
+	
+	/**
+	 * 同步响应拦截暂不支持
+	 */
+	private useResponseSync (interceptor: ResponseInterceptorSync): InterceptorManager {
+		this.interceptors.responseSync = interceptor;
+		setInterceptors(this.interceptors);
+		return this;
+	}
+};

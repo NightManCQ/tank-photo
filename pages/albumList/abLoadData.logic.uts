@@ -68,7 +68,7 @@ export class albumListLoadData {
 	// }
 
 	static calcStyle() {
-		const { windowInfo } = staticData
+		const { windowInfo } = globalData
 		const res = (windowInfo.windowWidth - 48) / 2
 		albumListData.albumStyle = `width: ${res}px;height: ${res}px;`
 		uni.setStorageSync("clumn2", res)

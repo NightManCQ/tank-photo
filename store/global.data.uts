@@ -1,21 +1,80 @@
 import { userInfoType } from "../pages/login/login.logic.uts"
 
 
-type windowInfoType = {
-	windowWidth : number,
-	windowHeight : number
-	screenWidth : number,
-	screenHeight : number
+
+
+
+type SafeArea = {
+	bottom : number;
+	height : number;
+	left : number;
+	right : number;
+	top : number;
+	width : number;
 }
+
+type SafeAreaInsets = {
+	bottom : number;
+	left : number;
+	right : number;
+	top : number;
+}
+
+
+/**
+ * 当前设备窗口信息
+ */
+type windowInfoType = {
+	pixelRatio : number;
+	// safeArea : SafeArea;
+	// safeAreaInsets : SafeAreaInsets;
+	screenHeight : number;
+	screenTop : number;
+	screenWidth : number;
+	statusBarHeight : number;
+	windowBottom : number;
+	windowHeight : number;
+	windowTop : number;
+	windowWidth : number;
+}
+
+
+
+
+/**
+ * 云盘系统信息
+ */
+export type tankSystemInfoType = {
+	downloadDirMaxSize : number;
+	copyright : string;
+	defaultTotalSizeLimit : number;
+	scanConfig : string;
+	updateTime : string;
+	downloadDirMaxNum : number;
+	sort : number;
+	uuid : string;
+	version : string;
+	logoUrl : string;
+	deletedKeepDays : number;
+	faviconUrl : string;
+	createTime : string;
+	record : string;
+	name : string;
+	allowRegister : boolean;
+	previewConfig : string;
+}
+
+
 
 type globalDataType = {
-
+	tankSystemInfo : tankSystemInfoType
+	windowInfo : windowInfoType
 	user : userInfoType
 }
-const wh = uni.getStorageSync("windowHeight")
-const ww = uni.getStorageSync("windowWidth")
-const sw = uni.getStorageSync("screenWidth")
-const sh = uni.getStorageSync("screenHeight")
+// const wh = uni.getStorageSync("windowHeight")
+// const ww = uni.getStorageSync("windowWidth")
+// const sw = uni.getStorageSync("screenWidth")
+// const sh = uni.getStorageSync("screenHeight")
 // const user = uni.getStorageSync("userInfo")
 // let userInfoDef : userInfoType = 
 
@@ -25,23 +84,15 @@ const sh = uni.getStorageSync("screenHeight")
 
 
 type staticDataTyep = {
-	windowInfo : windowInfoType
+
 	server : string
 }
-
-
-
 
 /**
  * 静态全局数据
  */
 export const staticData : staticDataTyep = {
-	windowInfo: {
-		windowHeight: wh != "" ? wh as number : 772,
-		windowWidth: ww != "" ? ww as number : 362,
-		screenWidth: sw != "" ? sw as number : 362,
-		screenHeight: sh != "" ? sh as number : 772,
-	},
+
 	// uni.getStorageSync("serverUrl") as string ?
 	server: "https://pan.promise.pink:442",
 }
@@ -52,7 +103,36 @@ export const staticData : staticDataTyep = {
  * 响应式全局数据
  */
 export const globalData = reactive({
-
+	tankSystemInfo: {
+		"downloadDirMaxSize": -1,
+		"copyright": "",
+		"defaultTotalSizeLimit": -1,
+		"scanConfig": "{}",
+		"updateTime": "2024-02-21 12:33:37",
+		"downloadDirMaxNum": -1,
+		"sort": 1708484287421,
+		"uuid": "c775b693-1766-455f-7448-1fe6d938b40e",
+		"version": "4.0.2",
+		"logoUrl": "",
+		"deletedKeepDays": 7,
+		"faviconUrl": "",
+		"createTime": "2024-02-21 10:58:07",
+		"record": "",
+		"name": "小云朵盘",
+		"allowRegister": false,
+		"previewConfig": "{}"
+	},
+	windowInfo: {
+		"pixelRatio": 3,
+		"screenHeight": 890,
+		"screenTop": 0,
+		"screenWidth": 400,
+		"statusBarHeight": 39,
+		"windowBottom": 0,
+		"windowHeight": 890,
+		"windowTop": 0,
+		"windowWidth": 400
+	},
 	user: {
 		lastTime: "",
 		role: uni.getStorageSync("role") as string,
@@ -82,3 +162,30 @@ export const globalData = reactive({
 
 
 } as globalDataType)
+
+
+
+/**
+ * 中央仓库初始化
+ */
+export function storeInit() {
+	console.log("仓库初始化开始");
+	// 初始化窗口信息
+	const res = uni.getWindowInfo();
+	// globalData.windowInfo = res as windowInfoType
+	const { windowInfo } = globalData
+	windowInfo.windowHeight = res.windowHeight
+	windowInfo.windowWidth = res.windowWidth
+	windowInfo.screenHeight = res.screenHeight
+	windowInfo.screenWidth = res.screenWidth
+	windowInfo.pixelRatio = res.pixelRatio
+	console.log("窗口信息", res);
+
+	// windowInfo.screenWidth = res["screenWidth"] as number
+	// windowInfo.screenHeight = res["screenHeight"] as number
+	// uni.setStorageSync("windowWidth", windowInfo.windowWidth)
+	// uni.setStorageSync("windowHeight", windowInfo.windowHeight)
+	// uni.setStorageSync("screenHeight", windowInfo.screenHeight)
+	// uni.setStorageSync("screenWidth", windowInfo.screenWidth)
+	console.log("窗口信息赋值", globalData)
+}

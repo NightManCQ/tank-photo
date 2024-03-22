@@ -56,7 +56,7 @@ export type userLoginRequestOptionType = {
 // 	}
 // 	return new Promise((resolve, reject) => {
 // 		// uni.request<IRootType>({
-// 		// 	url: globalData.server + "/api/user/login",
+// 		// 	url: staticData.server + "/api/user/login",
 // 		// 	data: {
 // 		// 		username: "bunny",
 // 		// 		password: "hong159874@.@"
@@ -99,7 +99,7 @@ export type userLoginRequestOptionType = {
 
 // export function userLoginPro(username : string, password : string, succeed : cllbackType, error : errorType) {
 // 	uni.request<IRootType>({
-// 		url: globalData.server + "/api/user/login",
+// 		url: staticData.server + "/api/user/login",
 // 		data: {
 // 			username: username,
 // 			password: password
@@ -116,11 +116,11 @@ export type userLoginRequestOptionType = {
 
 
 // class HTTPS {
-// 	// static server = globalData.server
+// 	// static server = staticData.server
 
 // 	static https(url : string, data : any, succeed : cllbackType, error : errorType) {
 // 		uni.request<IRootType>({
-// 			url: globalData.server + url,
+// 			url: staticData.server + url,
 // 			data,
 // 			success(res) {
 // 				succeed(res)

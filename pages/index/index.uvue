@@ -30,7 +30,7 @@
 					<view class="ab_it" v-for="(item,indexTwo) in itArr" :key="indexTwo  + item.id +''">
 
 
-						<image class="ab_img" :class="pattern ==2?'bor_all':'bor_all1'" :style="albumStyle"
+						<image class="ab_img" :class="item.check?'bor_all':'bor_all1'" :style="albumStyle"
 							:src="item.coverImg" @click="getAlbumData(item)"
 							@touchstart="touchstart($event as TouchEvent)"
 							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
@@ -102,38 +102,18 @@
 <script>
 	import { Album } from "@/uni_modules/photo-util";
 	import { uni_XXPermissions } from "@/uni_modules/xx-XXPermissions"
-	import { albumListLoadData, albumListData } from "@/pages/albumList/abLoadData.logic"
+	import { albumListLoadData } from "@/pages/albumList/abLoadData.logic"
 	import { albumDataData } from "@/pages/albumList/albumData/adLoadData.logic"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
 	import { globalData, staticData } from "@/store/global.data.uts";
 	import { userInfoType } from "@/pages/login/login.logic.uts";
-	import { albumData } from "@/pages/albumList/albumData/adLoadData.logic.uts"
-	// import { requestOptions, UniHttps } from "../../utils/https.logic.uts";
-	// import { xGlide } from "@/uni_modules/x-Glide"
-	// import { xxOkHttp, } from "@/uni_modules/xx-OkHttp"
-	// import { paramsType } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
-
-
-
-
-	// type userLoginType = {
-	// 	username : string,
-	// 	password : string
-	// }
-
-
-	type testType<T> = {
-		msg : string;
-		code : string;
-		data : T;
-	}
 
 	export default {
 		components: {
 			uniNavbarLite
 		},
 		data() {
-			const { screenHeight, screenWidth } = staticData.windowInfo
+			const { screenHeight, screenWidth } = globalData.windowInfo
 			return {
 				id: "ajsdjg0lkasdjglfka",
 				authorizationStatus: albumListLoadData.authorizationStatus,
@@ -150,46 +130,12 @@
 				return globalData.user
 			},
 			albumStyle() : string {
-				return albumListData.albumStyle
+				const { windowInfo } = globalData
+				const res = (windowInfo.windowWidth - 48) / 2
+				return `width: ${res}px;height: ${res}px;`
 			}
 		},
 		onLoad() {
-			// console.log("????", uni.getStorageSync("windowHeight"));
-			this.getWindowInfo()
-			this.getSystemInfo()
-			// xGlide.log()
-
-			// promise+uni.request 封装+类型提示测试。
-			// 无法转转换一个泛型
-			// UniHttps<userInfoType>({
-			// 	url: "",
-			// 	method: "GET",
-			// 	data: {}
-			// } as requestOptions).then((res) => {
-			// 	console.log("000000000000", res);
-			// })
-			// uni.request<testType<userInfoType>>({
-			// 	url: globalData.server + "/api/user/login",
-			// 	data: {
-			// 		username: "bunny",
-			// 		password: "hong159874@.@"
-			// 	},
-			// 	success(res) {
-			// 		// const cookie = res.header as UTSJSONObject
-
-
-			// 		const user = res.data?.data!
-			// 		console.log("????", res)
-
-
-			// 	}, fail(err) {
-			// 		console.log("登录失败", err)
-
-			// 		// reject(err)
-			// 	}
-			// })
-
-
 
 		},
 		onShow() {
@@ -197,130 +143,25 @@
 		},
 
 		methods: {
-			// async reqTest() : Promise<void> {
-			// 	const res = await userLoginFun<IRootType>("bunny", "hong159874@.@")
-			// 	console.log("---", res.data);
-
-			// 	// okHttpGet("https://pan.promise.pink:442/api/user/login?username=bunny&password=hong159874@.@")
-
-			// 	// 
-			// 	// xxOkHttp.request<IRootType>({
-			// 	// 	url: "https://pan.promise.pink:442/api/user/login?username=bunny&password=hong159874@.@",
-			// 	// 	method: "GET",
-			// 	// 	data: {
-			// 	// 		username: "bunny",
-			// 	// 		password: "hong159874@.@"
-			// 	// 	},
-			// 	// 	success(res) {
-			// 	// 		console.log("成功", res);
-
-
-
-			// 	// 		// xxOkHttp.request<IRootType>({
-			// 	// 		// 	url: "https://pan.promise.pink:442/api/user/info",
-			// 	// 		// 	method: "GET",
-			// 	// 		// 	data:{},
-			// 	// 		// 	success(res) {
-			// 	// 		// 		console.log("成功", res);
-			// 	// 		// 	},
-			// 	// 		// 	fail(err) {
-
-			// 	// 		// 	}
-			// 	// 		// } as paramsType<IRootType>)
-
-
-
-
-			// 	// 	},
-			// 	// 	fail(err) {
-
-			// 	// 	}
-			// 	// } as paramsType<IRootType>)
-
-
-			// 	// xxOkHttpaaaaa({
-			// 	// 	paramA: true,
-			// 	// 	success(res:any) {
-			// 	// 		console.log("?????", res);
-			// 	// 	}
-			// 	// } as RequestOptions)
-
-
-
-
-			// 	// setTimeout(() => {
-			// 	// 	okHttpGet("https://pan.promise.pink:442/api/user/info")
-			// 	// }, 2000)
-			// },
-
 			touchstart(e : TouchEvent) {
 				this.touchTimeStamp = e.timeStamp
 			},
 			touchmove(e : TouchEvent, item : Album) : void {
-				if (item.check) {
-					return
-				}
+				// if (item.check) {
+				// 	return
+				// }
 				if (e.timeStamp - this.touchTimeStamp > 200) {
-					this.pattern = 2
-					if (item.check == false) {
-						item.check = true
-						this.$forceUpdate()
-						console.log('正在', this.pattern, item.check)
-					}
+					// this.pattern = 2
+					item.check = !item.check
+					this.$forceUpdate()
+					console.log('正在', this.pattern, item.check)
 				}
 			},
 			touchend() {
 
 				console.log('结束')
 			},
-			/**
-			 * cookies 测试
-			 */
-			getSystemInfo() {
-
-				// uni.request<IRootType>({
-				// 	url: staticData.server + "/api/user/login",
-				// 	data: {
-				// 		username: "bunny",
-				// 		password: "hong159874@.@"
-				// 	},
-				// 	success(res) {
-				// 		console.log("登录成功", res);
-
-
-				// 		// res.header 返回的数据示例
-				// 		// "header": {
-				// 		//     "cache-control": "[no-cache, no-cache]",
-				// 		//     "connection": "keep-alive",
-				// 		//     "content-length": "715",
-				// 		//     "content-type": "application/json;charset=UTF-8",
-				// 		//     "date": "Mon, 18 Dec 2023 03:26:35 GMT",
-				// 		//     "expires": "0",
-				// 		//     "pragma": "No-cache",
-				// 		//     "server": "nginx",
-				// 		//     "set-cookie": "_ak=911cca12-d1fd-4030-57ff-8e982c6ace01; Path=/; Expires=Wed, 17 Jan 2024 03:26:35 GMT"
-				// 		// },
-
-
-
-
-				// 		// 使用cookie\session鉴权的用户信息接口
-				// 		uni.request<any>({
-				// 			url: staticData.server + "/api/user/info",
-				// 			method: "GET",
-				// 			success(res) {
-				// 				console.log("获取用户信息", res)
-
-				// 			},
-				// 			fail(err) {
-				// 				console.log("获取后端系统信息 失败", err)
-				// 			}
-				// 		})
-				// 	}
-				// } as RequestOptions<IRootType>)
-			},
 			getUserInfo() {
-
 				console.log("开始获取用户信息");
 				uni.request<any>({
 					url: staticData.server + "/api/user/info",
@@ -339,27 +180,7 @@
 
 				})
 			},
-			/**
-			 * 首次启动计算屏幕宽高数据，之后检测缓存，如果有则无需计算
-			 */
-			getWindowInfo() {
-				const sh = uni.getStorageSync("screenHeight")
-				if (sh == "") {
-					const res = uni.getWindowInfo();
-					const { windowInfo } = staticData
-					windowInfo.windowHeight = res["windowHeight"] as number
-					windowInfo.windowWidth = res["windowWidth"] as number
-					windowInfo.screenWidth = res["screenWidth"] as number
-					windowInfo.screenHeight = res["screenHeight"] as number
-					uni.setStorageSync("windowWidth", windowInfo.windowWidth)
-					uni.setStorageSync("windowHeight", windowInfo.windowHeight)
-					uni.setStorageSync("screenHeight", windowInfo.screenHeight)
-					uni.setStorageSync("screenWidth", windowInfo.screenWidth)
-					// console.log("赋值", windowInfo.screenHeight)
-					albumListLoadData.calcStyle()
-					albumData.calcStyle()
-				}
-			},
+
 			/**
 			 * 抽屉导航
 			 */
@@ -444,7 +265,7 @@
 		display: flex;
 		position: relative;
 		transition-property: transform;
-		transition-duration: 3;
+		transition-duration: 3s;
 		// border: 1rpx solid red;
 
 		.con_main {

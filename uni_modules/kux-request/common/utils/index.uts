@@ -1,0 +1,44 @@
+/**
+ * 工具类
+ * @class
+ * @method objToQueryString 对象转查询字符串
+ */
+export class Utils {
+	/**
+	 * 对象转查询字符串
+	 * @param {UTSJSONObject} queryObj 对象
+	 * @returns {string}
+	 */
+	objToQueryString (queryObj: UTSJSONObject): string {
+		let params: string[] = [];
+		
+		queryObj.toMap().forEach((value, key) => {
+			const encodedKey = encodeURIComponent(key);
+			const encodedValue = encodeURIComponent(`${value}`);
+			
+			params.push(`${encodedKey}=${encodedValue}`);
+		});
+		
+		return `${params.join('&')}`;
+	}
+	
+	buildUniError (errSubject: string, errCode: number, errMsg: string, cause: string = ''): UniError {
+		const error = new UniError(errSubject, errCode, errMsg);
+		const sourceError = new SourceError(cause);
+		error.cause = sourceError;
+		
+		return error;
+	}
+	
+	sleep (ms: number): Promise<any> {
+		return new Promise((resolve) => {
+			let timeout: number = 0;
+			timeout = setTimeout(() => {
+				clearTimeout(timeout);
+				resolve('');
+			}, ms);
+		});
+	}
+}
+
+export * from './url';

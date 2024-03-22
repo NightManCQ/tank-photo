@@ -1,0 +1,37 @@
+import { staticData } from "../store/global.data";
+
+/**
+ * 首次启动计算屏幕宽高数据，之后检测缓存，如果有则无需计算
+ */
+export function getWindowInfo() {
+	const res = uni.getWindowInfo();
+	const { windowInfo } = staticData
+	windowInfo.windowHeight = res["windowHeight"] as number
+	windowInfo.windowWidth = res["windowWidth"] as number
+	windowInfo.screenWidth = res["screenWidth"] as number
+	windowInfo.screenHeight = res["screenHeight"] as number
+	uni.setStorageSync("windowWidth", windowInfo.windowWidth)
+	uni.setStorageSync("windowHeight", windowInfo.windowHeight)
+	uni.setStorageSync("screenHeight", windowInfo.screenHeight)
+	uni.setStorageSync("screenWidth", windowInfo.screenWidth)
+	console.log("赋值", windowInfo.screenHeight)
+
+
+
+	// const sh = uni.getStorageSync("screenHeight")
+	// if (sh == "") {
+	// 	const res = uni.getWindowInfo();
+	// 	const { windowInfo } = staticData
+	// 	windowInfo.windowHeight = res["windowHeight"] as number
+	// 	windowInfo.windowWidth = res["windowWidth"] as number
+	// 	windowInfo.screenWidth = res["screenWidth"] as number
+	// 	windowInfo.screenHeight = res["screenHeight"] as number
+	// 	uni.setStorageSync("windowWidth", windowInfo.windowWidth)
+	// 	uni.setStorageSync("windowHeight", windowInfo.windowHeight)
+	// 	uni.setStorageSync("screenHeight", windowInfo.screenHeight)
+	// 	uni.setStorageSync("screenWidth", windowInfo.screenWidth)
+	// 	console.log("赋值", windowInfo.screenHeight)
+	// 	// albumListLoadData.calcStyle()
+	// 	// albumData.calcStyle()
+	// }
+}

@@ -25,13 +25,15 @@
 </template>
 
 <script>
-	import { globalData } from "@/store/global.data.uts"
+	import { staticData, globalData } from "@/store/global.data.uts"
 	import { IRootType } from "./login.logic.uts"
 	let loginWorkIng = false
 	export default {
 		data() {
+			// globalData.windowInfo.screenWidth
 			return {
-				conStyle: `width:${uni.getStorageSync("screenWidth")}px;height:${uni.getStorageSync("screenHeight") as number - 80}px;`,
+
+				conStyle: `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.windowHeight - 80}px;`,
 				serverUrl: "https://pan.promise.pink:442",
 				username: "bunny",
 				password: "hong123456"
@@ -39,10 +41,10 @@
 		},
 		onLoad() {
 
-			this.serverUrl = uni.getStorageSync("serverUrl") as string
-			this.password = uni.getStorageSync("password") as string
-			this.username = uni.getStorageSync("username") as string
-			globalData.server = this.serverUrl
+			// this.serverUrl = uni.getStorageSync("serverUrl") as string
+			// this.password = uni.getStorageSync("password") as string
+			// this.username = uni.getStorageSync("username") as string
+			// staticData.server = this.serverUrl
 		},
 		methods: {
 			async loginIng() : Promise<void> {
@@ -55,16 +57,16 @@
 				loginWorkIng = true
 
 				uni.setStorageSync("serverUrl", this.serverUrl)
-				globalData.server = this.serverUrl
+				// staticData.server = this.serverUrl
 				uni.setStorageSync("username", this.username)
 				uni.setStorageSync("password", this.password)
 
-				// console.log("登录信息", globalData.server + "/api/user/login", this.username, this.password);
+				// console.log("登录信息", staticData.server + "/api/user/login", this.username, this.password);
 				// const { username, password } = this
 
 
 				uni.request<IRootType>({
-					url: globalData.server + "/api/user/login",
+					url: staticData.server + "/api/user/login",
 					data: {
 						username: this.username,
 						password: this.password
@@ -134,7 +136,7 @@
 
 				// // 目前最优解决办法，直接写
 				// uni.request<IRootType>({
-				// 	url: globalData.server + "/api/user/login",
+				// 	url: staticData.server + "/api/user/login",
 				// 	data: {
 				// 		username: this.username,
 				// 		password: this.password

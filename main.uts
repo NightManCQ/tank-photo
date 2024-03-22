@@ -1,7 +1,11 @@
 import App from './App.uvue'
+import { storeInit } from "./store/global.data.uts"
+import { getTankInfo } from "./logic/getTankInfo.logic.uts"
 
 import { createSSRApp } from 'vue'
 export function createApp() {
+	storeInit()
+	getTankInfo()
 	const app = createSSRApp(App)
 	return {
 		app

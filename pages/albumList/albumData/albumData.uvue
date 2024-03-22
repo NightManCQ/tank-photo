@@ -5,31 +5,41 @@
 
 
 
-	<list-view ref="listView" :id="id" class="container_al" :rebound="false" :scroll-y="true"
+	<list-view ref="listView" :id="id" class="container_al" :style="conStyle" :rebound="false" :scroll-y="true"
 		:custom-nested-scroll="true">
 		<list-item :type="4" style="margin-top: 20px;"></list-item>
 		<list-item class="ab_it" v-for="(itemArr,index) in dataList" :key="index">
-			<image :style="photoStyle" class="ab_img" :src="item.uri" v-for="(item,indexT) in itemArr" :key="indexT">
+			<image :style="photoStyle" class="ab_img" :src="item.uri" v-for="(item,indexT) in itemArr" :key="indexT"
+				@click="imgClick(item)">
 			</image>
 			<!-- <text class="text">{{item.name}} {{item.count}}</text> -->
 		</list-item>
+		<list-item :type="5" style="margin-bottom: 100px;"></list-item>
 	</list-view>
-
+	
+	
+	
+	
+	
 </template>
 
 <script>
-	import { staticData } from "../../../store/global.data";
+	import { globalData } from "../../../store/global.data";
 	import { clumn3KeyName } from "../../../store/storage.key";
 	import { albumData, albumDataData } from "./adLoadData.logic"
 	import { mediaFile } from "@/uni_modules/photo-util";
-	type PST = string | null
+
 	export default {
 		data() {
 			return {
 				id: "ashlkjl0i3jkagpjgml12",
 			};
 		},
+
 		computed: {
+			conStyle() : string {
+				return `width:${globalData.windowInfo.windowWidth}px;height:${globalData.windowInfo.screenHeight}px;`
+			},
 			dataList() : Array<Array<mediaFile>> {
 				return albumDataData.photoList
 			},
@@ -54,7 +64,7 @@
 					return photoStyle as string
 				}
 				// let photoStyle = ""
-				const { windowInfo } = staticData
+				const { windowInfo } = globalData
 				const { clumns } = albumData
 				const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
 				photoStyle = `width: ${res}px;height: ${res}px;`
@@ -75,11 +85,26 @@
 				})
 			}
 
+		},
+		methods: {
+			imgClick(item : mediaFile) {
+				console.log("----------", item);
+				// uni.previewImage({
+				// 	current: 0,
+				// 	urls: [item.uri]
+				// })
+			}
 		}
 	}
 </script>
 
 <style lang="scss">
+	.container_al {
+		// width: 100vw;
+		// height: 500px;
+		// border: 1px solid red;
+	}
+
 	.ab_it {
 		display: flex;
 		flex-direction: row;

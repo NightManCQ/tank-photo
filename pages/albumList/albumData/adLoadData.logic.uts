@@ -24,7 +24,7 @@ export class albumData {
 	static clumns = 3
 
 	static calcStyle() {
-		const { windowInfo } = staticData
+		const { windowInfo } = globalData
 		const { clumns } = albumData
 		const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
 		albumDataData.photoStyle = `width: ${res}px;height: ${res}px;`
