@@ -3,7 +3,7 @@ import MediaStore from "android.provider.MediaStore";
 import ContentResolver from "android.content.ContentResolver";
 import Cursor from "android.database.Cursor";
 import Uri from "android.net.Uri";
-import WindowManager from "android.view.WindowManager";
+// import WindowManager from "android.view.WindowManager";
 // import ContentUris from "android.content.ContentUris";
 
 
@@ -19,11 +19,17 @@ export class mediaFile {
 	id : number = 0;
 	name : string = "";
 	uri : Uri;
+	url : string
 	// 是否被选中
 	check : boolean = false;
-	type : number;//1 图片 2: 视频
-	constructor(uri : Uri, type : number) {
+	/**
+	 * 1 图片 
+	 * 2: 视频
+	 */
+	type : number;
+	constructor(uri : Uri, type : number, url : string) {
 		this.uri = uri
+		this.url = url
 		this.type = type
 	}
 }
@@ -136,9 +142,11 @@ export class albumUtil {
 		let fileBucketId = cursor.getColumnIndexOrThrow(fileClumns.BUCKET_ID)
 		let fileBucketDisplayName = cursor.getColumnIndexOrThrow(fileClumns.BUCKET_DISPLAY_NAME)
 		let fileUrl = cursor.getColumnIndexOrThrow(fileClumns.DATA)
+
 		while (cursor.moveToNext()) {
 			let bucketId : Long = cursor.getLong(fileBucketId)
 			let bucketDisplayName : string = cursor.getString(fileBucketDisplayName)
+			// console.log("-------", cursor.getString(fileUrl));
 			let url : Uri = Uri.parse(cursor.getString(fileUrl)) //转换。直接获取，有些图片获取不了
 			const item = photoList[bucketId]
 			if (item == null) {
@@ -158,7 +166,7 @@ export class albumUtil {
 		// 获取文件个数
 		for (let i = 0; i < albums.length; i++) {
 			const item = albums[i]
-			item.count = photoList[item.id]!!
+			item.count = photoList[item.id]!
 		}
 
 
@@ -189,8 +197,9 @@ export class albumUtil {
 
 		let fileUrl = cursor.getColumnIndexOrThrow(DATA)
 		while (cursor.moveToNext()) {
-			let uri : Uri = Uri.parse(cursor.getString(fileUrl)) //转换
-			uriList.push(new mediaFile(uri, 1))
+			const url = cursor.getString(fileUrl)
+			let uri : Uri = Uri.parse(url) //转换
+			uriList.push(new mediaFile(uri, 1, url))
 		}
 
 
@@ -205,8 +214,9 @@ export class albumUtil {
 
 		let fileVideoUrl = cursor.getColumnIndexOrThrow(DATA)
 		while (cursorVideo.moveToNext()) {
-			let uri : Uri = Uri.parse(cursorVideo.getString(fileVideoUrl)) //转换
-			uriList.push(new mediaFile(uri, 2))
+			const url = cursorVideo.getString(fileVideoUrl)
+			let uri : Uri = Uri.parse(url) //转换
+			uriList.push(new mediaFile(uri, 2, url))
 		}
 		return uriList
 	}

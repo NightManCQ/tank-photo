@@ -30,11 +30,14 @@
 					<view class="ab_it" v-for="(item,indexTwo) in itArr" :key="indexTwo  + item.id +''">
 
 
-						<image class="ab_img" :class="item.check?'bor_all':'bor_all1'" :style="albumStyle"
+						<!-- 						<image class="ab_img" :class="item.check?'bor_all':'bor_all1'" :style="albumStyle"
 							:src="item.coverImg" @click="getAlbumData(item)"
 							@touchstart="touchstart($event as TouchEvent)"
 							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
 							@touchcancel="touchend">
+						</image> -->
+						<image class="ab_img" :class="item.check?'bor_all':'bor_all1'" :style="albumStyle"
+							:src="item.coverImg" @click="getAlbumData(item)">
 						</image>
 
 						<text class="text">{{item.name}} {{item.count}}</text>
@@ -75,8 +78,7 @@
 				}" @click.stop="optionSwitch(9)">
 					<text class="txt">相册</text>
 				</view>
-				<!-- v-if="user.uuid == ''" -->
-				<view class="opt_lab " :class="{
+				<view v-if="user.uuid == ''" class="opt_lab " :class="{
 					opt_lab_check: optLabCheck == 1
 				}" @click.stop="optionSwitch(1)">
 					<text class="txt">登录</text>
@@ -102,10 +104,9 @@
 <script>
 	import { Album } from "@/uni_modules/photo-util";
 	import { uni_XXPermissions } from "@/uni_modules/xx-XXPermissions"
-	import { albumListLoadData } from "@/pages/albumList/abLoadData.logic"
-	import { albumDataData } from "@/pages/albumList/albumData/adLoadData.logic"
+	import { albumListLoadData } from "@/pages/index/abLoadData.logic"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
-	import { globalData, staticData } from "@/store/global.data.uts";
+	import { globalData } from "@/store/global.data.uts";
 	import { userInfoType } from "@/pages/login/login.logic.uts";
 
 	export default {
@@ -161,25 +162,7 @@
 
 				console.log('结束')
 			},
-			getUserInfo() {
-				console.log("开始获取用户信息");
-				uni.request<any>({
-					url: staticData.server + "/api/user/info",
-					method: "GET",
 
-					// header:{
-					// 	Cookis:"_ak=614134d9-e887-445a-6611-a4b5ec21ede9"
-					// },
-					success(res) {
-						console.log("1111111获取用户信息", res)
-					},
-					fail(err) {
-
-						console.log("1111111获取用户信息 失败", err)
-					}
-
-				})
-			},
 
 			/**
 			 * 抽屉导航
@@ -195,7 +178,6 @@
 					case 2:
 						break;
 					case 3:
-						this.getUserInfo()
 						break;
 
 				}
@@ -216,11 +198,11 @@
 			 * 前往相册详情页
 			 */
 			getAlbumData(album : Album) {
-				albumDataData.album = album
 				uni.navigateTo({
-					url: "/pages/albumList/albumData/albumData"
+					animationType: "pop-in",
+					animationDuration: 50,
+					url: `/pages/albumData/albumData?id=${album.id}&name=${album.name}`
 				})
-
 			},
 			/**
 			 * 权限申请

@@ -1,49 +1,21 @@
 import { globalData, staticData, tankSystemInfoType } from "../store/global.data"
+import { tankResponseType } from "@/pages/base.entity.uts"
 
-type _data = {
-	downloadDirMaxSize : number;
-	copyright : string;
-	defaultTotalSizeLimit : number;
-	scanConfig : string;
-	updateTime : string;
-	downloadDirMaxNum : number;
-	sort : number;
-	uuid : string;
-	version : string;
-	logoUrl : string;
-	deletedKeepDays : number;
-	faviconUrl : string;
-	createTime : string;
-	record : string;
-	name : string;
-	allowRegister : boolean;
-	previewConfig : string;
-}
 
-type tankType = {
-	msg : string;
-	code : string;
-	data : _data;
-}
 
 /**
  * 获取tank系统信息
  */
 export function getTankInfo() {
-	uni.request<tankType>({
+	uni.request<tankResponseType<tankSystemInfoType>>({
 		url: staticData.server + "/api/preference/fetch",
 		method: "POST",
-		// dataType: "json",
-		// responseType: "json",
 		success(res) {
-
-			// const data : UTSJSONObject = res.data as UTSJSONObject
-			// const data : tankType = JSON.parse<tankType>(JSON.stringify(res.data))!;
-			console.log("获取后端系统信息", res.data!.data)
-			// globalData.tankSystemInfo = data['data'] as tankSystemInfoType
+			globalData.tankSystemInfo = res.data?.data!
+			console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
 		},
 		fail(err) {
-			console.log("获取后端系统信息 失败", err)
+			console.log("执行逻辑成功：获取后端系统信息 失败", err)
 		}
 	})
 }

@@ -1,0 +1,8 @@
+/**
+ * api 返回固定格式，定义相应数据需要重新定义接口继承该类型
+ */
+export type tankResponseType<T> = {
+	msg : string;
+	code : string;
+	data : T;
+}

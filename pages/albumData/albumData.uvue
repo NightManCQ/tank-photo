@@ -16,19 +16,20 @@
 		</list-item>
 		<list-item :type="5" style="margin-bottom: 100px;"></list-item>
 	</list-view>
-	
-	
-	
-	
-	
+
+
+
+
+
 </template>
 
 <script>
-	import { globalData } from "../../../store/global.data";
-	import { clumn3KeyName } from "../../../store/storage.key";
+	import { globalData, staticData } from "@/store/global.data";
+	import { clumn3KeyName } from "@/store/storage.key";
 	import { albumData, albumDataData } from "./adLoadData.logic"
 	import { mediaFile } from "@/uni_modules/photo-util";
-
+	// import [mkdirFileName] from "@/store/"
+	import { mkdirFileName } from "../../store/tank.movement.uts"
 	export default {
 		data() {
 			return {
@@ -44,21 +45,7 @@
 				return albumDataData.photoList
 			},
 			photoStyle() : string {
-
-
-				// var a : string | null = uni.getStorageSync(clumn3KeyName)
-				// a?.let(it => {
-				// 	// it必然是string
-
-				// 	console.log("本地数据",it);
-				// })
-
-
-
 				let photoStyle = uni.getStorageSync(clumn3KeyName)!
-
-
-
 				if (photoStyle != "") {
 					console.log("返回本地数据", photoStyle);
 					return photoStyle as string
@@ -72,18 +59,30 @@
 				return photoStyle
 			}
 		},
-		onLoad() {
-			if (albumDataData.album != null) {
-				albumData.loadAlbumData()
-				uni.setNavigationBarTitle({
-					title: albumDataData.album!.name,
-				})
-				console.log(`进来了 ${albumDataData.album!.name} 相册`);
-			} else {
-				uni.switchTab({
-					url: "/pages/index/index"
-				})
-			}
+		onLoad(option) {
+			console.log("相册详情页参数", option["id"]);
+			uni.setNavigationBarTitle({
+				title: option["name"] as string,
+			})
+			albumData.loadAlbumData(parseInt(option["id"]!))
+
+			// uni.uploadFile({
+			// 	url: staticData.server + '/api/matter/upload',
+			// 	filePath: this.dataList[0][0].url,
+			// 	formData: {
+			// 		spaceUuid: "94c5a091-4d3b-44a9-58b4-784a11a7b66c",
+			// 		puuid: "4e54cdfa-5966-4757-63d2-9226959b1e6d",
+			// 		alien: false,
+			// 		privacy: true
+			// 	},
+			// 	success(res) {
+			// 		console.log("上传成功", res);
+			// 	},
+			// 	fail(err) {
+			// 		console.log("上传失败", err);
+			// 	}
+			// })
+			// console.log(`进来了 ${option["name"]} 相册`);
 
 		},
 		methods: {

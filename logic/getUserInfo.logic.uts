@@ -1,0 +1,19 @@
+import { tankResponseType } from "../pages/base.entity"
+import { userInfoType } from "../pages/login/login.logic"
+import { globalData, staticData } from "../store/global.data"
+
+/**
+ * 从接口更新用户信息，登陆后运行
+ */
+export function updUserInfo() {
+	uni.request<tankResponseType<userInfoType>>({
+		url: staticData.server + "/api/user/info",
+		success(res) {
+			globalData.user = res.data?.data!
+			console.log("执行逻辑成功：更新用户信息", globalData.user)
+		}, fail(err) {
+			console.log("执行逻辑失败：更新用户信息", err)
+		}
+	})
+
+}

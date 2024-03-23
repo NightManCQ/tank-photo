@@ -1,0 +1,66 @@
+import { tankResponseType } from "../pages/base.entity";
+import { globalData, staticData } from "./global.data";
+
+
+/**
+ * 创建文件夹接口返回数据
+ */
+export type tankMkdirFileType = {
+	uuid : string;
+	sort : number;
+	updateTime : string;
+	createTime : string;
+	puuid : string;
+	userUuid : string;
+	space_name : string;
+	dir : boolean;
+	name : string;
+	md5 : string;
+	size : number;
+	privacy : boolean;
+	path : string;
+	times : number;
+	prop : string;
+	visitTime : string;
+	deleted : boolean;
+	deleteTime : string;
+	spaceUuid : string;
+	user : any | null;
+	parent : any | null;
+}
+
+
+/**
+ * 创建文件夹
+ */
+export function mkdirFileName(name : string, path : string = "root") : Promise<tankMkdirFileType> {
+	return new Promise((resolve, reject) => {
+		// 主动在根目录创建一个备份文件夹
+		uni.request<tankResponseType<tankMkdirFileType>>({
+			url: staticData.server + "/api/matter/create/directory",
+			header: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			data: {
+				name: name,
+				puuid: path,
+				spaceUuid: globalData.user.spaceUuid
+			},
+			method: "POST",
+			success(res) {
+				// console.log("创建备份文件夹成功", crRes.data?.data)
+				// staticData.backupFileName = mkName
+				if (res.statusCode == 200) {
+					resolve(res.data?.data!)
+				} else {
+					reject(false)
+				}
+
+			},
+			fail(crErr) {
+				// console.log("创建备份文件夹失败", crErr);
+				reject(crErr)
+			}
+		})
+	})
+}

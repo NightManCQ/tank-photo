@@ -36,6 +36,11 @@ export type IRootType = {
 	data : userInfoType;
 }
 
+export type IRootTypeTwo<T> = {
+	msg : string;
+	code : string;
+	data : T;
+}
 export const loginUrl = "/api/user/login"
 
 

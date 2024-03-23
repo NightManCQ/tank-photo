@@ -31,9 +31,11 @@ export class albumData {
 		console.log("?????元素样式", albumDataData);
 	}
 
-	static loadAlbumData() {
-		// @ts-ignore
-		const { id } = albumDataData.album!!
+	/**
+	 * 根据相册id查询该相册下所有的媒体文件
+	 */
+	static loadAlbumData(id : number) {
+		// const { id } = albumDataData.album!
 		if (id != 0) {
 			const arr : Array<Array<mediaFile>> = []
 			const { clumns } = albumData

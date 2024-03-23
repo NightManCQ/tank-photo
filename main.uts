@@ -1,11 +1,25 @@
 import App from './App.uvue'
 import { storeInit } from "./store/global.data.uts"
 import { getTankInfo } from "./logic/getTankInfo.logic.uts"
-
+import { updUserInfo } from "./logic/getUserInfo.logic.uts"
+import { getDeviceldInfo } from "./logic/getDeviceldInfo.logic.uts"
 import { createSSRApp } from 'vue'
+import { userInfoKeyName } from "./store/storage.key";
+import { albumListLoadData } from "@/pages/index/abLoadData.logic"
+
+albumListLoadData.getalbums()
+storeInit()
+getDeviceldInfo()
+getTankInfo()
+
+
+let data = uni.getStorageSync(userInfoKeyName)!
+if (data != "") {
+	updUserInfo()
+}
 export function createApp() {
-	storeInit()
-	getTankInfo()
+
+
 	const app = createSSRApp(App)
 	return {
 		app

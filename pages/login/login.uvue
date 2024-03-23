@@ -26,7 +26,9 @@
 
 <script>
 	import { staticData, globalData } from "@/store/global.data.uts"
-	import { IRootType } from "./login.logic.uts"
+	import { userInfoType } from "./login.logic.uts"
+	import { tankResponseType } from "@/pages/base.entity.uts"
+	import { userInfoKeyName } from "@/store/storage.key.uts"
 	let loginWorkIng = false
 	export default {
 		data() {
@@ -56,16 +58,16 @@
 				})
 				loginWorkIng = true
 
-				uni.setStorageSync("serverUrl", this.serverUrl)
-				// staticData.server = this.serverUrl
-				uni.setStorageSync("username", this.username)
-				uni.setStorageSync("password", this.password)
+				// uni.setStorageSync("serverUrl", this.serverUrl)
+				// // staticData.server = this.serverUrl
+				// uni.setStorageSync("username", this.username)
+				// uni.setStorageSync("password", this.password)
 
 				// console.log("登录信息", staticData.server + "/api/user/login", this.username, this.password);
 				// const { username, password } = this
 
 
-				uni.request<IRootType>({
+				uni.request<tankResponseType<userInfoType>>({
 					url: staticData.server + "/api/user/login",
 					data: {
 						username: this.username,
@@ -82,8 +84,10 @@
 
 						// const user = res.data?.data!
 						if (res.statusCode == 200) {
-							console.log("登录成功", res.data)
-
+							globalData.user = res.data?.data!
+							uni.setStorageSync(userInfoKeyName, globalData.user)
+							console.log("登录成功", globalData)
+							uni.navigateBack()
 						}
 
 					}, fail(err) {

@@ -1,5 +1,5 @@
 <script lang="uts">
-	import { albumListLoadData } from "@/pages/albumList/abLoadData.logic"
+
 
 
 	// function jest_getWindowInfo() : GetWindowInfoResult {
@@ -8,8 +8,8 @@
 	// let firstBackTime = 0
 	export default {
 		onLaunch: function () {
-			console.log('App Launch')
-			albumListLoadData.getalbums()
+			// console.log('App Launch')
+
 
 
 
@@ -41,7 +41,7 @@
 
 		},
 		onShow: function () {
-			console.log('App Show')
+			// console.log('App Show')
 
 			// 获取系统信息
 			// const res = uni.getWindowInfo();
@@ -49,7 +49,7 @@
 			// console.log("设备窗口信息", clentWindowInfo)
 		},
 		onHide: function () {
-			console.log('App Hide')
+			// console.log('App Hide')
 		},
 		onLastPageBackPress: function () {
 			uni.exit()
@@ -69,7 +69,7 @@
 			// }
 		},
 		onExit: function () {
-			console.log('App Exit')
+			// console.log('App Exit')
 		},
 	}
 </script>

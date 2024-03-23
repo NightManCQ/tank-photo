@@ -29,7 +29,7 @@
 		// 	}
 		// },
 		{
-			"path": "pages/albumList/albumData/albumData",
+			"path": "pages/albumData/albumData",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false

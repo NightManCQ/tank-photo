@@ -1,4 +1,5 @@
 import { userInfoType } from "../pages/login/login.logic.uts"
+import { userInfoKeyName } from "@/store/storage.key.uts"
 
 
 
@@ -42,7 +43,7 @@ type windowInfoType = {
 
 
 /**
- * 云盘系统信息
+ * tank 的系统信息
  */
 export type tankSystemInfoType = {
 	downloadDirMaxSize : number;
@@ -67,8 +68,17 @@ export type tankSystemInfoType = {
 
 
 type globalDataType = {
+	/**
+	 * tank 的系统信息
+	 */
 	tankSystemInfo : tankSystemInfoType
+	/**
+	 * 当前设备的窗口信息
+	 */
 	windowInfo : windowInfoType
+	/**
+	 * tank 的登录用户信息
+	 */
 	user : userInfoType
 }
 // const wh = uni.getStorageSync("windowHeight")
@@ -81,18 +91,65 @@ type globalDataType = {
 
 // console.log("================", user)
 // const userInfo = user == "" ? userInfoDef : user as userInfoType
+/**
+ * 设备信息
+ */
+type deviceldInfoType = {
+	/**
+	 * 品牌
+	 */
+	brand : string
+	/**
+	 * 认证型号
+	 */
+	model : string
+}
+
+
+
+/**
+ * 根目录备份文件夹数据
+ */
+export type backupFileType = {
+
+
+
+
+
+	puuid : string;
+	name : string;
+	path : string;
+	uuid : string;
+	deleted : boolean;
+	size : number;
+	privacy : boolean;
+}
+
 
 
 type staticDataTyep = {
-
+	deviceld : deviceldInfoType
 	server : string
+	backupFile : backupFileType
 }
 
 /**
  * 静态全局数据
  */
 export const staticData : staticDataTyep = {
-
+	backupFile: {
+		"uuid": "",
+		"puuid": "",
+		"name": "",
+		"size": 0,
+		"privacy": false,
+		"path": "",
+		"deleted": false,
+	},
+	deviceld: {
+		model: "",
+		brand: ""
+	},
 	// uni.getStorageSync("serverUrl") as string ?
 	server: "https://pan.promise.pink:442",
 }
@@ -118,7 +175,7 @@ export const globalData = reactive({
 		"faviconUrl": "",
 		"createTime": "2024-02-21 10:58:07",
 		"record": "",
-		"name": "小云朵盘",
+		"name": "",
 		"allowRegister": false,
 		"previewConfig": "{}"
 	},
@@ -135,14 +192,14 @@ export const globalData = reactive({
 	},
 	user: {
 		lastTime: "",
-		role: uni.getStorageSync("role") as string,
-		spaceUuid: uni.getStorageSync("spaceUuid") as string,
+		role: "",
+		spaceUuid: "",
 		createTime: "",
-		avatarUrl: uni.getStorageSync("avatarUrl") as string,
+		avatarUrl: "",
 		lastIp: "",
 		updateTime: "",
 		sort: 0,
-		uuid: uni.getStorageSync("uuid") as string,
+		uuid: "",
 		space: {
 			sizeLimit: 0,
 			totalSize: 0,
@@ -156,7 +213,7 @@ export const globalData = reactive({
 			uuid: "",
 			user: null
 		},
-		username: uni.getStorageSync("userName") as string,
+		username: "",
 		status: "",
 	}
 
@@ -169,7 +226,7 @@ export const globalData = reactive({
  * 中央仓库初始化
  */
 export function storeInit() {
-	console.log("仓库初始化开始");
+	// console.log("仓库初始化开始");
 	// 初始化窗口信息
 	const res = uni.getWindowInfo();
 	// globalData.windowInfo = res as windowInfoType
@@ -179,7 +236,14 @@ export function storeInit() {
 	windowInfo.screenHeight = res.screenHeight
 	windowInfo.screenWidth = res.screenWidth
 	windowInfo.pixelRatio = res.pixelRatio
-	console.log("窗口信息", res);
+	// console.log("窗口信息", res);
+
+	// let data = uni.getStorageSync(userInfoKeyName)!
+
+	// if (data != "") {
+	// 	console.log("本地存储的用户信息", data);
+	// 	globalData.user = data as userInfoType
+	// }
 
 	// windowInfo.screenWidth = res["screenWidth"] as number
 	// windowInfo.screenHeight = res["screenHeight"] as number
@@ -187,5 +251,5 @@ export function storeInit() {
 	// uni.setStorageSync("windowHeight", windowInfo.windowHeight)
 	// uni.setStorageSync("screenHeight", windowInfo.screenHeight)
 	// uni.setStorageSync("screenWidth", windowInfo.screenWidth)
-	console.log("窗口信息赋值", globalData)
+	console.log("执行逻辑成功：仓库初始化", globalData)
 }
