@@ -91,7 +91,7 @@ export function getDeviceldInfo() {
 					},
 					method: "GET",
 					success(res) {
-						// console.log("搜索当前设备是否有备份文件夹", res.data?.data)
+						console.log("搜索当前设备是否有备份文件夹", res.data?.data)
 						const searchData = res.data?.data
 						if (searchData != null) {
 							if (searchData.totalPages == 0) {

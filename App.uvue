@@ -1,10 +1,11 @@
 <script lang="uts">
-
-
-
 	// function jest_getWindowInfo() : GetWindowInfoResult {
 	// 	return uni.getWindowInfo();
 	// }
+
+	import { globalData } from './store/global.data'
+	import { systemConfigKeyName } from "@/store/storage.key.uts"
+
 	// let firstBackTime = 0
 	export default {
 		onLaunch: function () {
@@ -49,7 +50,9 @@
 			// console.log("设备窗口信息", clentWindowInfo)
 		},
 		onHide: function () {
-			// console.log('App Hide')
+			console.log('App Hide')
+			uni.setStorageSync(systemConfigKeyName, globalData.config)
+
 		},
 		onLastPageBackPress: function () {
 			uni.exit()

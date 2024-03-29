@@ -5,8 +5,10 @@ import { updUserInfo } from "./logic/getUserInfo.logic.uts"
 import { getDeviceldInfo } from "./logic/getDeviceldInfo.logic.uts"
 import { createSSRApp } from 'vue'
 import { userInfoKeyName } from "./store/storage.key";
+import { xxPermissionsInit } from "@/uni_modules/xx-XXPermissions"
 import { albumListLoadData } from "@/pages/index/abLoadData.logic"
 
+xxPermissionsInit()
 albumListLoadData.getalbums()
 storeInit()
 getDeviceldInfo()

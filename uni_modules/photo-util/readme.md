@@ -18,7 +18,7 @@
 
 ```ts
 import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
-import { uni_XXPermissions } from "@/uni_modules/xx-XXPermissions"
+import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
 
 /**
 *获取相册列表
@@ -30,7 +30,7 @@ getalbums() {
     const { permission } = albumListLoadData
     if (albumArray.length == 0) {
         // 判断有无权限，xx-XXPermissions是我另一个权限申请的插件，可自行搭配使用
-        albumListLoadData.authorizationStatus = uni_XXPermissions.checkSystemPermissionGranted(permission)
+        albumListLoadData.authorizationStatus = xxPermissions.checkSystemPermissionGranted(permission)
     } else {
         //业务代码
     }

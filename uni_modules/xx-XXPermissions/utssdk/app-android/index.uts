@@ -1,40 +1,99 @@
 import { UTSAndroid } from "io.dcloud.uts";
+import AlertDialog from "android.app.AlertDialog";
+import Gravity from "android.view.Gravity";
 
 
 
 type callbackFun = (doNotAskAgain : boolean, grantedList : string[]) => void
 
+let tosTxt = ""
+type dogType = {
+	dog ?: AlertDialog
+}
+const dog : dogType = {
+
+}
 
 
-
-export class uni_XXPermissions {
+export class xxPermissions {
 
 	/**
 	 * 判断权限是否被用户拒绝
 	 */
-	static  getSystemPermissionDenied(permission : Array<string>) : Array<string> {
+	static getSystemPermissionDenied(permission : Array<string>) : Array<string> {
 		return UTSAndroid.getSystemPermissionDenied(UTSAndroid.getUniActivity()!, permission)
 	}
 	/**
 	 * 跳转到权限设置
 	 */
-	static  gotoSystemPermissionActivity(permissionWifi : Array<string>) {
+	static gotoSystemPermissionActivity(permissionWifi : Array<string>) {
 		UTSAndroid.gotoSystemPermissionActivity(UTSAndroid.getUniActivity()!, permissionWifi)
 	}
 	/**
 	 * 判断是否拥有权限
 	 */
-	static  checkSystemPermissionGranted(permission : Array<string>) : boolean {
+	static checkSystemPermissionGranted(permission : Array<string>) : boolean {
 		return UTSAndroid.checkSystemPermissionGranted(UTSAndroid.getUniActivity()!, permission)
 	}
 
 	/**
 	 * 申请权限
 	 */
-	static  requestSystemPermission(permission : Array<string>, callbackOk : callbackFun, callbackNo : callbackFun) : void {
+	static requestSystemPermission(permission : Array<string>, tips : string, callbackOk : callbackFun, callbackNo : callbackFun) : void {
+		tosTxt = tips
 		// let permission = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
 		UTSAndroid.requestSystemPermission(UTSAndroid.getUniActivity()!, permission, callbackOk, callbackNo)
 	}
 
 
+}
+
+
+
+
+
+
+/**
+ * 监听权限申请
+ */
+export function xxPermissionsInit() {
+	let permissionListener = uni.createRequestPermissionListener()
+	permissionListener.onConfirm((perArr) => {
+		// console.log("???????", perArr);
+		if (tosTxt != "") {
+			dog.dog = showAlertDialog("提示", tosTxt)
+		} else {
+			// // 判断权限类型
+			// if (perArr[0].indexOf("LOCATION") > -1) {
+			// 	tosTxt = "获取定位权限，以便于可以对您的位置进行定位，拒绝后程序无法获得您的位置"
+			// } else if (perArr[0].indexOf("STORAGE") > -1) {
+			// 	tosTxt = "获取相机, 照片, 视频权限，用于上传图片"
+			// }
+			tosTxt = "将向您申请权限，您同意后我们将继续。"
+			dog.dog = showAlertDialog("提示", tosTxt)
+		}
+
+	})
+	permissionListener.onComplete((_) => {
+		tosTxt = ""
+		dog.dog?.dismiss()
+	})
+}
+
+
+
+/**
+ * 生成弹窗
+ */
+function showAlertDialog(
+	title : String,
+	message : String
+) : AlertDialog {
+	let alertDialog = AlertDialog.Builder(UTSAndroid.getUniActivity()!)
+		.setTitle(title)
+		.setMessage(message).create()
+	const window = alertDialog.getWindow();
+	window!!.setGravity(Gravity.TOP);//window.setGravity(Gravity.BOTTOM);
+	alertDialog.show()
+	return alertDialog
 }

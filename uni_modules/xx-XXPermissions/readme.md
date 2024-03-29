@@ -1,4 +1,4 @@
-# xx-XXPermissions
+# xxPermissions
 ### 开发文档
 [UTS 语法](https://uniapp.dcloud.net.cn/tutorial/syntax-uts.html)
 [UTS API插件](https://uniapp.dcloud.net.cn/plugin/uts-plugin.html)
@@ -11,25 +11,30 @@
 
 ## 插件使用示例
 
-```ts
-import {uni_XXPermissions} from "@/uni_modules/xx-XXPermissions"
+```uts
+import {xxPermissions} from "@/uni_modules/xx-XXPermissions"
 
 let permission = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
 
 
 
-console.log("判断权限是否被用户拒绝", uni_XXPermissions.getSystemPermissionDenied(permission));
+console.log("判断权限是否被用户拒绝", xxPermissions.getSystemPermissionDenied(permission));
 
 
-console.log("跳转到权限设置", uni_XXPermissions.gotoSystemPermissionActivity(permission));
+console.log("跳转到权限设置", xxPermissions.gotoSystemPermissionActivity(permission));
 
 
-console.log("判断是否拥有权限", uni_XXPermissions.checkSystemPermissionGranted(permission));
+console.log("判断是否拥有权限", xxPermissions.checkSystemPermissionGranted(permission));
 
-console.log("申请权限", uni_XXPermissions.requestSystemPermission(permission), function (allRight : boolean, grantedList : string[]) {
+//申请权限
+let permission = ["android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
+				const that = this
+				xxPermissions.requestSystemPermission(permission, "", function (allRight : boolean, grantedList : string[]) {
 					if (allRight) {
 						// 用户同意了全部权限
-						console.log("用户同意了全部权限");
+						console.log("用户同意了全部权限", grantedList);
+						
+						// that.albumArray = albumListLoadData.albumArray
 					} else {
 						// 用户仅同意了 grantedList中的权限
 						console.log("用户仅同意了 grantedList中的权限");
@@ -40,8 +45,8 @@ console.log("申请权限", uni_XXPermissions.requestSystemPermission(permission
 						// 用户拒绝了权限，并且选择不再询问
 						console.log("用户拒绝了权限，并且选择不再询问");
 					}
-					console.log("用户拒绝了部分权限，仅允许了grantedList中的权限");
-				});
+					console.log("用户拒绝了部分权限，仅允许了grantedList中的权限", grantedList);
+				})
 
 ```
 

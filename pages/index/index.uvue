@@ -3,19 +3,14 @@
 
 	<view class="container_abl" :style="conStyle">
 
+
+		<!-- 相册容器 -->
 		<view class="con_main" :class="conClass">
-
 			<uni-navbar-lite title="Tank 相册" :leftIcon="false" nbStyle="height:50px;">
-
 				<template #right>
 					<view class="head_img" @click="drawerSwitch">N</view>
 				</template>
-
 			</uni-navbar-lite>
-
-
-
-
 
 			<view v-if="authorizationStatus == false" class="req_perssion">
 				<button type="primary" @click="requestPermissions">
@@ -29,13 +24,6 @@
 				<list-item class="album_list_sub" v-for="(itArr,index) in albumArray" :key="index">
 					<view class="ab_it" v-for="(item,indexTwo) in itArr" :key="indexTwo  + item.id +''">
 
-
-						<!-- 						<image class="ab_img" :class="item.check?'bor_all':'bor_all1'" :style="albumStyle"
-							:src="item.coverImg" @click="getAlbumData(item)"
-							@touchstart="touchstart($event as TouchEvent)"
-							@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend"
-							@touchcancel="touchend">
-						</image> -->
 						<image class="ab_img" :class="item.check?'bor_all':'bor_all1'" :style="albumStyle"
 							:src="item.coverImg" @click="getAlbumData(item)">
 						</image>
@@ -45,34 +33,14 @@
 				</list-item>
 				<list-item :type="99" style="height: 20px;"></list-item>
 			</list-view>
-			<!-- 			<view style="flex:1;" class="album_list_sub" v-for="(itArr,index) in albumArray" :key="index">
-				<view class="ab_it" v-for="(item,indexTwo) in itArr" :key="indexTwo  + item.id +''">
-					<image class="ab_img" :class="pattern == 1?'bor_all':''" :style="albumStyle" :src="item.coverImg"
-						@click="getAlbumData(item)" @touchstart="touchstart($event as TouchEvent,item)"
-						@touchmove="touchmove($event as TouchEvent,item)" @touchend="touchend" @touchcancel="touchend">
-					</image>
-					<text class="text">{{item.name}} {{item.count}}</text>
-				</view>
-			</view> -->
-
-
-
 		</view>
 
 
-
+		<!-- 菜单栏 -->
 		<view class="con_bottom" @click="drawerSwitch">
-
-
-
 			<view class="c_b_con">
-
 				<image :src="user.avatarUrl" class="m_hd_img"></image>
-
 				<text class="usr_title">{{user.username}}</text>
-
-
-
 				<view class="opt_lab " :class="{
 					opt_lab_check: optLabCheck == 9
 				}" @click.stop="optionSwitch(9)">
@@ -93,8 +61,6 @@
 				}" @click.stop="optionSwitch(2)" v-if="user.uuid != ''">
 					<text class="txt">退出登录</text>
 				</view>
-
-
 			</view>
 		</view>
 	</view>
@@ -103,7 +69,7 @@
 
 <script>
 	import { Album } from "@/uni_modules/photo-util";
-	import { uni_XXPermissions } from "@/uni_modules/xx-XXPermissions"
+	import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
 	import { albumListLoadData } from "@/pages/index/abLoadData.logic"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
 	import { globalData } from "@/store/global.data.uts";
@@ -142,7 +108,6 @@
 		onShow() {
 			// this.reqTest()
 		},
-
 		methods: {
 			touchstart(e : TouchEvent) {
 				this.touchTimeStamp = e.timeStamp
@@ -159,11 +124,8 @@
 				}
 			},
 			touchend() {
-
 				console.log('结束')
 			},
-
-
 			/**
 			 * 抽屉导航
 			 */
@@ -178,6 +140,13 @@
 					case 2:
 						break;
 					case 3:
+						uni.navigateTo({
+							url: "/pages/setting/setting",
+							success() {
+								this.conClass = "tf_st"
+								this.optLabCheck = 9
+							}
+						})
 						break;
 
 				}
@@ -210,7 +179,7 @@
 			requestPermissions() {
 				let permission = ["android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
 				const that = this
-				uni_XXPermissions.requestSystemPermission(permission, function (allRight : boolean, grantedList : string[]) {
+				xxPermissions.requestSystemPermission(permission, "", function (allRight : boolean, grantedList : string[]) {
 					if (allRight) {
 						// 用户同意了全部权限
 						console.log("用户同意了全部权限", grantedList);

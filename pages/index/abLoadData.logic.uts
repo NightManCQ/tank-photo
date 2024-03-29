@@ -1,6 +1,6 @@
 
 import { albumUtil, Album } from "@/uni_modules/photo-util";
-import { uni_XXPermissions } from "@/uni_modules/xx-XXPermissions"
+import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
 import { globalData, staticData } from "@/store/global.data"
 
 
@@ -60,7 +60,7 @@ export class albumListLoadData {
 		const { permission } = albumListLoadData
 		if (albumArray.length == 0) {
 			// 判断有无权限
-			albumListLoadData.authorizationStatus = uni_XXPermissions.checkSystemPermissionGranted(permission)
+			albumListLoadData.authorizationStatus = xxPermissions.checkSystemPermissionGranted(permission)
 		} else {
 			// uni x 的多列布局实现性能较低，所以采用官方的组件以提高性能，但官方还有没出多列布局，所以采用这种迂回的办法（20231129）
 			const arr = albumListLoadData.albumArray

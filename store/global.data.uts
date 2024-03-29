@@ -1,5 +1,5 @@
 import { userInfoType } from "../pages/login/login.logic.uts"
-import { userInfoKeyName } from "@/store/storage.key.uts"
+import { userInfoKeyName, systemConfigKeyName } from "@/store/storage.key.uts"
 
 
 
@@ -65,7 +65,19 @@ export type tankSystemInfoType = {
 	previewConfig : string;
 }
 
-
+/**
+ * 应用配置文件
+ */
+export type configType = {
+	/**
+	 * 是否开启备份，默认false
+	 */
+	backup : boolean
+	/**
+	 * 是否使用移动网络进行备份，默认false
+	 */
+	mobileNetworkBackup : boolean
+}
 
 type globalDataType = {
 	/**
@@ -80,6 +92,10 @@ type globalDataType = {
 	 * tank 的登录用户信息
 	 */
 	user : userInfoType
+	/**
+	 * 应用配置文件
+	 */
+	config : configType
 }
 // const wh = uni.getStorageSync("windowHeight")
 // const ww = uni.getStorageSync("windowWidth")
@@ -111,11 +127,6 @@ type deviceldInfoType = {
  * 根目录备份文件夹数据
  */
 export type backupFileType = {
-
-
-
-
-
 	puuid : string;
 	name : string;
 	path : string;
@@ -160,6 +171,10 @@ export const staticData : staticDataTyep = {
  * 响应式全局数据
  */
 export const globalData = reactive({
+	config: {
+		backup: false,
+		mobileNetworkBackup: false
+	},
 	tankSystemInfo: {
 		"downloadDirMaxSize": -1,
 		"copyright": "",
@@ -236,20 +251,11 @@ export function storeInit() {
 	windowInfo.screenHeight = res.screenHeight
 	windowInfo.screenWidth = res.screenWidth
 	windowInfo.pixelRatio = res.pixelRatio
-	// console.log("窗口信息", res);
 
-	// let data = uni.getStorageSync(userInfoKeyName)!
+	const conf = uni.getStorageSync(systemConfigKeyName)
+	if (conf != "") {
+		globalData.config = JSON.parse<configType>(JSON.stringify(conf))!
+	}
 
-	// if (data != "") {
-	// 	console.log("本地存储的用户信息", data);
-	// 	globalData.user = data as userInfoType
-	// }
-
-	// windowInfo.screenWidth = res["screenWidth"] as number
-	// windowInfo.screenHeight = res["screenHeight"] as number
-	// uni.setStorageSync("windowWidth", windowInfo.windowWidth)
-	// uni.setStorageSync("windowHeight", windowInfo.windowHeight)
-	// uni.setStorageSync("screenHeight", windowInfo.screenHeight)
-	// uni.setStorageSync("screenWidth", windowInfo.screenWidth)
 	console.log("执行逻辑成功：仓库初始化", globalData)
 }

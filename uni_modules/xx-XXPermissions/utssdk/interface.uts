@@ -45,6 +45,6 @@
 // // export type MyApiSync = (paramA : boolean) => MyApiResult
 
 
-// export type uni_XXPermissions = {
+// export type xxPermissions = {
 
 // }

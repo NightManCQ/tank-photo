@@ -1,27 +1,27 @@
 {
   "id": "xx-XXPermissions",
-  "displayName": "xx-XXPermissions",
-  "version": "1.0.0",
+  "displayName": "xxPermissions",
+  "version": "1.0.3",
   "description": "安卓权限申请大全",
   "keywords": [
-    "XXPermissions,权限"
+    "权限,权限申请提示,权限申请同步说明用意"
 ],
   "repository": "",
   "engines": {
-    "HBuilderX": "^3.6.8"
+    "HBuilderX": "^4.07"
   },
   "dcloudext": {
     "type": "uts",
     "sale": {
       "regular": {
-        "price": "0.01"
+        "price": "10.00"
       },
       "sourcecode": {
-        "price": "0.00"
+        "price": "20.00"
       }
     },
     "contact": {
-      "qq": ""
+      "qq": "2417717166"
     },
     "declaration": {
       "ads": "无",
@@ -36,7 +36,8 @@
     "platforms": {
       "cloud": {
         "tcb": "y",
-        "aliyun": "y"
+        "aliyun": "y",
+        "alipay": "n"
       },
       "client": {
         "Vue": {
@@ -48,32 +49,32 @@
           "app-ios": "n"
         },
         "H5-mobile": {
-          "Safari": "u",
-          "Android Browser": "u",
-          "微信浏览器(Android)": "u",
-          "QQ浏览器(Android)": "u"
+          "Safari": "n",
+          "Android Browser": "n",
+          "微信浏览器(Android)": "n",
+          "QQ浏览器(Android)": "n"
         },
         "H5-pc": {
-          "Chrome": "u",
-          "IE": "u",
-          "Edge": "u",
-          "Firefox": "u",
-          "Safari": "u"
+          "Chrome": "n",
+          "IE": "n",
+          "Edge": "n",
+          "Firefox": "n",
+          "Safari": "n"
         },
         "小程序": {
-          "微信": "u",
-          "阿里": "u",
-          "百度": "u",
-          "字节跳动": "u",
-          "QQ": "u",
-          "钉钉": "u",
-          "快手": "u",
-          "飞书": "u",
-          "京东": "u"
+          "微信": "n",
+          "阿里": "n",
+          "百度": "n",
+          "字节跳动": "n",
+          "QQ": "n",
+          "钉钉": "n",
+          "快手": "n",
+          "飞书": "n",
+          "京东": "n"
         },
         "快应用": {
-          "华为": "u",
-          "联盟": "u"
+          "华为": "n",
+          "联盟": "n"
         }
       }
     }

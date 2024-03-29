@@ -1,28 +1,69 @@
 <template>
 	<!-- #ifdef APP -->
-	<scroll-view style="flex:1">
+	<scroll-view style="flex:1;">
 	<!-- #endif -->
-		
-		
-		
-		
-		
-		
+
+		<view class="set_item">
+			<text>自动备份</text>
+			<switch class="switch-checked" :checked="globalData.config.backup" @change="backupSwitch" />
+		</view>
+		<view class="set_item btn_cli_anm_1">
+			<text>备份的相册</text>
+			<!-- <switch class="switch-checked" :checked="globalData.config.backup" @change="backupSwitch" />
+			 -->
+			<text>></text>
+		</view>
+
+		<!-- 		<radio>
+			<text>uni-app-x</text>
+		</radio> -->
+
+
+
 	<!-- #ifdef APP -->
 	</scroll-view>
 	<!-- #endif -->
 </template>
 
-<script>
-	export default {
-		data() {
-			return {
-				
-			};
-		}
+<script setup>
+	import { globalData } from '../../store/global.data';
+	// export default {
+	// 	data() {
+	// 		return {
+	// 			globalData
+	// 		};
+	// 	},
+	// 	computed: {
+	// 		formData() : configType {
+	// 			return globalData.config
+	// 		}
+	// 	},
+	// 	methods: {
+	function backupSwitch(e : UniSwitchChangeEvent) {
+		globalData.config.backup = e.detail.value
 	}
+	// 	}
+	// }
 </script>
 
 <style lang="scss">
+	.set_item {
+		display: flex;
+		// display: row;
+		padding: 0 20rpx;
+		height: 100rpx;
+		justify-content: space-between;
+		flex-direction: row;
+		align-items: center;
+	}
 
+
+	.btn_cli_anm_1 {
+		transform: scale(1);
+		transition-duration: 200ms;
+	}
+
+	.btn_cli_anm_1:active {
+		transform: scale(1.2);
+	}
 </style>

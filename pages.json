@@ -46,7 +46,7 @@
 			"path" : "pages/setting/setting",
 			"style" : 
 			{
-				"navigationBarTitleText" : "",
+				"navigationBarTitleText" : "设置",
 				"enablePullDownRefresh" : false
 			}
 		}
@@ -54,7 +54,7 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app x",
-		"navigationBarBackgroundColor": "#F8F8F8",
+		"navigationBarBackgroundColor": "#FFFFFF",
 		"backgroundColor": "#F8F8F8"
 	},
 	// "tabBar": {
