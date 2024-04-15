@@ -35,11 +35,17 @@
 			// globalData.windowInfo.screenWidth
 			return {
 
-				conStyle: `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.windowHeight - 80}px;`,
+				// conStyle: `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.windowHeight - 80}px;`,
 				serverUrl: "https://pan.promise.pink:442",
 				username: "bunny",
 				password: "hong123456"
 			};
+		},
+		computed: {
+			conStyle() : string {
+				return `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.windowHeight - 80}px;`
+			},
+
 		},
 		onLoad() {
 

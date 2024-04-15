@@ -75,17 +75,18 @@
 	import { globalData } from "@/store/global.data.uts";
 	import { userInfoType } from "@/pages/login/login.logic.uts";
 
+	const { screenHeight, screenWidth } = globalData.windowInfo
 	export default {
 		components: {
 			uniNavbarLite
 		},
 		data() {
-			const { screenHeight, screenWidth } = globalData.windowInfo
+
 			return {
 				id: "ajsdjg0lkasdjglfka",
 				authorizationStatus: albumListLoadData.authorizationStatus,
 				albumArray: albumListLoadData.albumArray as Array<Array<Album>>,
-				conStyle: `height:${screenHeight}px;width:${screenWidth}px;`,
+				// conStyle: `height:${screenHeight}px;width:${screenWidth}px;`,
 				conClass: "tf_st",
 				optLabCheck: 9,
 				touchTimeStamp: 0,
@@ -93,6 +94,9 @@
 			};
 		},
 		computed: {
+			conStyle() : string {
+				return `height:${screenHeight}px;width:${screenWidth}px;`
+			},
 			user() : userInfoType {
 				return globalData.user
 			},
