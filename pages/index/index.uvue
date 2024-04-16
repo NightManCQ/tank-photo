@@ -69,7 +69,7 @@
 
 <script>
 	import { Album } from "@/uni_modules/photo-util";
-	import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
+	import { xxPermissions, newThread } from "@/uni_modules/xx-XXPermissions"
 	import { albumListLoadData } from "@/pages/index/abLoadData.logic"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
 	import { globalData } from "@/store/global.data.uts";
@@ -111,6 +111,11 @@
 		},
 		onShow() {
 			// this.reqTest()
+			const test = newThread(()=>{
+				console.log("==========hhhhhhhhhhhhhhhhhh");
+			})
+			test.start()
+
 		},
 		methods: {
 			touchstart(e : TouchEvent) {

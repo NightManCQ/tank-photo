@@ -5,7 +5,7 @@
 
 		<view class="set_item">
 			<text>自动备份</text>
-			<switch class="switch-checked" :checked="globalData.config.backup" @change="backupSwitch" />
+			<switch class="switch-checked" :checked="appConfig.value.backup" @change="backupSwitch" />
 		</view>
 		<view class="set_item btn_cli_anm_1">
 			<text>备份的相册</text>
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-	import { globalData } from '../../store/global.data';
+	import { appConfig } from '../../store/global.data';
 	// export default {
 	// 	data() {
 	// 		return {
@@ -40,7 +40,7 @@
 	// 	},
 	// 	methods: {
 	function backupSwitch(e : UniSwitchChangeEvent) {
-		globalData.config.backup = e.detail.value
+		appConfig.value.backup = e.detail.value
 	}
 	// 	}
 	// }

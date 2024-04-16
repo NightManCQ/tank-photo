@@ -1,66 +1,12 @@
-import { tankResponseType } from "../pages/base.entity";
-import { globalData, staticData, backupFileType } from "../store/global.data";
+
+import { staticData } from "../store/global.data";
 import { userInfoKeyName } from "../store/storage.key";
-import { mkdirFileName } from "@/store/tank.movement.uts"
+import { mkdirFileName, matterPageReqType, matterPage } from "@/store/tank.movement.uts"
 
 
-type fileDetail = {
-	uuid : string;
-	sort : number;
-	updateTime : string;
-	createTime : string;
-	puuid : string;
-	userUuid : string;
-	space_name : string;
-	dir : boolean;
-	name : string;
-	md5 : string;
-	size : number;
-	privacy : boolean;
-	path : string;
-	times : number;
-	prop : string;
-	visitTime : string;
-	deleted : boolean;
-	deleteTime : string;
-	spaceUuid : string;
-}
-
-type tankSearchType = {
-	page : number;
-	pageSize : number;
-	totalItems : number;
-	totalPages : number;
-	data : fileDetail[]
-}
 
 
-/**
- * 创建文件夹接口返回数据
- */
-type tankMkdirFileType = {
-	uuid : string;
-	sort : number;
-	updateTime : string;
-	createTime : string;
-	puuid : string;
-	userUuid : string;
-	space_name : string;
-	dir : boolean;
-	name : string;
-	md5 : string;
-	size : number;
-	privacy : boolean;
-	path : string;
-	times : number;
-	prop : string;
-	visitTime : string;
-	deleted : boolean;
-	deleteTime : string;
-	spaceUuid : string;
-	user : any | null;
-	parent : any | null;
-}
+
 
 /**
  * 获取设备信息
@@ -77,80 +23,33 @@ export function getDeviceldInfo() {
 			let data = uni.getStorageSync(userInfoKeyName)!
 			if (data != "") {
 				const mkName = `${res.brand}_${res.model}`
-				uni.request<tankResponseType<tankSearchType>>({
-					url: staticData.server + "/api/matter/page",
-					data: {
-						page: 0,
-						pageSize: 1,
-						orderCreateTime: 'DESC',
-						puuid: 'root',
-						name: mkName,
-						// name: "pronhub",
-						deleted: false,
-						orderDir: 'DESC'
-					},
-					method: "GET",
-					success(res) {
-						console.log("搜索当前设备是否有备份文件夹", res.data?.data)
-						const searchData = res.data?.data
-						if (searchData != null) {
-							if (searchData.totalPages == 0) {
+				const reqPar : matterPageReqType = {
+					page: 0,
+					pageSize: 1,
+					orderCreateTime: 'DESC',
+					puuid: 'root',
+					name: mkName,
+					deleted: false,
+					orderDir: 'DESC'
+				}
 
-
-								// 主动在根目录创建一个备份文件夹
-								mkdirFileName(mkName).then((crResData) => {
-									const { backupFile } = staticData
-									backupFile.deleted = crResData.deleted
-									backupFile.path = crResData.path
-									backupFile.name = crResData.name
-									backupFile.privacy = crResData.privacy
-									backupFile.puuid = crResData.puuid
-									backupFile.size = crResData.size
-									console.log("执行逻辑成功：创建备份文件夹", backupFile)
-								})
-								// uni.request<tankResponseType<tankMkdirFileType>>({
-								// 	url: staticData.server + "/api/matter/create/directory",
-								// 	header: {
-								// 		"Content-Type": "application/x-www-form-urlencoded"
-								// 	},
-								// 	data: {
-								// 		name: mkName,
-								// 		puuid: 'root',
-								// 		spaceUuid: globalData.user.spaceUuid
-								// 	},
-								// 	method: "POST",
-								// 	success(crRes) {
-
-
-								// 		// staticData.backupFileName = mkName
-								// 		const { backupFile } = staticData
-								// 		const crResData = crRes.data?.data!
-								// 		backupFile.deleted = crResData.deleted
-								// 		backupFile.path = crResData.path
-								// 		backupFile.name = crResData.name
-								// 		backupFile.privacy = crResData.privacy
-								// 		backupFile.puuid = crResData.puuid
-								// 		backupFile.size = crResData.size
-								// 		console.log("执行逻辑成功：创建备份文件夹", backupFile)
-								// 	},
-								// 	fail(crErr) {
-								// 		console.log("创建备份文件夹失败", crErr);
-								// 	}
-								// })
-								// mkdirFileName(mkName)
-							} else {
-								// staticData.backupFileName = mkName
-								const { backupFile } = staticData
-								const crResData = searchData.data[0]
-								backupFile.deleted = crResData.deleted
-								backupFile.path = crResData.path
-								backupFile.name = crResData.name
-								backupFile.privacy = crResData.privacy
-								backupFile.puuid = crResData.puuid
-								backupFile.size = crResData.size
-								console.log("执行逻辑成功：获取备份文件夹信息", backupFile)
-							}
-						}
+				matterPage(reqPar).then((res) => {
+					if (res.data.length > 0) {
+						staticData.backupFile = res.data[0]
+						console.log("执行逻辑成功：获取备份文件夹信息", staticData.backupFile)
+					} else {
+						// 主动在根目录创建一个备份文件夹
+						mkdirFileName(mkName).then((crResData) => {
+							const { backupFile } = staticData
+							backupFile.deleted = crResData.deleted
+							backupFile.path = crResData.path
+							backupFile.name = crResData.name
+							backupFile.privacy = crResData.privacy
+							backupFile.puuid = crResData.puuid
+							backupFile.size = crResData.size
+							backupFile.uuid = crResData.uuid
+							console.log("执行逻辑成功：创建备份文件夹", backupFile)
+						})
 					}
 				})
 			}

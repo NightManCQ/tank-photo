@@ -1,7 +1,11 @@
 // import { https, requestOptions } from "@/utils/https.logic.uts"
 // import { responseType, } from "@/uni_modules/xx-OkHttp/utssdk/interface.uts"
 
-type Space = {
+
+/**
+ * 存储空间实体类型
+ */
+export type Space = {
 	sizeLimit : number;
 	totalSize : number;
 	createTime : string;
@@ -15,6 +19,10 @@ type Space = {
 	user : any | null;
 }
 
+
+/**
+ * 用户信息实体类型
+ */
 export type userInfoType = {
 	lastTime : string;
 	role : string;
@@ -25,6 +33,9 @@ export type userInfoType = {
 	updateTime : string;
 	sort : number;
 	uuid : string;
+	/**
+	 * 空间
+	 */
 	space : Space;
 	username : string;
 	status : string;

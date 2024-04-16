@@ -1,6 +1,36 @@
 import { UTSAndroid } from "io.dcloud.uts";
 import AlertDialog from "android.app.AlertDialog";
 import Gravity from "android.view.Gravity";
+import "java.lang.Thread";
+import "java.lang.Runnable";
+
+
+class xxRunnable implements Runnable {
+	fun : any
+	// @override
+	override run() : void {
+		console.log("hhhhhhhhhhhhhhhhhhhhhhh---");
+		// this.fun()
+	}
+	constructor(fun : any) {
+		// super()
+		this.fun = fun
+	}
+
+}
+
+export function newThread(par : () => {}) : Thread {
+	const bb = new xxRunnable(par)
+	const aaaa = new Thread(bb)
+
+
+	return aaaa
+}
+// export class xxThread {
+// 	constructor(){
+// 	}
+// }
+
 
 
 
@@ -58,7 +88,7 @@ export class xxPermissions {
  */
 export function xxPermissionsInit() {
 	let permissionListener = uni.createRequestPermissionListener()
-	permissionListener.onConfirm((perArr) => {
+	permissionListener.onConfirm((_ : Array<string>) => {
 		// console.log("???????", perArr);
 		if (tosTxt != "") {
 			dog.dog = showAlertDialog("提示", tosTxt)

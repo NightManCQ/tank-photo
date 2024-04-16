@@ -1,5 +1,6 @@
 import { tankResponseType } from "../pages/base.entity";
 import { globalData, staticData } from "./global.data";
+import { httpRequestHeader } from "@/utils/https.logic.uts"
 
 
 /**
@@ -38,9 +39,7 @@ export function mkdirFileName(name : string, path : string = "root") : Promise<t
 		// 主动在根目录创建一个备份文件夹
 		uni.request<tankResponseType<tankMkdirFileType>>({
 			url: staticData.server + "/api/matter/create/directory",
-			header: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
+			header: httpRequestHeader,
 			data: {
 				name: name,
 				puuid: path,
@@ -49,6 +48,147 @@ export function mkdirFileName(name : string, path : string = "root") : Promise<t
 			method: "POST",
 			success(res) {
 				// console.log("创建备份文件夹成功", crRes.data?.data)
+				// staticData.backupFileName = mkName
+				if (res.statusCode == 200) {
+					resolve(res.data?.data!)
+				} else {
+					reject(false)
+				}
+
+			},
+			fail(crErr) {
+				// console.log("创建备份文件夹失败", crErr);
+				reject(crErr)
+			}
+		})
+	})
+}
+
+
+
+/**
+ * 按需查询文件和文件夹列表的请求参数
+ */
+export type matterPageReqType = {
+	/**
+	 * 页
+	 */
+	page : number
+	/**
+	 * 页大小
+	 */
+	pageSize : number
+	/**
+	 * 可选 创建时间排序 "DESC"
+	 */
+	orderCreateTime ?: "DESC" | "ASC"
+	/**
+	 * uuid
+	 */
+	puuid : string
+	/**
+	 * 是否删除
+	 */
+	deleted : boolean
+	/**
+	 * 排序
+	 */
+	orderDir : "DESC"
+	/**
+	 * 可选 文件、文件夹名称
+	 */
+	name ?: string
+}
+
+
+/**
+ * tank 文件、文件夹实体或返回值
+ */
+export type fileDetailType = {
+	/**
+	 * id
+	 */
+	uuid : string;
+	sort : number;
+	updateTime : string;
+	createTime : string;
+	/**
+	 * 父级目录id
+	 */
+	puuid : string;
+	/**
+	 * 用户id
+	 */
+	userUuid : string;
+	/**
+	 * 空间名称
+	 */
+	space_name : string;
+	dir : boolean;
+	name : string;
+	md5 : string;
+	size : number;
+	/**
+	 * 私有
+	 */
+	privacy : boolean;
+	/**
+	 * 路径
+	 */
+	path : string;
+	times : number;
+	prop : string;
+	visitTime : string;
+	/**
+	 * 是否删除
+	 */
+	deleted : boolean;
+	deleteTime : string;
+	/**
+	 * 空间id
+	 */
+	spaceUuid : string;
+}
+
+
+/**
+ * tank 按需查询文件和文件夹列表返回值类型
+ */
+export type matterPageResType = {
+	page : number;
+	pageSize : number;
+	totalItems : number;
+	totalPages : number;
+	data : fileDetailType[]
+}
+
+/**
+ * 按需查询文件和文件夹的列表
+ */
+export function matterPage(param : matterPageReqType) : Promise<matterPageResType> {
+	return new Promise((resolve, reject) => {
+		// console.log("------------请求参数", param);
+		uni.request<tankResponseType<matterPageResType>>({
+			url: staticData.server + "/api/matter/page",
+			// header: {
+			// 	"Content-Type": "application/x-www-form-urlencoded"
+			// },
+			data:
+				// param
+				{
+					page: param.page,
+					pageSize: param.pageSize,
+					orderCreateTime: param.orderCreateTime,
+					puuid: param.puuid,
+					name: param.name,
+					deleted: param.deleted,
+					orderDir: param.orderDir
+				}
+
+			,
+			method: "GET",
+			success(res) {
+				// console.log(`--------------------------查询 ${par.puuid} ￥${par.name} 成功： `, res)
 				// staticData.backupFileName = mkName
 				if (res.statusCode == 200) {
 					resolve(res.data?.data!)

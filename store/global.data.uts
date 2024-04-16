@@ -1,4 +1,5 @@
 import { userInfoType } from "../pages/login/login.logic.uts"
+import { fileDetailType } from "@/store/tank.movement.uts"
 import { userInfoKeyName, systemConfigKeyName } from "@/store/storage.key.uts"
 
 
@@ -65,48 +66,12 @@ export type tankSystemInfoType = {
 	previewConfig : string;
 }
 
-/**
- * 应用配置文件
- */
-export type configType = {
-	/**
-	 * 是否开启备份，默认false
-	 */
-	backup : boolean
-	/**
-	 * 是否使用移动网络进行备份，默认false
-	 */
-	mobileNetworkBackup : boolean
-}
-
-type globalDataType = {
-	/**
-	 * tank 的系统信息
-	 */
-	tankSystemInfo : tankSystemInfoType
-	/**
-	 * 当前设备的窗口信息
-	 */
-	windowInfo : windowInfoType
-	/**
-	 * tank 的登录用户信息
-	 */
-	user : userInfoType
-	/**
-	 * 应用配置文件
-	 */
-	config : configType
-}
-// const wh = uni.getStorageSync("windowHeight")
-// const ww = uni.getStorageSync("windowWidth")
-// const sw = uni.getStorageSync("screenWidth")
-// const sh = uni.getStorageSync("screenHeight")
-// const user = uni.getStorageSync("userInfo")
-// let userInfoDef : userInfoType = 
 
 
-// console.log("================", user)
-// const userInfo = user == "" ? userInfoDef : user as userInfoType
+
+
+
+
 /**
  * 设备信息
  */
@@ -124,24 +89,21 @@ type deviceldInfoType = {
 
 
 /**
- * 根目录备份文件夹数据
+ * 非响应式静态数据
  */
-export type backupFileType = {
-	puuid : string;
-	name : string;
-	path : string;
-	uuid : string;
-	deleted : boolean;
-	size : number;
-	privacy : boolean;
-}
-
-
-
 type staticDataTyep = {
+	/**
+	 * 设备信息
+	 */
 	deviceld : deviceldInfoType
+	/**
+	 * 服务器地址
+	 */
 	server : string
-	backupFile : backupFileType
+	/**
+	 * 备份文件夹
+	 */
+	backupFile : fileDetailType
 }
 
 /**
@@ -149,13 +111,31 @@ type staticDataTyep = {
  */
 export const staticData : staticDataTyep = {
 	backupFile: {
-		"uuid": "",
-		"puuid": "",
-		"name": "",
-		"size": 0,
-		"privacy": false,
-		"path": "",
+		"createTime": "",
+		"deleteTime": "",
 		"deleted": false,
+		"dir": true,
+		"md5": "",
+		"name": "",
+		"path": "",
+		"privacy": false,
+		"prop": "{}",
+		"puuid": "",
+		"size":
+			//‍[number]‍
+			0,
+		"sort":
+			//‍[number]‍
+			1711696034273,
+		"spaceUuid": "",
+		"space_name": "bunny",
+		"times":
+			//‍[number]‍
+			0,
+		"updateTime": "",
+		"userUuid": "",
+		"uuid": "",
+		"visitTime": ""
 	},
 	deviceld: {
 		model: "",
@@ -167,14 +147,29 @@ export const staticData : staticDataTyep = {
 
 
 
+
+
+/**
+ * 响应式全局数据
+ */
+type globalDataType = {
+	/**
+	 * tank 的系统信息
+	 */
+	tankSystemInfo : tankSystemInfoType
+	/**
+	 * 当前设备的窗口信息
+	 */
+	windowInfo : windowInfoType
+	/**
+	 * tank 的登录用户信息
+	 */
+	user : userInfoType
+}
 /**
  * 响应式全局数据
  */
 export const globalData = reactive({
-	config: {
-		backup: false,
-		mobileNetworkBackup: false
-	},
 	tankSystemInfo: {
 		"downloadDirMaxSize": -1,
 		"copyright": "",
@@ -237,6 +232,37 @@ export const globalData = reactive({
 
 
 
+
+/**
+ * tank 程序设置内容
+ */
+type configType = {
+	/**
+	 * 是否开启备份，默认false
+	 */
+	backup : boolean
+	/**
+	 * 是否使用移动网络进行备份，默认false
+	 */
+	mobileNetworkBackup : boolean
+}
+/**
+ * 应用配置
+ */
+export type appConfigType = {
+	value : configType
+}
+/**
+ * tank 应用设置 
+ */
+export const appConfig = reactive({
+	value: {
+		backup: false,
+		mobileNetworkBackup: false
+	}
+} as appConfigType)
+
+
 /**
  * 中央仓库初始化
  */
@@ -254,7 +280,7 @@ export function storeInit() {
 
 	const conf = uni.getStorageSync(systemConfigKeyName)
 	if (conf != "") {
-		globalData.config = JSON.parse<configType>(JSON.stringify(conf))!
+		appConfig.value = JSON.parse<configType>(JSON.stringify(conf))!
 	}
 
 	console.log("执行逻辑成功：仓库初始化", globalData)
