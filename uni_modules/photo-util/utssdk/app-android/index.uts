@@ -3,6 +3,7 @@ import MediaStore from "android.provider.MediaStore";
 import ContentResolver from "android.content.ContentResolver";
 import Cursor from "android.database.Cursor";
 import Uri from "android.net.Uri";
+import HashMap from "java.util.HashMap";
 // import WindowManager from "android.view.WindowManager";
 // import ContentUris from "android.content.ContentUris";
 
@@ -20,8 +21,6 @@ export class mediaFile {
 	name : string = "";
 	uri : Uri;
 	url : string
-	// 是否被选中
-	check : boolean = false;
 	/**
 	 * 1 图片 
 	 * 2: 视频
@@ -42,15 +41,12 @@ export class Album {
 	// 文件数量
 	count : number;
 
-	// 选中
-	check : boolean;
 	constructor(id : number, name : string, coverImg : Uri) {
 		this.id = id;
 		this.name = name;
 		// this.bucketDisplayName = bucketDisplayName
 		this.coverImg = coverImg
 		this.count = 0
-		this.check = false
 	}
 }
 

@@ -43,11 +43,16 @@
 			}
 		},
 		{
-			"path" : "pages/setting/setting",
-			"style" : 
-			{
-				"navigationBarTitleText" : "设置",
-				"enablePullDownRefresh" : false
+			"path": "pages/setting/setting",
+			"style": {
+				"navigationBarTitleText": "设置",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/setting/checkAlbumBak/checkAlbumBak",
+			"style": {
+				"navigationBarTitleText": "备份的相册"
 			}
 		}
 	],

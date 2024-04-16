@@ -7,7 +7,7 @@
 			<text>自动备份</text>
 			<switch class="switch-checked" :checked="appConfig.value.backup" @change="backupSwitch" />
 		</view>
-		<view class="set_item btn_cli_anm_1">
+		<view class="set_item btn_cli_anm_1" @click="navTo">
 			<text>备份的相册</text>
 			<!-- <switch class="switch-checked" :checked="globalData.config.backup" @change="backupSwitch" />
 			 -->
@@ -39,8 +39,17 @@
 	// 		}
 	// 	},
 	// 	methods: {
+	/**
+	 * 修改设置是否备份
+	 */
 	function backupSwitch(e : UniSwitchChangeEvent) {
 		appConfig.value.backup = e.detail.value
+	}
+
+	function navTo() {
+		uni.navigateTo({
+			url: "/pages/index/index?pattern=2"
+		})
 	}
 	// 	}
 	// }

@@ -1,0 +1,107 @@
+import { xxPermissions } from "../../uni_modules/xx-XXPermissions/utssdk/app-android";
+import { Album, albumUtil } from "@/uni_modules/photo-util";
+import Uri from "android.net.Uri";
+
+
+
+const permission = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
+
+
+
+/**
+ * tank app使用的相册实体类
+ */
+export type tankAlbumType = {
+	/**
+	 * id
+	 */
+	id : number;
+	/**
+	 * 名称
+	 */
+	name : string;
+	/**
+	 * 封面路径
+	 */
+	coverImg : Uri;
+	/**
+	 *  媒体文件数量
+	 */
+	count : number;
+
+	/**
+	 * 是否备份该相册
+	 */
+	backups : boolean
+}
+
+/**
+ * 相册首页所用的数据
+ */
+type albumArrayDataType = {
+
+	/**
+	 * 读取外部存储需要请求的权限
+	 */
+	authorizationStatus : boolean
+	/**
+	 * tank app使用的相册实体类
+	 */
+	tankData : Array<Array<tankAlbumType>>
+	/**
+	 * 展示多少列
+	 */
+	clumnsCount : 1 | 2 | 3
+}
+
+
+/**
+ * 相册首页所用的数据
+ */
+export const albumArrayData = reactive({
+	authorizationStatus: true,
+	clumnsCount: 2,
+	tankData: []
+} as albumArrayDataType)
+
+
+
+
+/**
+ * 获取相册列表
+ */
+export function getalbums() {
+	const albumArray : Array<Album> = albumUtil.getAlbum()
+	if (albumArray.length == 0) {
+		// 判断有无权限
+		albumArrayData.authorizationStatus = xxPermissions.checkSystemPermissionGranted(permission)
+	} else {
+		// uni x 的多列布局实现性能较低，所以采用官方的组件以提高性能，但官方还有没出多列布局，所以采用这种迂回的办法（20231129）
+		const arr = albumArrayData.tankData
+		const clumnsCount = albumArrayData.clumnsCount
+		for (let i = 0; i < albumArray.length; i++) {
+			const yNum = i / clumnsCount
+			const item = albumArray[i]
+			const addObj : tankAlbumType = {
+				id: item.id,
+				name: item.name,
+				coverImg: item.coverImg,
+				count: item.count,
+				backups: false
+			}
+
+			// if (item.name == "Screenshots") {
+			// 	item.name = "截图"
+			// } else if (item.name == "Camera") {
+			// 	item.name = "相机"
+			// }else if()
+			if (i % clumnsCount == 0) {
+				arr.push([])
+				arr[yNum].push(addObj)
+			} else {
+				arr[yNum].push(addObj)
+			}
+		}
+	}
+
+}

@@ -6,9 +6,9 @@
 
 		<!-- 相册容器 -->
 		<view class="con_main" :class="conClass">
-			<uni-navbar-lite title="Tank 相册" :leftIcon="false" nbStyle="height:50px;">
+			<uni-navbar-lite title="Tank 相册" v-if="pattern == 1" :leftIcon="false" nbStyle="height:50px;">
 				<template #right>
-					<view class="head_img" @click="drawerSwitch">N</view>
+					<image  class="head_img" @click="drawerSwitch" :src="user.avatarUrl"></image>
 				</template>
 			</uni-navbar-lite>
 
@@ -21,14 +21,13 @@
 			<list-view style="flex:1;" ref="listView" :id=id :rebound="false" :scroll-y="true"
 				:custom-nested-scroll="true">
 				<list-item :type="2" style="margin-top: 20px;"></list-item>
-				<list-item class="album_list_sub" v-for="(itArr,index) in albumArray" :key="index">
-					<view class="ab_it" v-for="(item,indexTwo) in itArr" :key="indexTwo  + item.id +''">
-
-						<image class="ab_img" :class="item.check?'bor_all':'bor_all1'" :style="albumStyle"
-							:src="item.coverImg" @click="getAlbumData(item)">
+				<list-item class="album_list_sub" v-for="(itArr, index) in albumArray" :key="index">
+					<view class="ab_it" v-for="(item, indexTwo) in itArr" :key="indexTwo  + item.id +''">
+						<!-- :class="item.check?'bor_all':'bor_all1'" -->
+						<image class="ab_img" :style="albumStyle" :src="item.coverImg" @click="getAlbumData(item)">
 						</image>
 
-						<text class="text">{{item.name}} {{item.count}}</text>
+						<text>{{item.name}} {{item.count}}</text>
 					</view>
 				</list-item>
 				<list-item :type="99" style="height: 20px;"></list-item>
@@ -68,12 +67,15 @@
 </template>
 
 <script>
-	import { Album } from "@/uni_modules/photo-util";
-	import { xxPermissions, newThread } from "@/uni_modules/xx-XXPermissions"
+	import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
 	import { albumListLoadData } from "@/pages/index/abLoadData.logic"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
 	import { globalData } from "@/store/global.data.uts";
 	import { userInfoType } from "@/pages/login/login.logic.uts";
+	import { albumArrayData, getalbums, tankAlbumType } from "./index.data.uts"
+	import { UTSAndroid } from "io.dcloud.uts";
+	// import Runnable from "java.lang.Runnable";
+	import Thread from "java.lang.Thread";
 
 	const { screenHeight, screenWidth } = globalData.windowInfo
 	export default {
@@ -85,11 +87,22 @@
 			return {
 				id: "ajsdjg0lkasdjglfka",
 				authorizationStatus: albumListLoadData.authorizationStatus,
-				albumArray: albumListLoadData.albumArray as Array<Array<Album>>,
-				// conStyle: `height:${screenHeight}px;width:${screenWidth}px;`,
+				/**
+				 * 相册列表
+				 */
+				albumArray: albumArrayData.tankData as Array<Array<tankAlbumType>>,
+				/**
+				 * 容器状态
+				 */
 				conClass: "tf_st",
+				/**
+				 * 抽屉选中
+				 */
 				optLabCheck: 9,
-				touchTimeStamp: 0,
+				/**
+				 * 模式 1: 默认首页 
+				 * 2：选择进行备份的相册
+				 */
 				pattern: 1
 			};
 		},
@@ -106,35 +119,38 @@
 				return `width: ${res}px;height: ${res}px;`
 			}
 		},
-		onLoad() {
+		onLoad(param) {
+			// if(param)
+			// console.log("参数", param["pattern"]);
+			if (param["pattern"] != "") {
+				this.pattern = param["pattern"]! as number
+			}
 
 		},
 		onShow() {
 			// this.reqTest()
-			const test = newThread(()=>{
-				console.log("==========hhhhhhhhhhhhhhhhhh");
-			})
-			test.start()
+			// const test = newThread(()=>{
+			// 	console.log("==========hhhhhhhhhhhhhhhhhh");
+			// })
+			// test.start()
+
+			// let currentDispatcher = UTSAndroid.getDispatcher()
+			// console.log("currentDispatcher", currentDispatcher)
+			// // 期望在 io 任务队列执行
+			// UTSAndroid.getDispatcher("io").async(function (_) {
+			// 	console.log("当前任务执行在", Thread.currentThread().getName())
+			// 	// 期望在 主线程 任务队列执行
+			// 	// UTSAndroid.getDispatcher("main").async(function (_) {
+			// 	// 	console.log("当前任务执行在", Thread.currentThread().getName())
+			// 	// 	currentDispatcher.async(function (_) {
+			// 	// 		console.log("起始任务执行在", Thread.currentThread().getName())
+			// 	// 	}, null)
+			// 	// }, null)
+			// }, null)
 
 		},
 		methods: {
-			touchstart(e : TouchEvent) {
-				this.touchTimeStamp = e.timeStamp
-			},
-			touchmove(e : TouchEvent, item : Album) : void {
-				// if (item.check) {
-				// 	return
-				// }
-				if (e.timeStamp - this.touchTimeStamp > 200) {
-					// this.pattern = 2
-					item.check = !item.check
-					this.$forceUpdate()
-					console.log('正在', this.pattern, item.check)
-				}
-			},
-			touchend() {
-				console.log('结束')
-			},
+
 			/**
 			 * 抽屉导航
 			 */
@@ -169,13 +185,11 @@
 				} else {
 					this.conClass = "tf_st"
 				}
-
-				console.log("========", this.conClass);
 			},
 			/**
 			 * 前往相册详情页
 			 */
-			getAlbumData(album : Album) {
+			getAlbumData(album : tankAlbumType) {
 				uni.navigateTo({
 					animationType: "pop-in",
 					animationDuration: 50,
@@ -187,13 +201,14 @@
 			 */
 			requestPermissions() {
 				let permission = ["android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
-				const that = this
 				xxPermissions.requestSystemPermission(permission, "", function (allRight : boolean, grantedList : string[]) {
 					if (allRight) {
 						// 用户同意了全部权限
 						console.log("用户同意了全部权限", grantedList);
-						albumListLoadData.getalbums()
-						that.authorizationStatus = true
+						getalbums()
+						albumArrayData.authorizationStatus = true
+						// albumListLoadData.getalbums()
+						// that.authorizationStatus = true
 						// that.albumArray = albumListLoadData.albumArray
 					} else {
 						// 用户仅同意了 grantedList中的权限

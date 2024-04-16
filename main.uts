@@ -6,10 +6,12 @@ import { getDeviceldInfo } from "./logic/getDeviceldInfo.logic.uts"
 import { createSSRApp } from 'vue'
 import { userInfoKeyName } from "./store/storage.key";
 import { xxPermissionsInit } from "@/uni_modules/xx-XXPermissions"
-import { albumListLoadData } from "@/pages/index/abLoadData.logic"
+// import { albumListLoadData } from "@/pages/index/abLoadData.logic"
+import { getalbums } from "@/pages/index/index.data.uts"
 
 xxPermissionsInit()
-albumListLoadData.getalbums()
+// albumListLoadData.getalbums()
+getalbums()
 storeInit()
 getDeviceldInfo()
 getTankInfo()
