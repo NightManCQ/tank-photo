@@ -1,26 +1,22 @@
 import App from './App.uvue'
 import { storeInit } from "./store/global.data.uts"
 import { getTankInfo } from "./logic/getTankInfo.logic.uts"
-import { updUserInfo } from "./logic/getUserInfo.logic.uts"
 import { getDeviceldInfo } from "./logic/getDeviceldInfo.logic.uts"
 import { createSSRApp } from 'vue'
 import { userInfoKeyName } from "./store/storage.key";
 import { xxPermissionsInit } from "@/uni_modules/xx-XXPermissions"
-// import { albumListLoadData } from "@/pages/index/abLoadData.logic"
 import { getalbums } from "@/pages/index/index.data.uts"
+import "./logic/appConfigChange.logic.uts"
 
+// 勿调整执行顺序
 xxPermissionsInit()
-// albumListLoadData.getalbums()
-getalbums()
 storeInit()
+getalbums()
 getDeviceldInfo()
 getTankInfo()
 
 
-let data = uni.getStorageSync(userInfoKeyName)!
-if (data != "") {
-	updUserInfo()
-}
+
 export function createApp() {
 
 

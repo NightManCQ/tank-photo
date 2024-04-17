@@ -4,7 +4,6 @@
 	// }
 
 	import { globalData, appConfig } from './store/global.data'
-	import { systemConfigKeyName } from "@/store/storage.key.uts"
 
 	// let firstBackTime = 0
 	export default {
@@ -51,7 +50,7 @@
 		},
 		onHide: function () {
 			console.log('App Hide')
-			uni.setStorageSync(systemConfigKeyName, appConfig.value)
+			// uni.setStorageSync(systemConfigKeyName, appConfig.value)
 
 		},
 		onLastPageBackPress: function () {

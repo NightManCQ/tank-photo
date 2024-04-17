@@ -1,6 +1,6 @@
 
 import { staticData } from "../store/global.data";
-import { userInfoKeyName } from "../store/storage.key";
+import { userInfoKeyName, backupFileKeyName } from "../store/storage.key";
 import { mkdirFileName, matterPageReqType, matterPage } from "@/store/tank.movement.uts"
 
 
@@ -37,6 +37,10 @@ export function getDeviceldInfo() {
 					if (res.data.length > 0) {
 						staticData.backupFile = res.data[0]
 						console.log("执行逻辑成功：获取备份文件夹信息", staticData.backupFile)
+						uni.setStorage({
+							key: backupFileKeyName,
+							data: staticData.backupFile
+						})
 					} else {
 						// 主动在根目录创建一个备份文件夹
 						mkdirFileName(mkName).then((crResData) => {
@@ -48,6 +52,10 @@ export function getDeviceldInfo() {
 							backupFile.puuid = crResData.puuid
 							backupFile.size = crResData.size
 							backupFile.uuid = crResData.uuid
+							uni.setStorage({
+								key: backupFileKeyName,
+								data: staticData.backupFile
+							})
 							console.log("执行逻辑成功：创建备份文件夹", backupFile)
 						})
 					}

@@ -1,6 +1,6 @@
 import { userInfoType } from "../pages/login/login.logic.uts"
-import { fileDetailType } from "@/store/tank.movement.uts"
-import { userInfoKeyName, systemConfigKeyName } from "@/store/storage.key.uts"
+import { fileDetailType, updUserInfo } from "@/store/tank.movement.uts"
+import { userInfoKeyName, systemConfigKeyName, backupFileKeyName } from "@/store/storage.key.uts"
 
 
 
@@ -128,7 +128,7 @@ export const staticData : staticDataTyep = {
 			//‍[number]‍
 			1711696034273,
 		"spaceUuid": "",
-		"space_name": "bunny",
+		"space_name": "",
 		"times":
 			//‍[number]‍
 			0,
@@ -141,7 +141,6 @@ export const staticData : staticDataTyep = {
 		model: "",
 		brand: ""
 	},
-	// uni.getStorageSync("serverUrl") as string ?
 	server: "https://pan.promise.pink:442",
 }
 
@@ -175,15 +174,15 @@ export const globalData = reactive({
 		"copyright": "",
 		"defaultTotalSizeLimit": -1,
 		"scanConfig": "{}",
-		"updateTime": "2024-02-21 12:33:37",
+		"updateTime": "",
 		"downloadDirMaxNum": -1,
 		"sort": 1708484287421,
-		"uuid": "c775b693-1766-455f-7448-1fe6d938b40e",
+		"uuid": "",
 		"version": "4.0.2",
 		"logoUrl": "",
 		"deletedKeepDays": 7,
 		"faviconUrl": "",
-		"createTime": "2024-02-21 10:58:07",
+		"createTime": "",
 		"record": "",
 		"name": "",
 		"allowRegister": false,
@@ -234,6 +233,14 @@ export const globalData = reactive({
 
 
 /**
+ * 备份的相册列表
+ */
+export type bakAlbumType = {
+	uuid ?: string
+	name : string
+}
+
+/**
  * tank 程序设置内容
  */
 type configType = {
@@ -245,6 +252,22 @@ type configType = {
 	 * 是否使用移动网络进行备份，默认false
 	 */
 	mobileNetworkBackup : boolean
+	/**
+	 * 相册列表展示多少列
+	 */
+	albumClumns : 1 | 2 | 3
+	/**
+	 * 相册详情页展示多少列
+	 */
+	albumDetailClumns : 1 | 2 | 3
+	/**
+	 * 备份的相册列表
+	 */
+	bakAlbumArr : Array<bakAlbumType>
+	/**
+	 * tank 相册目前最大支持500相册列表的同步
+	 */
+	maxPageSize : number
 }
 /**
  * 应用配置
@@ -258,19 +281,40 @@ export type appConfigType = {
 export const appConfig = reactive({
 	value: {
 		backup: false,
-		mobileNetworkBackup: false
+		mobileNetworkBackup: false,
+		albumClumns: 2,
+		albumDetailClumns: 3,
+		bakAlbumArr: [],
+		maxPageSize: 500
 	}
 } as appConfigType)
 
 
 /**
+ * tank app 任务的执行状态
+ */
+type appTaskStatusType = {
+	/**
+	 * 备份上传、下载状态
+	 * 0：没有备份任务或者备份状态停止
+	 * 1：正在备份
+	 */
+	backups : 0 | 1
+}
+
+/**
+ * tank app 任务的执行状态
+ */
+export const appTaskStatus = reactive({
+	backups: 0
+} as appTaskStatusType)
+
+/**
  * 中央仓库初始化
  */
 export function storeInit() {
-	// console.log("仓库初始化开始");
 	// 初始化窗口信息
 	const res = uni.getWindowInfo();
-	// globalData.windowInfo = res as windowInfoType
 	const { windowInfo } = globalData
 	windowInfo.windowHeight = res.windowHeight
 	windowInfo.windowWidth = res.windowWidth
@@ -278,9 +322,23 @@ export function storeInit() {
 	windowInfo.screenWidth = res.screenWidth
 	windowInfo.pixelRatio = res.pixelRatio
 
+	// 获取 tank app设置
 	const conf = uni.getStorageSync(systemConfigKeyName)
-	if (conf != "") {
+	if (typeof conf == "object") {
 		appConfig.value = JSON.parse<configType>(JSON.stringify(conf))!
+		// console.log("--------------------!! app 本地设置获取成功", appConfig);
+	}
+
+	// 获取备份文件夹信息
+	const bakInfo = uni.getStorageSync(backupFileKeyName)
+	if (typeof bakInfo == "object") {
+		staticData.backupFile = JSON.parse<fileDetailType>(JSON.stringify(bakInfo))!
+	}
+	// 获取用户信息
+	const locUser = uni.getStorageSync(userInfoKeyName)
+	if (typeof locUser == "object") {
+		globalData.user = JSON.parse<userInfoType>(JSON.stringify(locUser))!
+		updUserInfo()
 	}
 
 	console.log("执行逻辑成功：仓库初始化", globalData)

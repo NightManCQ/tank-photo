@@ -1,6 +1,11 @@
 import { xxPermissions } from "../../uni_modules/xx-XXPermissions/utssdk/app-android";
 import { Album, albumUtil } from "@/uni_modules/photo-util";
 import Uri from "android.net.Uri";
+import { albumnArrayKeyName } from "@/store/storage.key.uts"
+import { appConfig, bakAlbumType } from "@/store/global.data.uts"
+// import { UTSAndroid } from "io.dcloud.uts";
+// // import Runnable from "java.lang.Runnable";
+// import Thread from "java.lang.Thread";
 
 
 
@@ -30,9 +35,16 @@ export type tankAlbumType = {
 	count : number;
 
 	/**
-	 * 是否备份该相册
+	 * 该相册的备份状态
+	 * 0：不备份
+	 * 1：正在备份
+	 * 2：所有文件备份完成
 	 */
-	backups : boolean
+	backups : 0 | 1 | 2
+	/**
+	 * 如果开启备份，且已经上传至 tank 服务器。就会有该id
+	 */
+	uuid ?: string
 }
 
 /**
@@ -48,10 +60,7 @@ type albumArrayDataType = {
 	 * tank app使用的相册实体类
 	 */
 	tankData : Array<Array<tankAlbumType>>
-	/**
-	 * 展示多少列
-	 */
-	clumnsCount : 1 | 2 | 3
+
 }
 
 
@@ -60,7 +69,6 @@ type albumArrayDataType = {
  */
 export const albumArrayData = reactive({
 	authorizationStatus: true,
-	clumnsCount: 2,
 	tankData: []
 } as albumArrayDataType)
 
@@ -71,30 +79,27 @@ export const albumArrayData = reactive({
  * 获取相册列表
  */
 export function getalbums() {
+
 	const albumArray : Array<Album> = albumUtil.getAlbum()
+	const bakArr = appConfig.value.bakAlbumArr
 	if (albumArray.length == 0) {
 		// 判断有无权限
 		albumArrayData.authorizationStatus = xxPermissions.checkSystemPermissionGranted(permission)
 	} else {
 		// uni x 的多列布局实现性能较低，所以采用官方的组件以提高性能，但官方还有没出多列布局，所以采用这种迂回的办法（20231129）
 		const arr = albumArrayData.tankData
-		const clumnsCount = albumArrayData.clumnsCount
+		const clumnsCount = appConfig.value.albumClumns
 		for (let i = 0; i < albumArray.length; i++) {
 			const yNum = i / clumnsCount
 			const item = albumArray[i]
+			const bakAlbum = bakArr.find((val) : boolean => val["name"] == item.name)
 			const addObj : tankAlbumType = {
 				id: item.id,
 				name: item.name,
 				coverImg: item.coverImg,
 				count: item.count,
-				backups: false
+				backups: bakAlbum == null ? 0 : 1
 			}
-
-			// if (item.name == "Screenshots") {
-			// 	item.name = "截图"
-			// } else if (item.name == "Camera") {
-			// 	item.name = "相机"
-			// }else if()
 			if (i % clumnsCount == 0) {
 				arr.push([])
 				arr[yNum].push(addObj)
@@ -103,5 +108,4 @@ export function getalbums() {
 			}
 		}
 	}
-
 }

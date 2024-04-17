@@ -6,9 +6,12 @@
 
 		<!-- 相册容器 -->
 		<view class="con_main" :class="conClass">
-			<uni-navbar-lite title="Tank 相册" v-if="pattern == 1" :leftIcon="false" nbStyle="height:50px;">
+			<uni-navbar-lite :title="pattern == 1?'Tank 相册':'选择备份的相册'" :leftIcon="false" nbStyle="height:50px;">
 				<template #right>
-					<image  class="head_img" @click="drawerSwitch" :src="user.avatarUrl"></image>
+					<image v-if="pattern == 1" class="head_img" @click="drawerSwitch" :src="user.avatarUrl"></image>
+					<view v-else-if="pattern == 2" class="head_bakcif_btn cent" @click="bakPage">
+						<text class="col_fg">确定</text>
+					</view>
 				</template>
 			</uni-navbar-lite>
 
@@ -23,11 +26,13 @@
 				<list-item :type="2" style="margin-top: 20px;"></list-item>
 				<list-item class="album_list_sub" v-for="(itArr, index) in albumArray" :key="index">
 					<view class="ab_it" v-for="(item, indexTwo) in itArr" :key="indexTwo  + item.id +''">
-						<!-- :class="item.check?'bor_all':'bor_all1'" -->
 						<image class="ab_img" :style="albumStyle" :src="item.coverImg" @click="getAlbumData(item)">
 						</image>
 
 						<text>{{item.name}} {{item.count}}</text>
+						<view v-if="pattern == 2" class="sel_bak cent" :class="hfSel(item) ? 'pr_bg':''">
+							<text v-if="hfSel(item)" class="col_fg">√</text>
+						</view>
 					</view>
 				</list-item>
 				<list-item :type="99" style="height: 20px;"></list-item>
@@ -86,7 +91,7 @@
 
 			return {
 				id: "ajsdjg0lkasdjglfka",
-				authorizationStatus: albumListLoadData.authorizationStatus,
+				authorizationStatus: albumArrayData.authorizationStatus,
 				/**
 				 * 相册列表
 				 */
@@ -100,7 +105,8 @@
 				 */
 				optLabCheck: 9,
 				/**
-				 * 模式 1: 默认首页 
+				 * 模式 
+				 * 1: 默认首页 
 				 * 2：选择进行备份的相册
 				 */
 				pattern: 1
@@ -123,7 +129,8 @@
 			// if(param)
 			// console.log("参数", param["pattern"]);
 			if (param["pattern"] != "") {
-				this.pattern = param["pattern"]! as number
+				this.pattern = param["pattern"]!.toInt()
+				// console.log("--------------", this.pattern);
 			}
 
 		},
@@ -150,7 +157,13 @@
 
 		},
 		methods: {
+			hfSel(item : tankAlbumType) : boolean {
 
+				return item.backups == 1 || item.backups == 2;
+			},
+			bakPage() {
+				uni.navigateBack()
+			},
 			/**
 			 * 抽屉导航
 			 */
@@ -190,16 +203,28 @@
 			 * 前往相册详情页
 			 */
 			getAlbumData(album : tankAlbumType) {
-				uni.navigateTo({
-					animationType: "pop-in",
-					animationDuration: 50,
-					url: `/pages/albumData/albumData?id=${album.id}&name=${album.name}`
-				})
+				if (this.pattern == 1) {
+					uni.navigateTo({
+						animationType: "pop-in",
+						animationDuration: 50,
+						url: `/pages/albumData/albumData?id=${album.id}&name=${album.name}`
+					})
+				} else if (this.pattern == 2) {
+					if (album.backups == 0) {
+						album.backups = 1
+					} else if (album.backups == 1) {
+						album.backups = 0
+					} else {
+						album.backups = 1
+					}
+				}
+
 			},
 			/**
 			 * 权限申请
 			 */
 			requestPermissions() {
+				const that = this
 				let permission = ["android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
 				xxPermissions.requestSystemPermission(permission, "", function (allRight : boolean, grantedList : string[]) {
 					if (allRight) {
@@ -207,8 +232,9 @@
 						console.log("用户同意了全部权限", grantedList);
 						getalbums()
 						albumArrayData.authorizationStatus = true
+						// this.
 						// albumListLoadData.getalbums()
-						// that.authorizationStatus = true
+						that.authorizationStatus = true
 						// that.albumArray = albumListLoadData.albumArray
 					} else {
 						// 用户仅同意了 grantedList中的权限
@@ -234,6 +260,21 @@
 
 	.bor_all1 {
 		border: rgb(255, 255, 255, 0) 2px solid;
+	}
+
+	.col_fg {
+		color: #fff;
+	}
+
+	.pr_bg {
+		background-color: $uni-color-primary;
+	}
+
+	.cent {
+		display: flex;
+		// flex-direction: row;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.container_abl {
@@ -262,6 +303,19 @@
 				margin-right: 16px;
 			}
 
+			.head_bakcif_btn {
+				width: 150rpx;
+				height: 70rpx;
+				border-radius: 20rpx;
+				background-color: $uni-color-primary;
+				color: #fff;
+				margin-right: 16px;
+				// display: flex;
+				// flex-direction: row;
+				// align-items: center;
+				// justify-content: center;
+			}
+
 			.req_perssion {
 				margin: 0 auto;
 				margin-top: 20px;
@@ -280,13 +334,20 @@
 					display: flex;
 					flex-direction: column;
 					align-items: center;
+					position: relative;
 
+					.sel_bak {
+						width: 40rpx;
+						height: 40rpx;
+						border: 2rpx solid $uni-color-primary;
+						border-radius: 20rpx;
+						position: absolute;
+						top: 10rpx;
+						right: 10rpx;
+					}
 
 
 					.ab_img {
-						// width: 156px;
-						// border: 1px solid red;
-						// height: 156px;
 						border-radius: 35rpx;
 						margin-bottom: 10px;
 						// padding-right: 16px;
