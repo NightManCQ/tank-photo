@@ -34,7 +34,7 @@ export function getDeviceldInfo() {
 				}
 
 				matterPage(reqPar).then((res) => {
-					if (res.data.length > 0) {
+					if (res?.data?.length > 0) {
 						staticData.backupFile = res.data[0]
 						console.log("执行逻辑成功：获取备份文件夹信息", staticData.backupFile)
 						uni.setStorage({

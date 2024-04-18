@@ -1,6 +1,6 @@
 import { tankResponseType } from "../pages/base.entity";
 import { userInfoType } from "../pages/login/login.logic"
-import { globalData, staticData } from "./global.data";
+import { globalData, staticData, tankSystemInfoType } from "./global.data";
 import { httpRequestHeader } from "@/utils/https.logic.uts"
 import { userInfoKeyName } from "@/store/storage.key.uts"
 
@@ -195,9 +195,28 @@ export function updUserInfo() {
 				key: userInfoKeyName,
 				data: globalData.user
 			})
-			// console.log("执行逻辑成功：更新用户信息", globalData.user)
+			console.log("执行逻辑成功：更新用户信息", globalData.user)
 		}, fail(err) {
 			console.log("执行逻辑失败：更新用户信息", err)
+		}
+	})
+}
+
+
+
+/**
+ * 获取tank系统信息
+ */
+export function getTankInfo() {
+	uni.request<tankResponseType<tankSystemInfoType>>({
+		url: staticData.server + "/api/preference/fetch",
+		method: "POST",
+		success(res) {
+			globalData.tankSystemInfo = res.data?.data!
+			console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
+		},
+		fail(err) {
+			console.log("执行逻辑成功：获取后端系统信息 失败", err)
 		}
 	})
 }

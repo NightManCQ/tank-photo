@@ -1,0 +1,149 @@
+import { appConfig, staticData, appTaskStatus } from "../store/global.data";
+import { taskQueueKeyName } from "../store/storage.key";
+import { fileDetailType, matterPageReqType, matterPage, mkdirFileName } from "@/store/tank.movement.uts"
+
+
+
+/**
+ * tank app 任务队列
+ */
+export type taskQueueType = {
+	/**
+	 * 任务类型
+	 * 1: 同步任务，将本地所有需要备份的文件全部上传至 tank 服务器
+	 */
+	type : 1 | 2
+	/**
+	 * 执行该任务可能需要的数据
+	 */
+	data : any
+}
+
+
+
+/**
+ * tank app 任务队列
+ */
+export const tankTaskQueue = reactive([] as Array<taskQueueType>)
+
+
+
+watch(tankTaskQueue, () => {
+	console.log("---------！ 任务队列发生变化", tankTaskQueue);
+	startTaskQueue()
+
+
+	// console.log("=================", typeof globalData.user.uuid, (appConfig.value.backup && appTaskStatus.backups == 0));
+	// if (appConfig.value.backup && globalData.user.uuid != "") {
+	// 	backupsIng()
+	// }
+}
+	, {
+		flush: 'post',
+		// deep: true,
+		// onTrack(e) {
+		// },
+		// onTrigger(e) {
+		// }
+	}
+
+)
+
+
+/**
+ * 任务队列工作函数
+ */
+function startTaskQueue() {
+	if (appTaskStatus.taskQueueWorkIng) {
+		return
+	}
+	appTaskStatus.taskQueueWorkIng = true
+
+	// console.log("开始备份上传咯！~1111111111");
+
+	// 1. 先拉取备份文件夹内所有的文件夹、文件列表
+	// 2. 同本地需要备份的相册进行比对，将服务器上没有的文件统统上传，遇到同名冲突则重命名，始终保持服务端上拥有完整的文件
+	// 附加、云上有的文件，本地没有的，则通过api拉倒本地显示（略缩图）
+	// 3. 
+	// 开始备份的条件
+	// 1. 用户已经登录(服务端也登录，本地cookies有效)
+	// 2. 备份线程没有正在工作
+	// 3. 用户开启了备份
+
+	// 实现
+	// 使用一个独立线程，分批的一个一个处理文件
+	// 假设我有500个相册需要上传，全部一起处理完成后再一个个上传
+
+	UTSAndroid.getDispatcher("io").async(function (_) {
+		// console.log("----------------`````当前任务执行在", Thread.currentThread().getName())
+		console.log("---------！ 任务队列开始工作", tankTaskQueue);
+
+
+		matterPage({
+			page: 0,
+			pageSize: appConfig.value.maxPageSize,
+			orderCreateTime: 'DESC',
+			puuid: staticData.backupFile.uuid,
+			deleted: false,
+			orderDir: 'DESC'
+		} as matterPageReqType).then(async (res) => {
+			const serverFileArr : Array<fileDetailType> = res.data
+			console.log("服务器上的所有文件夹列表", serverFileArr);
+			const bakAlbumArr = appConfig.value.bakAlbumArr
+
+			for (let i = 0; i < bakAlbumArr.length; i++) {
+				const bakAlbum = bakAlbumArr[i]
+				const serverFile = serverFileArr.find((svf) : boolean => svf["name"] == bakAlbum.name)
+				if (serverFile == null) {
+					// 创建一个文件夹
+					const mkRes = await mkdirFileName(bakAlbum.name, staticData.backupFile.uuid)
+					bakAlbum.uuid = mkRes.uuid
+				} else {
+					bakAlbum.uuid = serverFile.uuid
+				}
+				// 开始查询并且上传
+				// appTaskStatus.backups = 0
+			}
+
+
+
+			appTaskStatus.taskQueueWorkIng = false
+			console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!队列工作完成");
+		})
+	}, null)
+
+
+
+}
+
+/**
+ * 任务队列初始化
+ */
+export function taskQueueInit() {
+	uni.getStorage({
+		key: taskQueueKeyName,
+		success(res) {
+			// console.log("-0-0-0-本地历史任务获取成功", res);
+			const arr : Array<taskQueueType> = JSON.parse<Array<taskQueueType>>(JSON.stringify(res.data))!
+			for (let i = 0; i < arr.length; i++) {
+				tankTaskQueue.push(arr[i])
+			}
+			// arr.forEach((val) => {
+			// 	
+			// })
+
+			startTaskQueue()
+		},
+		fail(err) {
+			console.log("=-==-=-=-=获取失败", err);
+		}
+	})
+}
+
+
+/**
+ * 任务队列存储本地
+ */
+export function setStoTaskQueue() {
+	uni.setStorageSync(taskQueueKeyName, tankTaskQueue)
+}

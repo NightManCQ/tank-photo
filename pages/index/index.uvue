@@ -75,7 +75,7 @@
 	import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
 	import { albumListLoadData } from "@/pages/index/abLoadData.logic"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
-	import { globalData } from "@/store/global.data.uts";
+	import { appConfig, bakAlbumType, globalData } from "@/store/global.data.uts";
 	import { userInfoType } from "@/pages/login/login.logic.uts";
 	import { albumArrayData, getalbums, tankAlbumType } from "./index.data.uts"
 	import { UTSAndroid } from "io.dcloud.uts";
@@ -162,7 +162,25 @@
 				return item.backups == 1 || item.backups == 2;
 			},
 			bakPage() {
-				uni.navigateBack()
+
+				uni.navigateBack({
+					complete() {
+						const bakArr : Array<bakAlbumType> = []
+						const albumArr = albumArrayData.tankData
+						albumArr.forEach((value) => {
+							value.forEach((val) => {
+								if (val.backups != 0) {
+									bakArr.push({
+										uuid: val.uuid,
+										name: val.name,
+										id: val.id
+									} as bakAlbumType)
+								}
+							})
+						})
+						appConfig.value.bakAlbumArr = bakArr
+					}
+				})
 			},
 			/**
 			 * 抽屉导航
@@ -297,9 +315,9 @@
 				height: 70rpx;
 				border-radius: 50rpx;
 				background-color: $uni-color-primary;
-				display: flex;
-				justify-content: center;
-				align-items: center;
+				// display: flex;
+				// justify-content: center;
+				// align-items: center;
 				margin-right: 16px;
 			}
 

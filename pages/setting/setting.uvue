@@ -26,7 +26,8 @@
 </template>
 
 <script setup>
-	import { appConfig, bakAlbumType } from '../../store/global.data';
+	import { appConfig } from '../../store/global.data';
+	import { taskQueueType, tankTaskQueue } from "@/logic/taskQueue.logic.uts"
 	import { systemConfigKeyName } from "@/store/storage.key.uts"
 	import { albumArrayData } from "@/pages/index/index.data.uts"
 	// export default {
@@ -56,21 +57,15 @@
 
 
 	onUnload(() => {
-		const bakArr : Array<bakAlbumType> = []
-		const albumArr = albumArrayData.tankData
-		albumArr.forEach((value) => {
-			value.forEach((val) => {
-				if (val.backups != 0) {
-					bakArr.push({
-						uuid: val.uuid,
-						name: val.name
-					} as bakAlbumType)
-				}
-			})
-		})
-		appConfig.value.bakAlbumArr = bakArr
 		uni.setStorageSync(systemConfigKeyName, appConfig.value)
-		console.log("！！！！！设置页面卸载存储设置内容", appConfig.value);
+		// 添加任务队列
+		if (appConfig.value.backup) {
+			tankTaskQueue.push({
+				type: 1,
+				data: appConfig.value.bakAlbumArr
+			} as taskQueueType)
+		}
+		// console.log("！！！！！设置页面卸载存储设置内容", appConfig.value);
 	})
 	// 	}
 	// }

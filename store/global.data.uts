@@ -1,5 +1,5 @@
 import { userInfoType } from "../pages/login/login.logic.uts"
-import { fileDetailType, updUserInfo } from "@/store/tank.movement.uts"
+import { fileDetailType } from "@/store/tank.movement.uts"
 import { userInfoKeyName, systemConfigKeyName, backupFileKeyName } from "@/store/storage.key.uts"
 
 
@@ -236,8 +236,18 @@ export const globalData = reactive({
  * 备份的相册列表
  */
 export type bakAlbumType = {
+	/**
+	 * tank 服务器上的id
+	 */
 	uuid ?: string
+	/**
+	 * 名称
+	 */
 	name : string
+	/**
+	 * 本地相册id
+	 */
+	id : number
 }
 
 /**
@@ -300,14 +310,26 @@ type appTaskStatusType = {
 	 * 1：正在备份
 	 */
 	backups : 0 | 1
+	/**
+	 * 任务队列工作中？？？
+	 */
+	taskQueueWorkIng : boolean
 }
 
 /**
  * tank app 任务的执行状态
  */
 export const appTaskStatus = reactive({
-	backups: 0
+	backups: 0,
+	taskQueueWorkIng: false
 } as appTaskStatusType)
+
+
+
+
+
+
+
 
 /**
  * 中央仓库初始化
@@ -323,23 +345,29 @@ export function storeInit() {
 	windowInfo.pixelRatio = res.pixelRatio
 
 	// 获取 tank app设置
-	const conf = uni.getStorageSync(systemConfigKeyName)
-	if (typeof conf == "object") {
-		appConfig.value = JSON.parse<configType>(JSON.stringify(conf))!
-		// console.log("--------------------!! app 本地设置获取成功", appConfig);
-	}
+	uni.getStorage({
+		key: systemConfigKeyName,
+		success(res) {
+			appConfig.value = JSON.parse<configType>(JSON.stringify(res.data))!
+		}
+	})
 
 	// 获取备份文件夹信息
-	const bakInfo = uni.getStorageSync(backupFileKeyName)
-	if (typeof bakInfo == "object") {
-		staticData.backupFile = JSON.parse<fileDetailType>(JSON.stringify(bakInfo))!
-	}
+	uni.getStorage({
+		key: backupFileKeyName,
+		success(res) {
+			// console.log("---------------？？", res);
+			staticData.backupFile = JSON.parse<fileDetailType>(JSON.stringify(res.data))!
+		}
+	})
+
 	// 获取用户信息
-	const locUser = uni.getStorageSync(userInfoKeyName)
-	if (typeof locUser == "object") {
-		globalData.user = JSON.parse<userInfoType>(JSON.stringify(locUser))!
-		updUserInfo()
-	}
+	uni.getStorage({
+		key: userInfoKeyName,
+		success(res) {
+			globalData.user = JSON.parse<userInfoType>(JSON.stringify(res.data))!
+		}
+	})
 
 	console.log("执行逻辑成功：仓库初始化", globalData)
 }

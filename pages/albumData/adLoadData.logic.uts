@@ -23,18 +23,18 @@ export class albumData {
 
 	static clumns = 3
 
-	static calcStyle() {
-		const { windowInfo } = globalData
-		const { clumns } = albumData
-		const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
-		albumDataData.photoStyle = `width: ${res}px;height: ${res}px;`
-		console.log("?????元素样式", albumDataData);
-	}
+	// static calcStyle() {
+	// 	const { windowInfo } = globalData
+	// 	const { clumns } = albumData
+	// 	const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
+	// 	albumDataData.photoStyle = `width: ${res}px;height: ${res}px;`
+	// 	console.log("?????元素样式", albumDataData);
+	// }
 
 	/**
 	 * 根据相册id查询该相册下所有的媒体文件
 	 */
-	static loadAlbumData(id : number) {
+	static loadAlbumData(id : number) : Array<Array<mediaFile>> {
 		// const { id } = albumDataData.album!
 		if (id != 0) {
 			const arr : Array<Array<mediaFile>> = []
@@ -51,7 +51,10 @@ export class albumData {
 				}
 			}
 			albumDataData.photoList = arr
+			return arr
 		}
+		return []
+
 	}
 
 }

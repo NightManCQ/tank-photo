@@ -1,19 +1,24 @@
 import App from './App.uvue'
 import { storeInit } from "./store/global.data.uts"
-import { getTankInfo } from "./logic/getTankInfo.logic.uts"
 import { getDeviceldInfo } from "./logic/getDeviceldInfo.logic.uts"
 import { createSSRApp } from 'vue'
 import { userInfoKeyName } from "./store/storage.key";
 import { xxPermissionsInit } from "@/uni_modules/xx-XXPermissions"
 import { getalbums } from "@/pages/index/index.data.uts"
-import "./logic/appConfigChange.logic.uts"
 
 // 勿调整执行顺序
 xxPermissionsInit()
 storeInit()
 getalbums()
-getDeviceldInfo()
-getTankInfo()
+// getDeviceldInfo()
+
+// UTSAndroid.getDispatcher("io").async(function (_) {
+// 	console.log("---------！ 匿名线程工作中");
+
+// }, null)
+
+
+
 
 
 
