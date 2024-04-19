@@ -6,6 +6,7 @@
 	import { globalData, appConfig } from './store/global.data'
 	import { setStoTaskQueue, taskQueueInit } from "./logic/taskQueue.logic.uts"
 	import { getTankInfo, updUserInfo } from "./store/tank.movement.uts"
+	import { getalbums } from "@/pages/index/index.data.uts"
 
 	// let firstBackTime = 0
 	export default {
@@ -17,6 +18,7 @@
 
 		},
 		onShow: function () {
+			getalbums()
 			console.log('App Show')
 			taskQueueInit()
 			getTankInfo()

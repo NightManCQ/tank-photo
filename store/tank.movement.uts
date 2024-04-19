@@ -187,19 +187,23 @@ export function matterPage(param : matterPageReqType) : Promise<matterPageResTyp
  * 已登录 获取用户信息
  */
 export function updUserInfo() {
-	uni.request<tankResponseType<userInfoType>>({
-		url: staticData.server + "/api/user/info",
-		success(res) {
-			globalData.user = res.data?.data!
-			uni.setStorage({
-				key: userInfoKeyName,
-				data: globalData.user
-			})
-			console.log("执行逻辑成功：更新用户信息", globalData.user)
-		}, fail(err) {
-			console.log("执行逻辑失败：更新用户信息", err)
-		}
-	})
+	let data = uni.getStorageSync(userInfoKeyName)!
+	if (data != "") {
+		uni.request<tankResponseType<userInfoType>>({
+			url: staticData.server + "/api/user/info",
+			success(res) {
+				globalData.user = res.data?.data!
+				uni.setStorage({
+					key: userInfoKeyName,
+					data: globalData.user
+				})
+				console.log("执行逻辑成功：更新用户信息", globalData.user)
+			}, fail(err) {
+				console.log("执行逻辑失败：更新用户信息", err)
+			}
+		})
+	}
+
 }
 
 
@@ -219,4 +223,39 @@ export function getTankInfo() {
 			console.log("执行逻辑成功：获取后端系统信息 失败", err)
 		}
 	})
+}
+
+
+
+
+/**
+ * 上传单个文件至 tank 服务器
+ */
+export function tankUploadFile(url : string, spaceUuid : string, puuid : string) : Promise<fileDetailType> {
+	return new Promise((resolve, reject) => {
+		uni.uploadFile({
+			url: staticData.server + '/api/matter/upload',
+			filePath: url,
+			formData: {
+				spaceUuid: spaceUuid,
+				puuid: puuid,
+				alien: false,
+				privacy: true
+			},
+			success(res) {
+				// staticData.backupFileName = mkName
+				console.log("------------", res);
+				if (res.statusCode == 200) {
+					const resObj = JSON.parse<tankResponseType<fileDetailType>>(res.data)
+					resolve(resObj?.data!)
+				} else {
+					reject(res)
+				}
+			},
+			fail(err) {
+				reject(err)
+			}
+		})
+	})
+
 }

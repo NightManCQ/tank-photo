@@ -1,6 +1,7 @@
 import { userInfoType } from "../pages/login/login.logic.uts"
 import { fileDetailType } from "@/store/tank.movement.uts"
 import { userInfoKeyName, systemConfigKeyName, backupFileKeyName } from "@/store/storage.key.uts"
+// import { getalbums } from "@/pages/index/index.data.uts"
 
 
 
@@ -141,7 +142,7 @@ export const staticData : staticDataTyep = {
 		model: "",
 		brand: ""
 	},
-	server: "https://pan.promise.pink:442",
+	server: "http://192.168.1.210:6010",
 }
 
 
@@ -234,6 +235,7 @@ export const globalData = reactive({
 
 /**
  * 备份的相册列表
+ * 本地所有相册列表
  */
 export type bakAlbumType = {
 	/**
@@ -248,6 +250,11 @@ export type bakAlbumType = {
 	 * 本地相册id
 	 */
 	id : number
+	/**
+	 * 释放本地空间
+	 * true 将导致本地文件删除，保留服务器上的文件
+	 */
+	releaseSpace : boolean
 }
 
 /**
@@ -344,13 +351,18 @@ export function storeInit() {
 	windowInfo.screenWidth = res.screenWidth
 	windowInfo.pixelRatio = res.pixelRatio
 
-	// 获取 tank app设置
-	uni.getStorage({
-		key: systemConfigKeyName,
-		success(res) {
-			appConfig.value = JSON.parse<configType>(JSON.stringify(res.data))!
-		}
-	})
+	// 获取 tank app设置 必须要同步
+	const conf = uni.getStorageSync(systemConfigKeyName)
+	if (typeof conf == "object") {
+		appConfig.value = JSON.parse<configType>(JSON.stringify(conf))!
+	}
+	// uni.getStorage({
+	// 	key: systemConfigKeyName,
+	// 	success(res) {
+	// 		appConfig.value = JSON.parse<configType>(JSON.stringify(res.data))!
+	// 		// 
+	// 	}
+	// })
 
 	// 获取备份文件夹信息
 	uni.getStorage({

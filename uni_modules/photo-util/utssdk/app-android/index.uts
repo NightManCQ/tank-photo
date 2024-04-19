@@ -11,47 +11,68 @@ import HashMap from "java.util.HashMap";
 
 
 
-// 统计相册照片数量
-type photoListType = HashMap<number, number>
 
 
-// 媒体文件类 
+/**
+ * 媒体文件类
+ */
 export class mediaFile {
-	id : number = 0;
-	name : string = "";
-	uri : Uri;
+	/**
+	 * url
+	 */
 	url : string
 	/**
 	 * 1 图片 
 	 * 2: 视频
 	 */
 	type : number;
-	constructor(uri : Uri, type : number, url : string) {
-		this.uri = uri
+	constructor(type : number, url : string) {
 		this.url = url
 		this.type = type
 	}
 }
-// 相册类
+/**
+ * 相册类
+ */
 export class Album {
+	/**
+	 * 相册id
+	 */
 	id : number;
+	/**
+	 * 相册名称
+	 */
 	name : string;
-	// 封面图路径
-	coverImg : Uri;
-	// 文件数量
-	count : number;
-
-	constructor(id : number, name : string, coverImg : Uri) {
+	/**
+	 * 封面照片途径 Url
+	 */
+	coverPicture : string
+	/**
+	 * 文件数量
+	 */
+	count : number = 0;
+	/**
+	 * 
+	 */
+	correlationId : Array<number> = []
+	constructor(id : number, name : string, url : string) {
 		this.id = id;
 		this.name = name;
-		// this.bucketDisplayName = bucketDisplayName
-		this.coverImg = coverImg
-		this.count = 0
+		this.coverPicture = url
 	}
 }
 
 
-// MediaStore.Files.getContentUri("external") 查询整个外部存储库
+/**
+ * 统计相册照片数量
+ */
+type photoListType = HashMap<number, Album>
+
+
+
+/**
+ *  MediaStore.Files.getContentUri("external") 查询整个外部存储库
+ */
 class fileClumns {
 	// 主键id
 	static _ID = MediaStore.Files.FileColumns._ID
@@ -63,6 +84,10 @@ class fileClumns {
 	static DATE_ADDED = MediaStore.Files.FileColumns.DATE_ADDED;
 	// 磁盘路径
 	static DATA = MediaStore.Files.FileColumns.DATA
+	// /**
+	//  * 文件名
+	//  */
+	// static TITLE = MediaStore.Files.FileColumns.TITLE
 }
 
 
@@ -79,6 +104,10 @@ export class albumUtil {
 		fileClumns.DATE_ADDED,
 		// 磁盘路径
 		fileClumns.DATA,
+		// /**
+		//  * 文件名
+		//  */
+		// fileClumns.TITLE,
 	)
 
 
@@ -87,7 +116,9 @@ export class albumUtil {
 
 
 
-	// 查询文件制作相册时需要的属性
+	/**
+	 *  查询文件制作相册时需要的属性
+	 */
 	static albumsOption = arrayOf(
 		// 所属相册id
 		fileClumns.BUCKET_ID,
@@ -102,17 +133,39 @@ export class albumUtil {
 
 
 	/**
-	 * 获取视频、照片文件
+	 * 获取所有相册
+	 * 应该根据相册id分组查询
 	 */
 	static getAlbum() : Array<Album> {
+		// console.log("---------------进来了  ···111");
 		const { albums } = albumUtil
-		if (albums.length == 0) {
-			const photoList : photoListType = hashMapOf()
-			let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
-			albumUtil.queryAlbumsPro(contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, albums, photoList)
-			albumUtil.queryAlbumsPro(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, albums, photoList)
-			return albums
-		}
+		const photoList : photoListType = hashMapOf()
+		let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
+		albumUtil.queryAlbumsPro(contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, albums, photoList)
+		albumUtil.queryAlbumsPro(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, albums, photoList)
+
+		const arr:Array<Album> = [] 
+		// 对相册进行按照相册名分组
+		albums.forEach((val)=>{
+			
+		})
+
+
+		// const projection = arrayOf(
+		// 	MediaStore.Images.Media.BUCKET_ID, // 相册 ID
+		// 	MediaStore.Images.Media.BUCKET_DISPLAY_NAME // 相册名称
+		// )
+
+		// const cursor : Cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, ` group by ${MediaStore.Images.Media.BUCKET_ID}`, null, `${MediaStore.Images.Media.BUCKET_ID} ASC`) as Cursor;
+		// console.log("?????????????????????????????1111", cursor);
+
+		// while (cursor.moveToNext()) {
+		// 	let fileBucketId = cursor.getColumnIndexOrThrow(fileClumns.BUCKET_ID)
+		// 	let bucketId : number = cursor.getLong(fileBucketId)
+		// 	console.log("???????", bucketId);
+		// }
+
+
 		return albums
 	}
 
@@ -131,43 +184,24 @@ export class albumUtil {
 			null,
 			MediaStore.Video.Media.DATE_ADDED + " DESC"
 		) as Cursor
-
-
-
-
 		let fileBucketId = cursor.getColumnIndexOrThrow(fileClumns.BUCKET_ID)
 		let fileBucketDisplayName = cursor.getColumnIndexOrThrow(fileClumns.BUCKET_DISPLAY_NAME)
 		let fileUrl = cursor.getColumnIndexOrThrow(fileClumns.DATA)
-
 		while (cursor.moveToNext()) {
-			let bucketId : Long = cursor.getLong(fileBucketId)
+			let bucketId : number = cursor.getLong(fileBucketId)
 			let bucketDisplayName : string = cursor.getString(fileBucketDisplayName)
 			// console.log("-------", cursor.getString(fileUrl));
-			let url : Uri = Uri.parse(cursor.getString(fileUrl)) //转换。直接获取，有些图片获取不了
+			const url = cursor.getString(fileUrl)
+			// let uri : Uri = Uri.parse(url) //转换。直接获取，有些图片获取不了
 			const item = photoList[bucketId]
-			if (item == null) {
-				photoList[bucketId] = 1
-				albums.push(new Album(bucketId, bucketDisplayName, url));
-				// // 获取缩略图
-				// let thumbnail = MediaStore.Images.Thumbnails.getThumbnail(
-				//     contentResolver,
-				//     imageId,
-				//     MediaStore.Images.Thumbnails.MINI_KIND,
-				//     null
-				// )
+			if (photoList[bucketId] == null) {
+				photoList[bucketId] = new Album(bucketId, bucketDisplayName, url)
+				photoList[bucketId]!!.count = 1
+				albums.push(photoList[bucketId]!);
 			} else {
-				photoList[bucketId] = item + 1
+				item!!.count += 1
 			}
 		}
-		// 获取文件个数
-		for (let i = 0; i < albums.length; i++) {
-			const item = albums[i]
-			item.count = photoList[item.id]!
-		}
-
-
-		// console.log("-=-=-=-====",UTSAndroid.getUniActivity()!.windowManager)
-
 	}
 
 
@@ -194,8 +228,8 @@ export class albumUtil {
 		let fileUrl = cursor.getColumnIndexOrThrow(DATA)
 		while (cursor.moveToNext()) {
 			const url = cursor.getString(fileUrl)
-			let uri : Uri = Uri.parse(url) //转换
-			uriList.push(new mediaFile(uri, 1, url))
+			// let uri : Uri = Uri.parse(url) //转换
+			uriList.push(new mediaFile(1, url))
 		}
 
 
@@ -211,8 +245,8 @@ export class albumUtil {
 		let fileVideoUrl = cursor.getColumnIndexOrThrow(DATA)
 		while (cursorVideo.moveToNext()) {
 			const url = cursorVideo.getString(fileVideoUrl)
-			let uri : Uri = Uri.parse(url) //转换
-			uriList.push(new mediaFile(uri, 2, url))
+			// let uri : Uri = Uri.parse(url) //转换
+			uriList.push(new mediaFile(2, url))
 		}
 		return uriList
 	}

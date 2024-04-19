@@ -1,60 +1,65 @@
 
 import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
-import { globalData, staticData } from "@/store/global.data"
+import { appConfig, globalData, staticData } from "@/store/global.data"
+import Uri from "android.net.Uri";
 
 
-
-
-type albumDataDataType = {
-	photoList : Array<Array<mediaFile>>
-	photoStyle : string
-	album ?: Album
-}
-
-// 读取缓存
-const cl3 = uni.getStorageSync("clumn3")
-export const albumDataData = reactive({
-	photoList: [],
-	photoStyle: `width: ${cl3}7px;height: ${cl3}px;`,
-} as albumDataDataType)
-
-
-export class albumData {
-
-	static clumns = 3
-
-	// static calcStyle() {
-	// 	const { windowInfo } = globalData
-	// 	const { clumns } = albumData
-	// 	const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
-	// 	albumDataData.photoStyle = `width: ${res}px;height: ${res}px;`
-	// 	console.log("?????元素样式", albumDataData);
-	// }
+/**
+ * 媒体文件实体类型
+ */
+export type mediaFileType = {
 
 	/**
-	 * 根据相册id查询该相册下所有的媒体文件
+	 * 文件类型
 	 */
-	static loadAlbumData(id : number) : Array<Array<mediaFile>> {
-		// const { id } = albumDataData.album!
-		if (id != 0) {
-			const arr : Array<Array<mediaFile>> = []
-			const { clumns } = albumData
-			const value = albumUtil.getAlbumsData(id)
-			for (let i = 0; i < value.length; i++) {
-				const yNum = i / clumns
-				const item = value[i]
-				if (i % clumns == 0) {
-					arr.push([])
-					arr[yNum].push(item)
-				} else {
-					arr[yNum].push(item)
-				}
+	type : number
+	/**
+	 * url
+	 */
+	url : string
+	/**
+	 * 文件上传状态
+	 * 0:未上传
+	 * 1：等待上传
+	 * 2：上传完成
+	 */
+	status : 0 | 1 | 2
+}
+
+
+
+/**
+ * 根据相册id查询相册所有内容
+ */
+export function loadAlbumData(id : number) : Array<Array<mediaFileType>> {
+	if (id != 0) {
+		const arr : Array<Array<mediaFileType>> = []
+		const { albumDetailClumns } = appConfig.value
+		const value = albumUtil.getAlbumsData(id)
+		for (let i = 0; i < value.length; i++) {
+			const yNum = i / albumDetailClumns
+			const item = value[i]
+			const addObj : mediaFileType = {
+				url: item.url,
+				type: item.type,
+				status: 0
 			}
-			albumDataData.photoList = arr
-			return arr
+
+			if (i % albumDetailClumns == 0) {
+				arr.push([])
+
+			}
+
+			arr[yNum].push(addObj)
+
+			// if (i % albumDetailClumns == 0) {
+			// 	arr.push([])
+			// 	arr[yNum].push(addObj)
+			// } else {
+			// 	arr[yNum].push(addObj)
+			// }
 		}
-		return []
-
+		return arr
 	}
-
+	return []
 }

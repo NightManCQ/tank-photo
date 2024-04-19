@@ -9,7 +9,7 @@
 		:scroll-y="true" :custom-nested-scroll="true">
 		<list-item :type="4" style="margin-top: 20px;"></list-item>
 		<list-item class="ab_it" v-for="(itemArr,index) in pageData.dataList" :key="index">
-			<image :style="photoStyle" class="ab_img" :src="item.uri" v-for="(item,indexT) in itemArr" :key="indexT"
+			<image :style="photoStyle" class="ab_img" :src="item.url" v-for="(item,indexT) in itemArr" :key="indexT"
 				@click="imgClick(item)">
 			</image>
 			<!-- <text class="text">{{item.name}} {{item.count}}</text> -->
@@ -24,16 +24,15 @@
 </template>
 
 <script setup>
-	import { globalData, staticData } from "@/store/global.data";
+	import { appConfig, globalData, staticData } from "@/store/global.data";
 	import { clumn3KeyName } from "@/store/storage.key";
-	import { albumData, albumDataData } from "./adLoadData.logic"
-	import { mediaFile } from "@/uni_modules/photo-util";
+	import { loadAlbumData, mediaFileType } from "./adLoadData.logic"
 	// import [mkdirFileName] from "@/store/"
 	import { mkdirFileName } from "../../store/tank.movement.uts"
 
 	type albumDetailDataType = {
 		alId : string
-		dataList : Array<Array<mediaFile>>
+		dataList : Array<Array<mediaFileType>>
 	}
 
 	const pageData = reactive({
@@ -53,8 +52,8 @@
 		}
 		// let photoStyle = ""
 		const { windowInfo } = globalData
-		const { clumns } = albumData
-		const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
+		const { albumDetailClumns } = appConfig.value
+		const res = (windowInfo.windowWidth - (albumDetailClumns + 1) * 10) / 3
 		photoStyle = `width: ${res}px;height: ${res}px;`
 		uni.setStorageSync(clumn3KeyName, photoStyle)
 		return photoStyle
@@ -69,83 +68,12 @@
 	})
 
 	onReady(() => {
-		pageData.dataList = albumData.loadAlbumData(parseInt(pageData.alId))
+		pageData.dataList = loadAlbumData(parseInt(pageData.alId))
 	})
 
-	function imgClick(item : mediaFile) {
+	function imgClick(item : mediaFileType) {
 
 	}
-	// let alId = ""
-	// export default {
-	// 	data() {
-	// 		return {
-	// 			id: "ashlkjl0i3jkagpjgml12",
-	// 			alId: ""
-	// 		};
-	// 	},
-
-	// 	computed: {
-	// 		conStyle() : string {
-	// 			return `width:${globalData.windowInfo.windowWidth}px;height:${globalData.windowInfo.screenHeight}px;`
-	// 		},
-	// 		dataList() : Array<Array<mediaFile>> {
-	// 			return albumDataData.photoList
-	// 		},
-	// 		photoStyle() : string {
-	// 			let photoStyle = uni.getStorageSync(clumn3KeyName)!
-	// 			if (photoStyle != "") {
-	// 				console.log("返回本地数据", photoStyle);
-	// 				return photoStyle as string
-	// 			}
-	// 			// let photoStyle = ""
-	// 			const { windowInfo } = globalData
-	// 			const { clumns } = albumData
-	// 			const res = (windowInfo.windowWidth - (clumns + 1) * 10) / 3
-	// 			photoStyle = `width: ${res}px;height: ${res}px;`
-	// 			uni.setStorageSync(clumn3KeyName, photoStyle)
-	// 			return photoStyle
-	// 		}
-	// 	},
-	// 	onLoad(option) {
-	// 		console.log("相册详情页参数", option["id"]);
-	// 		uni.setNavigationBarTitle({
-	// 			title: option["name"] as string,
-	// 		})
-	// 		this.alId = option["id"]!
-	// 		// albumData.loadAlbumData(parseInt(option["id"]!))
-
-	// 		// uni.uploadFile({
-	// 		// 	url: staticData.server + '/api/matter/upload',
-	// 		// 	filePath: this.dataList[0][0].url,
-	// 		// 	formData: {
-	// 		// 		spaceUuid: "94c5a091-4d3b-44a9-58b4-784a11a7b66c",
-	// 		// 		puuid: "4e54cdfa-5966-4757-63d2-9226959b1e6d",
-	// 		// 		alien: false,
-	// 		// 		privacy: true
-	// 		// 	},
-	// 		// 	success(res) {
-	// 		// 		console.log("上传成功", res);
-	// 		// 	},
-	// 		// 	fail(err) {
-	// 		// 		console.log("上传失败", err);
-	// 		// 	}
-	// 		// })
-	// 		// console.log(`进来了 ${option["name"]} 相册`);
-
-	// 	},
-	// 	onReady() {
-	// 		albumData.loadAlbumData(parseInt(this.alId))
-	// 	},
-	// 	methods: {
-	// 		imgClick(item : mediaFile) {
-	// 			console.log("----------", item);
-	// 			// uni.previewImage({
-	// 			// 	current: 0,
-	// 			// 	urls: [item.uri]
-	// 			// })
-	// 		}
-	// 	}
-	// }
 </script>
 
 <style lang="scss">

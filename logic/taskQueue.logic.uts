@@ -1,6 +1,8 @@
+import { albumArrayData } from "../pages/index/index.data";
 import { appConfig, staticData, appTaskStatus } from "../store/global.data";
 import { taskQueueKeyName } from "../store/storage.key";
-import { fileDetailType, matterPageReqType, matterPage, mkdirFileName } from "@/store/tank.movement.uts"
+import { fileDetailType, matterPageReqType, matterPage, mkdirFileName, tankUploadFile } from "@/store/tank.movement.uts"
+import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
 
 
 
@@ -16,7 +18,7 @@ export type taskQueueType = {
 	/**
 	 * 执行该任务可能需要的数据
 	 */
-	data : any
+	data ?: any
 }
 
 
@@ -30,7 +32,10 @@ export const tankTaskQueue = reactive([] as Array<taskQueueType>)
 
 watch(tankTaskQueue, () => {
 	console.log("---------！ 任务队列发生变化", tankTaskQueue);
-	startTaskQueue()
+	if (!appTaskStatus.taskQueueWorkIng) {
+		startTaskQueue()
+	}
+
 
 
 	// console.log("=================", typeof globalData.user.uuid, (appConfig.value.backup && appTaskStatus.backups == 0));
@@ -54,12 +59,11 @@ watch(tankTaskQueue, () => {
  * 任务队列工作函数
  */
 function startTaskQueue() {
-	if (appTaskStatus.taskQueueWorkIng) {
-		return
-	}
+	// console.log("开始备份上传咯！~1111111111", appTaskStatus.taskQueueWorkIng);
+
 	appTaskStatus.taskQueueWorkIng = true
 
-	// console.log("开始备份上传咯！~1111111111");
+
 
 	// 1. 先拉取备份文件夹内所有的文件夹、文件列表
 	// 2. 同本地需要备份的相册进行比对，将服务器上没有的文件统统上传，遇到同名冲突则重命名，始终保持服务端上拥有完整的文件
@@ -75,69 +79,122 @@ function startTaskQueue() {
 	// 假设我有500个相册需要上传，全部一起处理完成后再一个个上传
 
 	UTSAndroid.getDispatcher("io").async(function (_) {
-		// console.log("----------------`````当前任务执行在", Thread.currentThread().getName())
-		console.log("---------！ 任务队列开始工作", tankTaskQueue);
-
-
-		matterPage({
-			page: 0,
-			pageSize: appConfig.value.maxPageSize,
-			orderCreateTime: 'DESC',
-			puuid: staticData.backupFile.uuid,
-			deleted: false,
-			orderDir: 'DESC'
-		} as matterPageReqType).then(async (res) => {
-			const serverFileArr : Array<fileDetailType> = res.data
-			console.log("服务器上的所有文件夹列表", serverFileArr);
-			const bakAlbumArr = appConfig.value.bakAlbumArr
-
-			for (let i = 0; i < bakAlbumArr.length; i++) {
-				const bakAlbum = bakAlbumArr[i]
-				const serverFile = serverFileArr.find((svf) : boolean => svf["name"] == bakAlbum.name)
-				if (serverFile == null) {
-					// 创建一个文件夹
-					const mkRes = await mkdirFileName(bakAlbum.name, staticData.backupFile.uuid)
-					bakAlbum.uuid = mkRes.uuid
-				} else {
-					bakAlbum.uuid = serverFile.uuid
-				}
-				// 开始查询并且上传
-				// appTaskStatus.backups = 0
-			}
-
-
-
+		if (tankTaskQueue.length == 0) {
 			appTaskStatus.taskQueueWorkIng = false
-			console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!队列工作完成");
-		})
+			return
+		}
+
+		upFileToTank()
+
 	}, null)
 
 
 
 }
 
+async function upFileToTank() {
+	console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!任务队列开始工作", tankTaskQueue);
+	for (let t1 = 0; t1 < tankTaskQueue.length; t1++) {
+		const tqItem = tankTaskQueue[t1]
+
+		// 备份任务
+		if (tqItem.type == 1) {
+
+
+			// 
+			const res = await matterPage({
+				page: 0,
+				pageSize: appConfig.value.maxPageSize,
+				orderCreateTime: 'DESC',
+				puuid: staticData.backupFile.uuid,
+				deleted: false,
+				orderDir: 'DESC'
+			} as matterPageReqType)
+			const serverFileArr : Array<fileDetailType> = res.data
+			// console.log("服务器上的所有文件夹列表", serverFileArr);
+			const bakAlbumArr = albumArrayData.tankDataOnce
+
+			for (let i = 0; i < bakAlbumArr.length; i++) {
+				const bakAlbum = bakAlbumArr[i]
+				if (bakAlbum.backups != 0) {
+					// 确定服务器上是否有该文件夹（相册）
+					const serverFile = serverFileArr.find((svf) : boolean => svf["name"] == bakAlbum.name)
+					if (serverFile == null) {
+						// 创建一个文件夹
+						const mkRes = await mkdirFileName(bakAlbum.name, staticData.backupFile.uuid)
+						bakAlbum.uuid = mkRes.uuid
+					} else if (bakAlbum.uuid != serverFile.uuid) {
+						bakAlbum.uuid = serverFile.uuid
+					}
+					// 开始查询并且上传
+					// appTaskStatus.backups = 0
+					// 1. 查询 tank 服务器上该文件夹下所有文件
+					const fileList = await matterPage({
+						page: 0,
+						pageSize: 9999,
+						orderCreateTime: 'DESC',
+						puuid: bakAlbum.uuid!,
+						deleted: false,
+						orderDir: 'DESC'
+					} as matterPageReqType)
+					// console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
+					// 2. 查询该相册列表下所有的文件
+					// 3. 遍历文件，逐个对比，服务器没有的则上传
+					const value = albumUtil.getAlbumsData(bakAlbum.id)
+					for (let i1 = 0; i1 < value.length; i1++) {
+						// console.log("---------!!!", value[i1].url.substringAfterLast('/'));
+						const fileVal = value[i1]
+						const serFile = fileList.data.find((svf) : boolean => svf["name"] == fileVal.url.substringAfterLast('/'))
+						if (serFile == null) {
+							// console.log("需要上传", fileVal);
+							await tankUploadFile(fileVal.url, staticData.backupFile.spaceUuid, bakAlbum.uuid!)
+						} else {
+							// console.log("不需要上传", fileVal)
+						}
+						// console.log("----找到了吗", serFile);
+					}
+					bakAlbum.backups = 2
+				}
+
+
+
+
+			}
+		}
+	}
+
+	appTaskStatus.taskQueueWorkIng = false
+	console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!队列工作完成");
+
+}
+
+
+
+
 /**
  * 任务队列初始化
  */
 export function taskQueueInit() {
-	uni.getStorage({
-		key: taskQueueKeyName,
-		success(res) {
-			// console.log("-0-0-0-本地历史任务获取成功", res);
-			const arr : Array<taskQueueType> = JSON.parse<Array<taskQueueType>>(JSON.stringify(res.data))!
-			for (let i = 0; i < arr.length; i++) {
-				tankTaskQueue.push(arr[i])
-			}
-			// arr.forEach((val) => {
-			// 	
-			// })
+	// console.log("-0-0-0-本地历史任务获取成功", tankTaskQueue);
+	startTaskQueue()
+	// uni.getStorage({
+	// 	key: taskQueueKeyName,
+	// 	success(res) {
+	// 		// console.log("-0-0-0-本地历史任务获取成功", res);
+	// 		const arr : Array<taskQueueType> = JSON.parse<Array<taskQueueType>>(JSON.stringify(res.data))!
+	// 		for (let i = 0; i < arr.length; i++) {
+	// 			tankTaskQueue.push(arr[i])
+	// 		}
+	// 		// arr.forEach((val) => {
+	// 		// 	
+	// 		// })
 
-			startTaskQueue()
-		},
-		fail(err) {
-			console.log("=-==-=-=-=获取失败", err);
-		}
-	})
+	// 		startTaskQueue()
+	// 	},
+	// 	fail(err) {
+	// 		console.log("=-==-=-=-=获取失败", err);
+	// 	}
+	// })
 }
 
 

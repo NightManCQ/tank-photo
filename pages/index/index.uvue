@@ -21,20 +21,65 @@
 				</button>
 			</view>
 
+
+			<!-- 			<scroll-view style="flex:1;">
+	
+							<view class="album_list_view">
+					<view :style="albumStyle" v-for="(item,index) in albumListOnce">
+						<image :src="item.coverPicture" style="width: 100%;height: 100%;"></image>
+					</view>
+				</view>
+			</scroll-view> -->
 			<list-view style="flex:1;" ref="listView" :id=id :rebound="false" :scroll-y="true"
 				:custom-nested-scroll="true">
 				<list-item :type="2" style="margin-top: 20px;"></list-item>
+
+
 				<list-item class="album_list_sub" v-for="(itArr, index) in albumArray" :key="index">
 					<view class="ab_it" v-for="(item, indexTwo) in itArr" :key="indexTwo  + item.id +''">
-						<image class="ab_img" :style="albumStyle" :src="item.coverImg" @click="getAlbumData(item)">
+						<image class="ab_img" :style="albumStyle" :src="item.coverPicture" @click="getAlbumData(item)">
 						</image>
-
 						<text>{{item.name}} {{item.count}}</text>
+
+
 						<view v-if="pattern == 2" class="sel_bak cent" :class="hfSel(item) ? 'pr_bg':''">
 							<text v-if="hfSel(item)" class="col_fg">√</text>
 						</view>
+
+
+						<view v-else-if="item.backups == 1 || item.backups == 2" class="bak_state cent">
+							<text class="col_fg" v-if="item.backups == 1">正</text>
+							<text class="col_fg" v-if="item.backups == 2">√</text>
+						</view>
 					</view>
 				</list-item>
+
+
+				<!-- 				<list-item class="album_list_sub" v-for="(itArr, index) in albumListOnce" :key="index"
+					v-if="index % 2 == 0">
+					<view style="border:1px solid red;" :style="albumStyle">
+
+					</view>
+					<view class="ab_it" v-for="(item, indexTwo) in itArr" :key="indexTwo  + item.id +''">
+						<image class="ab_img" :style="albumStyle" :src="item.coverPicture" @click="getAlbumData(item)">
+						</image>
+						<text>{{item.name}} {{item.count}}</text>
+
+
+						<view v-if="pattern == 2" class="sel_bak cent" :class="hfSel(item) ? 'pr_bg':''">
+							<text v-if="hfSel(item)" class="col_fg">√</text>
+						</view>
+
+
+						<view v-else-if="item.backups == 1 || item.backups == 2" class="bak_state cent">
+							<text class="col_fg" v-if="item.backups == 1">正</text>
+							<text class="col_fg" v-if="item.backups == 2">√</text>
+						</view>
+					</view>
+				</list-item> -->
+
+
+
 				<list-item :type="99" style="height: 20px;"></list-item>
 			</list-view>
 		</view>
@@ -47,22 +92,22 @@
 				<text class="usr_title">{{user.username}}</text>
 				<view class="opt_lab " :class="{
 					opt_lab_check: optLabCheck == 9
-				}" @click.stop="optionSwitch(9)">
+				}" @click="optionSwitch(9)">
 					<text class="txt">相册</text>
 				</view>
 				<view v-if="user.uuid == ''" class="opt_lab " :class="{
 					opt_lab_check: optLabCheck == 1
-				}" @click.stop="optionSwitch(1)">
+				}" @click="optionSwitch(1)">
 					<text class="txt">登录</text>
 				</view>
 				<view class="opt_lab" :class="{
 					opt_lab_check: optLabCheck == 3
-				}" @click.stop="optionSwitch(3)" v-if="user.uuid != ''">
+				}" @click="optionSwitch(3)" v-if="user.uuid != ''">
 					<text class="txt">设置</text>
 				</view>
 				<view class="opt_lab" :class="{
 					opt_lab_check: optLabCheck == 2
-				}" @click.stop="optionSwitch(2)" v-if="user.uuid != ''">
+				}" @click="optionSwitch(2)" v-if="user.uuid != ''">
 					<text class="txt">退出登录</text>
 				</view>
 			</view>
@@ -91,7 +136,7 @@
 
 			return {
 				id: "ajsdjg0lkasdjglfka",
-				authorizationStatus: albumArrayData.authorizationStatus,
+
 				/**
 				 * 相册列表
 				 */
@@ -113,6 +158,12 @@
 			};
 		},
 		computed: {
+			albumListOnce() : Array<tankAlbumType> {
+				return albumArrayData.tankDataOnce
+			},
+			authorizationStatus() : boolean {
+				return albumArrayData.authorizationStatus
+			},
 			conStyle() : string {
 				return `height:${screenHeight}px;width:${screenWidth}px;`
 			},
@@ -132,28 +183,6 @@
 				this.pattern = param["pattern"]!.toInt()
 				// console.log("--------------", this.pattern);
 			}
-
-		},
-		onShow() {
-			// this.reqTest()
-			// const test = newThread(()=>{
-			// 	console.log("==========hhhhhhhhhhhhhhhhhh");
-			// })
-			// test.start()
-
-			// let currentDispatcher = UTSAndroid.getDispatcher()
-			// console.log("currentDispatcher", currentDispatcher)
-			// // 期望在 io 任务队列执行
-			// UTSAndroid.getDispatcher("io").async(function (_) {
-			// 	console.log("当前任务执行在", Thread.currentThread().getName())
-			// 	// 期望在 主线程 任务队列执行
-			// 	// UTSAndroid.getDispatcher("main").async(function (_) {
-			// 	// 	console.log("当前任务执行在", Thread.currentThread().getName())
-			// 	// 	currentDispatcher.async(function (_) {
-			// 	// 		console.log("起始任务执行在", Thread.currentThread().getName())
-			// 	// 	}, null)
-			// 	// }, null)
-			// }, null)
 
 		},
 		methods: {
@@ -242,7 +271,6 @@
 			 * 权限申请
 			 */
 			requestPermissions() {
-				const that = this
 				let permission = ["android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
 				xxPermissions.requestSystemPermission(permission, "", function (allRight : boolean, grantedList : string[]) {
 					if (allRight) {
@@ -252,7 +280,6 @@
 						albumArrayData.authorizationStatus = true
 						// this.
 						// albumListLoadData.getalbums()
-						that.authorizationStatus = true
 						// that.albumArray = albumListLoadData.albumArray
 					} else {
 						// 用户仅同意了 grantedList中的权限
@@ -340,6 +367,16 @@
 				width: 400rpx;
 			}
 
+			.album_list_view {
+				width: 100%;
+				// height: 100%;
+				// border: 1px solid blue;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+			}
+
 			.album_list_sub {
 				display: flex;
 				flex-direction: row;
@@ -364,10 +401,21 @@
 						right: 10rpx;
 					}
 
+					.bak_state {
+						width: 40rpx;
+						height: 40rpx;
+						border: 2rpx solid #eee;
+						border-radius: 20rpx;
+						position: absolute;
+						top: 10rpx;
+						right: 10rpx;
+					}
+
 
 					.ab_img {
 						border-radius: 35rpx;
 						margin-bottom: 10px;
+						overflow: hidden;
 						// padding-right: 16px;
 						margin-left: 16px;
 					}
