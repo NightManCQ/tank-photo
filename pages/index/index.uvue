@@ -254,7 +254,7 @@
 					uni.navigateTo({
 						animationType: "pop-in",
 						animationDuration: 50,
-						url: `/pages/albumData/albumData?id=${album.id}&name=${album.name}`
+						url: `/pages/albumData/albumData?id=${album.correlationId.join(",")}&name=${album.name}`
 					})
 				} else if (this.pattern == 2) {
 					if (album.backups == 0) {

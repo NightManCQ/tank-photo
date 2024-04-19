@@ -69,6 +69,7 @@ type albumArrayDataType = {
 	 * tank app使用的相册实体类 一个数组梭哈
 	 */
 	tankDataOnce : Array<tankAlbumType>
+	albumMap : HashMap<number, Array<Album>>
 }
 
 
@@ -78,7 +79,8 @@ type albumArrayDataType = {
 export const albumArrayData = reactive({
 	authorizationStatus: true,
 	tankData: [],
-	tankDataOnce: []
+	tankDataOnce: [],
+	albumMap: hashMapOf()
 } as albumArrayDataType)
 
 
@@ -135,31 +137,46 @@ function updAlbumArray(type : 1 | 2) {
 	// console.log("------", type, albumArrayData, albumArray.length);
 	if (albumArrayData.authorizationStatus) {
 		const albumArray : Array<Album> = albumUtil.getAlbum()
-
+		console.log("-----------------原始相册列表", albumArray.length);
 		// uni x 的多列布局实现性能较低，所以采用官方的组件以提高性能，但官方还有没出多列布局，所以采用这种迂回的办法（20231129）
-		const arr = albumArrayData.tankData
+		const arr : Array<Array<tankAlbumType>> = []
 		const onceArr = albumArrayData.tankDataOnce
 		const newOnceArr : tankAlbumType[] = []
 		const clumnsCount = appConfig.value.albumClumns
+
+
+
 		for (let i = 0; i < albumArray.length; i++) {
 			const yNum = i / clumnsCount
 			const item : Album = albumArray[i]
 			const bakAlbum = onceArr.find((val) : boolean => val["name"] == item.name)
+
+			// 获取关联的相册
+			const idArr : number[] = []
+			item.correlationId.forEach((idVal) => {
+				idArr.push(idVal.key)
+			})
 			const addObj : tankAlbumType = {
 				id: item.id,
 				name: item.name,
 				count: item.count,
 				backups: bakAlbum == null ? 0 : bakAlbum.backups,
 				coverPicture: item.coverPicture,
-				correlationId: [item.id]
+				correlationId: idArr
 			}
 			if (i % clumnsCount == 0) {
 				arr.push([])
 			}
 			arr[yNum].push(addObj)
 			newOnceArr.push(addObj)
+
+
+
+
+
 		}
 		albumArrayData.tankDataOnce = newOnceArr
+		albumArrayData.tankData = arr
 		console.log("------------", newOnceArr.length, newOnceArr);
 	}
 	//  else {

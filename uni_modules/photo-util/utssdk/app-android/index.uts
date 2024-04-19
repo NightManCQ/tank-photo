@@ -52,13 +52,14 @@ export class Album {
 	 */
 	count : number = 0;
 	/**
-	 * 
+	 * 关联的相册id
 	 */
-	correlationId : Array<number> = []
+	correlationId : HashMap<number, number> = hashMapOf()
 	constructor(id : number, name : string, url : string) {
 		this.id = id;
 		this.name = name;
 		this.coverPicture = url
+		this.correlationId[id] = 1
 	}
 }
 
@@ -66,7 +67,7 @@ export class Album {
 /**
  * 统计相册照片数量
  */
-type photoListType = HashMap<number, Album>
+type photoListType = HashMap<string, Album>
 
 
 
@@ -112,7 +113,7 @@ export class albumUtil {
 
 
 	// 相册列表
-	static albums : Array<Album> = [];
+	// static albums : Array<Album> = [];
 
 
 
@@ -138,34 +139,12 @@ export class albumUtil {
 	 */
 	static getAlbum() : Array<Album> {
 		// console.log("---------------进来了  ···111");
-		const { albums } = albumUtil
+		// const { albums } = albumUtil
+		const albums : Array<Album> = []
 		const photoList : photoListType = hashMapOf()
 		let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
 		albumUtil.queryAlbumsPro(contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, albums, photoList)
 		albumUtil.queryAlbumsPro(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, albums, photoList)
-
-		const arr:Array<Album> = [] 
-		// 对相册进行按照相册名分组
-		albums.forEach((val)=>{
-			
-		})
-
-
-		// const projection = arrayOf(
-		// 	MediaStore.Images.Media.BUCKET_ID, // 相册 ID
-		// 	MediaStore.Images.Media.BUCKET_DISPLAY_NAME // 相册名称
-		// )
-
-		// const cursor : Cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, ` group by ${MediaStore.Images.Media.BUCKET_ID}`, null, `${MediaStore.Images.Media.BUCKET_ID} ASC`) as Cursor;
-		// console.log("?????????????????????????????1111", cursor);
-
-		// while (cursor.moveToNext()) {
-		// 	let fileBucketId = cursor.getColumnIndexOrThrow(fileClumns.BUCKET_ID)
-		// 	let bucketId : number = cursor.getLong(fileBucketId)
-		// 	console.log("???????", bucketId);
-		// }
-
-
 		return albums
 	}
 
@@ -193,13 +172,14 @@ export class albumUtil {
 			// console.log("-------", cursor.getString(fileUrl));
 			const url = cursor.getString(fileUrl)
 			// let uri : Uri = Uri.parse(url) //转换。直接获取，有些图片获取不了
-			const item = photoList[bucketId]
-			if (photoList[bucketId] == null) {
-				photoList[bucketId] = new Album(bucketId, bucketDisplayName, url)
-				photoList[bucketId]!!.count = 1
-				albums.push(photoList[bucketId]!);
+			const item : Album | null = photoList[bucketDisplayName]
+			if (item == null) {
+				photoList[bucketDisplayName] = new Album(bucketId, bucketDisplayName, url)
+				photoList[bucketDisplayName]!!.count = 1
+				albums.push(photoList[bucketDisplayName]!);
 			} else {
 				item!!.count += 1
+				item.correlationId[bucketId] = 1
 			}
 		}
 	}
@@ -212,15 +192,33 @@ export class albumUtil {
 	/**
 	 * 根据相册 id 获取里面的照片（包括gif）和视频
 	 */
-	static getAlbumsData(bucketId : number) : Array<mediaFile> {
+	static getAlbumsData(bucketId : Array<number>) : Array<mediaFile> {
+		// const arr = [111, 3333445]
+
+
+
+
+
+
 		const uriList : Array<mediaFile> = []
 		let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
 		const { BUCKET_ID, DATE_ADDED, DATA } = fileClumns
+
+
+
+		const strArr : string[] = []
+		bucketId.forEach((val) => {
+			strArr.push(`${BUCKET_ID} = '${val}'`)
+		})
+
+		console.log("??????????????????", strArr.join(" or "));
 		// 查询图片
 		let cursor : Cursor = contentResolver.query(
 			MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 			albumUtil.mediaFileOption,//列
-			BUCKET_ID + "='" + bucketId + "'",//查询条件
+			// BUCKET_ID + "='" + bucketId + "'",//查询条件
+			strArr.join(" or "),
+			// `${bucketId.join()}` ,
 			null,
 			DATE_ADDED + " DESC"
 		) as Cursor

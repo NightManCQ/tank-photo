@@ -111,7 +111,7 @@ async function upFileToTank() {
 				orderDir: 'DESC'
 			} as matterPageReqType)
 			const serverFileArr : Array<fileDetailType> = res.data
-			// console.log("服务器上的所有文件夹列表", serverFileArr);
+			console.log("服务器上的所有文件夹列表", serverFileArr);
 			const bakAlbumArr = albumArrayData.tankDataOnce
 
 			for (let i = 0; i < bakAlbumArr.length; i++) {
@@ -137,19 +137,19 @@ async function upFileToTank() {
 						deleted: false,
 						orderDir: 'DESC'
 					} as matterPageReqType)
-					// console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
+					console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
 					// 2. 查询该相册列表下所有的文件
 					// 3. 遍历文件，逐个对比，服务器没有的则上传
-					const value = albumUtil.getAlbumsData(bakAlbum.id)
+					const value = albumUtil.getAlbumsData(bakAlbum.correlationId)
 					for (let i1 = 0; i1 < value.length; i1++) {
 						// console.log("---------!!!", value[i1].url.substringAfterLast('/'));
 						const fileVal = value[i1]
 						const serFile = fileList.data.find((svf) : boolean => svf["name"] == fileVal.url.substringAfterLast('/'))
 						if (serFile == null) {
-							// console.log("需要上传", fileVal);
+							console.log("需要上传", fileVal);
 							await tankUploadFile(fileVal.url, staticData.backupFile.spaceUuid, bakAlbum.uuid!)
 						} else {
-							// console.log("不需要上传", fileVal)
+							console.log("不需要上传", fileVal)
 						}
 						// console.log("----找到了吗", serFile);
 					}

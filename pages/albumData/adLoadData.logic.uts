@@ -31,35 +31,32 @@ export type mediaFileType = {
 /**
  * 根据相册id查询相册所有内容
  */
-export function loadAlbumData(id : number) : Array<Array<mediaFileType>> {
-	if (id != 0) {
-		const arr : Array<Array<mediaFileType>> = []
-		const { albumDetailClumns } = appConfig.value
-		const value = albumUtil.getAlbumsData(id)
-		for (let i = 0; i < value.length; i++) {
-			const yNum = i / albumDetailClumns
-			const item = value[i]
-			const addObj : mediaFileType = {
-				url: item.url,
-				type: item.type,
-				status: 0
-			}
-
-			if (i % albumDetailClumns == 0) {
-				arr.push([])
-
-			}
-
-			arr[yNum].push(addObj)
-
-			// if (i % albumDetailClumns == 0) {
-			// 	arr.push([])
-			// 	arr[yNum].push(addObj)
-			// } else {
-			// 	arr[yNum].push(addObj)
-			// }
+export function loadAlbumData(id : Array<number>) : Array<Array<mediaFileType>> {
+	const arr : Array<Array<mediaFileType>> = []
+	const { albumDetailClumns } = appConfig.value
+	const value = albumUtil.getAlbumsData(id)
+	for (let i = 0; i < value.length; i++) {
+		const yNum = i / albumDetailClumns
+		const item = value[i]
+		const addObj : mediaFileType = {
+			url: item.url,
+			type: item.type,
+			status: 0
 		}
-		return arr
+
+		if (i % albumDetailClumns == 0) {
+			arr.push([])
+
+		}
+
+		arr[yNum].push(addObj)
+
+		// if (i % albumDetailClumns == 0) {
+		// 	arr.push([])
+		// 	arr[yNum].push(addObj)
+		// } else {
+		// 	arr[yNum].push(addObj)
+		// }
 	}
-	return []
+	return arr
 }

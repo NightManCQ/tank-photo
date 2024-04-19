@@ -68,7 +68,11 @@
 	})
 
 	onReady(() => {
-		pageData.dataList = loadAlbumData(parseInt(pageData.alId))
+		const arr : number[] = []
+		pageData.alId.split(",").forEach((val) => {
+			arr.push(parseInt(val))
+		})
+		pageData.dataList = loadAlbumData(arr)
 	})
 
 	function imgClick(item : mediaFileType) {
