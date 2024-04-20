@@ -9,7 +9,7 @@ import Gravity from "android.view.Gravity";
 // 	fun : any
 // 	// @override
 // 	override run() : void {
-// 		console.log("hhhhhhhhhhhhhhhhhhhhhhh---");
+// 		//console.log("hhhhhhhhhhhhhhhhhhhhhhh---");
 // 		// this.fun()
 // 	}
 // 	constructor(fun : any) {
@@ -89,7 +89,7 @@ export class xxPermissions {
 export function xxPermissionsInit() {
 	let permissionListener = uni.createRequestPermissionListener()
 	permissionListener.onConfirm((_ : Array<string>) => {
-		// console.log("???????", perArr);
+		// //console.log("???????", perArr);
 		if (tosTxt != "") {
 			dog.dog = showAlertDialog("提示", tosTxt)
 		} else {

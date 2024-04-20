@@ -60,7 +60,7 @@
 				source: iconpath,
 				success() { },
 				fail(err) {
-					console.log(err);
+					//console.log(err);
 				},
 			})
 			const sys = uni.getSystemInfoSync()

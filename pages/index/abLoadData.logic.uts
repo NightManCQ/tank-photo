@@ -11,7 +11,7 @@ type albumListDataType = {
 
 // 读取缓存
 const cl2 = uni.getStorageSync("clumn2")
-// console.log("-------------------clumn2", cl2)
+// //console.log("-------------------clumn2", cl2)
 export const albumListData = reactive({
 	albumStyle: `width: ${cl2}px;height: ${cl2}px;`
 } as albumListDataType)
@@ -56,7 +56,7 @@ export class albumListLoadData {
 	 */
 	static getalbums() {
 		const albumArray : Array<Album> = albumUtil.getAlbum()
-		// console.log("???????", albumArray);
+		// //console.log("???????", albumArray);
 		const { permission } = albumListLoadData
 		if (albumArray.length == 0) {
 			// 判断有无权限

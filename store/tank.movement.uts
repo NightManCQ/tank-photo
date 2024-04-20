@@ -73,7 +73,7 @@ export function mkdirFileName(name : string, path : string = "root") : Promise<f
 			},
 			method: "POST",
 			success(res) {
-				// console.log("创建备份文件夹成功", crRes.data?.data)
+				// //console.log("创建备份文件夹成功", crRes.data?.data)
 				// staticData.backupFileName = mkName
 				if (res.statusCode == 200) {
 					resolve(res.data?.data!)
@@ -83,7 +83,7 @@ export function mkdirFileName(name : string, path : string = "root") : Promise<f
 
 			},
 			fail(crErr) {
-				// console.log("创建备份文件夹失败", crErr);
+				// //console.log("创建备份文件夹失败", crErr);
 				reject(crErr)
 			}
 		})
@@ -145,7 +145,7 @@ export type matterPageResType = {
  */
 export function matterPage(param : matterPageReqType) : Promise<matterPageResType> {
 	return new Promise((resolve, reject) => {
-		// console.log("------------请求参数", param);
+		// //console.log("------------请求参数", param);
 		uni.request<tankResponseType<matterPageResType>>({
 			url: appConfig.value.server + "/api/matter/page",
 			data: {
@@ -160,7 +160,7 @@ export function matterPage(param : matterPageReqType) : Promise<matterPageResTyp
 			,
 			method: "GET",
 			success(res) {
-				// console.log(`--------------------------查询 ${param.puuid} ￥${param.name} 成功： `, res)
+				// //console.log(`--------------------------查询 ${param.puuid} ￥${param.name} 成功： `, res)
 				// staticData.backupFileName = mkName
 				if (res.statusCode == 200) {
 					resolve(res.data?.data!)
@@ -170,7 +170,7 @@ export function matterPage(param : matterPageReqType) : Promise<matterPageResTyp
 
 			},
 			fail(crErr) {
-				// console.log("创建备份文件夹失败", crErr);
+				// //console.log("创建备份文件夹失败", crErr);
 				reject(crErr)
 			}
 		})
@@ -194,9 +194,9 @@ export function updUserInfo() {
 					key: userInfoKeyName,
 					data: globalData.user
 				})
-				console.log("执行逻辑成功：更新用户信息", globalData.user)
+				//console.log("执行逻辑成功：更新用户信息", globalData.user)
 			}, fail(err) {
-				console.log("执行逻辑失败：更新用户信息", err)
+				//console.log("执行逻辑失败：更新用户信息", err)
 			}
 		})
 	}
@@ -215,10 +215,10 @@ export function getTankInfo() {
 			method: "POST",
 			success(res) {
 				globalData.tankSystemInfo = res.data?.data!
-				console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
+				//console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
 			},
 			fail(err) {
-				console.log("执行逻辑成功：获取后端系统信息 失败", err)
+				//console.log("执行逻辑成功：获取后端系统信息 失败", err)
 			}
 		})
 	}
@@ -243,7 +243,7 @@ export function tankUploadFile(url : string, spaceUuid : string, puuid : string)
 			},
 			success(res) {
 				// staticData.backupFileName = mkName
-				console.log("------------", res);
+				// //console.log("------------", res);
 				if (res.statusCode == 200) {
 					const resObj = JSON.parse<tankResponseType<fileDetailType>>(res.data)
 					resolve(resObj?.data!)
@@ -272,7 +272,7 @@ export function tankUserLogin() : Promise<userInfoType> {
 				password: appConfig.value.password
 			},
 			success(res) {
-				console.log("登录成功", res.data)
+				//console.log("登录成功", res.data)
 				if (res.statusCode == 200) {
 					globalData.user = res.data?.data!
 
@@ -286,7 +286,7 @@ export function tankUserLogin() : Promise<userInfoType> {
 					// uni.navigateBack()
 				}
 			}, fail(err) {
-				console.log("登录失败", err)
+				//console.log("登录失败", err)
 				reject(err)
 			},
 			complete() {

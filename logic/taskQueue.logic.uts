@@ -38,7 +38,7 @@ export const tankTaskQueue = reactive([] as Array<taskQueueType>)
 
 
 watch(tankTaskQueue, () => {
-	// console.log("---------！ 任务队列发生变化", tankTaskQueue);
+	// //console.log("---------！ 任务队列发生变化", tankTaskQueue);
 	if (!appTaskStatus.taskQueueWorkIng) {
 		startTaskQueue()
 	}
@@ -56,7 +56,7 @@ watch(tankTaskQueue, () => {
  * 任务队列工作函数
  */
 function startTaskQueue() {
-	// console.log("开始备份上传咯！~1111111111", appTaskStatus.taskQueueWorkIng);
+	// //console.log("开始备份上传咯！~1111111111", appTaskStatus.taskQueueWorkIng);
 
 	appTaskStatus.taskQueueWorkIng = true
 
@@ -66,10 +66,7 @@ function startTaskQueue() {
 	// 2. 同本地需要备份的相册进行比对，将服务器上没有的文件统统上传，遇到同名冲突则重命名，始终保持服务端上拥有完整的文件
 	// 附加、云上有的文件，本地没有的，则通过api拉倒本地显示（略缩图）
 	// 3. 
-	// 开始备份的条件
-	// 1. 用户已经登录(服务端也登录，本地cookies有效)
-	// 2. 备份线程没有正在工作
-	// 3. 用户开启了备份
+
 
 	// 实现
 	// 使用一个独立线程，分批的一个一个处理文件
@@ -90,12 +87,16 @@ function startTaskQueue() {
 }
 
 async function upFileToTank() {
-	console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!任务队列开始工作", tankTaskQueue);
+	//console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!任务队列开始工作", tankTaskQueue);
 	for (let t1 = 0; t1 < tankTaskQueue.length; t1++) {
 		const tqItem = tankTaskQueue[t1]
 
-		// 备份任务
-		if (tqItem.type == 1 && globalData.user.uuid != "") {
+		// 开始备份的条件
+		// 1. 用户已经登录(服务端也登录，本地cookies有效)
+		// 2. 备份线程没有正在工作
+		// 3. 用户开启了备份
+
+		if (tqItem.type == 1 && globalData.user.uuid != "" && (appTaskStatus.backups != 1 || appTaskStatus.backups != 0)) {
 			appTaskStatus.backups = 1
 			albumArrayData.allUpFileCount = 0
 			albumArrayData.upFileCount = 0
@@ -117,7 +118,7 @@ async function upFileToTank() {
 				orderDir: 'DESC'
 			} as matterPageReqType)
 			const serverFileArr : Array<fileDetailType> = res.data
-			console.log("服务器上备份文件夹下所有文件夹、文件列表", serverFileArr);
+			// //console.log("服务器上备份文件夹下所有文件夹、文件列表", serverFileArr);
 			for (let i = 0; i < bakAlbumArr.length; i++) {
 				const bakAlbum = bakAlbumArr[i]
 				if (bakAlbum.backups != 0) {
@@ -141,22 +142,21 @@ async function upFileToTank() {
 						deleted: false,
 						orderDir: 'DESC'
 					} as matterPageReqType)
-					console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
+					//console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
 					// 2. 查询该相册列表下所有的文件
 					// 3. 遍历文件，逐个对比，服务器没有的则上传
 					const value = albumUtil.getAlbumsData(bakAlbum.correlationId)
 					for (let i1 = 0; i1 < value.length; i1++) {
-						// console.log("---------!!!", value[i1].url.substringAfterLast('/'));
+						// //console.log("---------!!!", value[i1].url.substringAfterLast('/'));
 						const fileVal = value[i1]
 						const serFile = fileList.data.find((svf) : boolean => svf["name"] == fileVal.url.substringAfterLast('/'))
 						if (serFile == null) {
-							console.log("需要上传", fileVal);
-
+							// //console.log("需要上传", fileVal);
 							await tankUploadFile(fileVal.url, staticData.backupFile.spaceUuid, bakAlbum.uuid!)
 							// 统计已上传数量
 							albumArrayData.upFileCount++
 						} else {
-							console.log("不需要上传", fileVal)
+							// //console.log("不需要上传", fileVal)
 							albumArrayData.upFileCount++
 						}
 					}
@@ -164,6 +164,10 @@ async function upFileToTank() {
 				}
 			}
 			appTaskStatus.backups = 2
+
+			// 完成备份任务，删除该条计划
+			tankTaskQueue.splice(t1, 1)
+			t1--
 			setTimeout(function () {
 				appTaskStatus.backups = 3
 			}, 30000);
@@ -171,7 +175,7 @@ async function upFileToTank() {
 	}
 
 	appTaskStatus.taskQueueWorkIng = false
-	console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!队列工作完成");
+	//console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!队列工作完成");
 
 }
 
@@ -182,7 +186,7 @@ async function upFileToTank() {
  * 任务队列初始化
  */
 export function taskQueueInit() {
-	// console.log("-0-0-0-本地历史任务获取成功", tankTaskQueue);
+	// //console.log("-0-0-0-本地历史任务获取成功", tankTaskQueue);
 	tankTaskQueue.push({
 		type: 1,
 		status: 0
@@ -191,7 +195,7 @@ export function taskQueueInit() {
 	// uni.getStorage({
 	// 	key: taskQueueKeyName,
 	// 	success(res) {
-	// 		// console.log("-0-0-0-本地历史任务获取成功", res);
+	// 		// //console.log("-0-0-0-本地历史任务获取成功", res);
 	// 		const arr : Array<taskQueueType> = JSON.parse<Array<taskQueueType>>(JSON.stringify(res.data))!
 	// 		for (let i = 0; i < arr.length; i++) {
 	// 			tankTaskQueue.push(arr[i])
@@ -203,7 +207,7 @@ export function taskQueueInit() {
 	// 		startTaskQueue()
 	// 	},
 	// 	fail(err) {
-	// 		console.log("=-==-=-=-=获取失败", err);
+	// 		//console.log("=-==-=-=-=获取失败", err);
 	// 	}
 	// })
 }

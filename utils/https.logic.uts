@@ -45,11 +45,11 @@ export const httpRequestHeader = {
 
 
 // 				// const user = res.data?.data!
-// 				// console.log("????", aaaaa)
+// 				// //console.log("????", aaaaa)
 // 				resolve(res)
 
 // 			}, fail(err) {
-// 				console.log("登录失败", err)
+// 				//console.log("登录失败", err)
 
 // 				// reject(err)
 // 			}
@@ -81,11 +81,11 @@ export const httpRequestHeader = {
 
 
 // 		// 		// const user = res.data?.data!
-// 		// 		// console.log("????", aaaaa)
+// 		// 		// //console.log("????", aaaaa)
 // 		// 		resolve(aaaaa)
 
 // 		// 	}, fail(err) {
-// 		// 		console.log("登录失败", err)
+// 		// 		//console.log("登录失败", err)
 
 // 		// 		// reject(err)
 // 		// 	}

@@ -13,7 +13,7 @@ storeInit()
 getDeviceldInfo()
 
 // UTSAndroid.getDispatcher("io").async(function (_) {
-// 	console.log("---------！ 匿名线程工作中");
+// 	//console.log("---------！ 匿名线程工作中");
 
 // }, null)
 

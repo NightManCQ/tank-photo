@@ -60,7 +60,7 @@
 			loginWorkIng = false
 			uni.navigateBack()
 		}).catch((_) => {
-			// console.log("-----------登录失败", err);
+			// //console.log("-----------登录失败", err);
 			uni.showToast({
 				title: "登录失败",
 				icon: "error"

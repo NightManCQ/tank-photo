@@ -20,8 +20,8 @@
 						<text class="col_fg">返回</text>
 					</view>
 				</template>
+				<!-- 上传进度条 -->
 				<template #bottom>
-					<!-- 上传进度条 -->
 					<progress v-if="appTaskStatus.backups == 1" :stroke-width="2" :percent="percent_input"
 						:activeColor="theme.primaryColor" style="width: 100%" :backgroundColor="theme.fgColor">
 					</progress>
@@ -186,7 +186,7 @@
 	// 		source: iconpath,
 	// 		success() { },
 	// 		fail(err) {
-	// 			console.log(err);
+	// 			//console.log(err);
 	// 		},
 	// 	})
 	// })
@@ -213,7 +213,7 @@
 						if (res.confirm) {
 							uni.getStorageInfo({
 								success(res) {
-									// console.log("-------------------------", res);
+									// //console.log("-------------------------", res);
 									res.keys.forEach((key) => {
 										uni.removeStorage({
 											key: key
@@ -279,7 +279,7 @@
 		xxPermissions.requestSystemPermission(permission, "", function (allRight : boolean, grantedList : string[]) {
 			if (allRight) {
 				// 用户同意了全部权限
-				console.log("用户同意了全部权限", grantedList);
+				//console.log("用户同意了全部权限", grantedList);
 				getalbums()
 				albumArrayData.authorizationStatus = true
 				// this.
@@ -287,15 +287,15 @@
 				// that.albumArray = albumListLoadData.albumArray
 			} else {
 				// 用户仅同意了 grantedList中的权限
-				console.log("用户仅同意了 grantedList中的权限");
+				//console.log("用户仅同意了 grantedList中的权限");
 			}
 		}, function (doNotAskAgain : boolean, grantedList : string[]) {
 			// 用户拒绝了部分权限，仅允许了grantedList中的权限
 			if (doNotAskAgain) {
 				// 用户拒绝了权限，并且选择不再询问
-				console.log("用户拒绝了权限，并且选择不再询问");
+				//console.log("用户拒绝了权限，并且选择不再询问");
 			}
-			console.log("用户拒绝了部分权限，仅允许了grantedList中的权限", grantedList);
+			//console.log("用户拒绝了部分权限，仅允许了grantedList中的权限", grantedList);
 		})
 	}
 </script>

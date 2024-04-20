@@ -35,7 +35,7 @@ import { MyApiFailImpl } from '../unierror';
  * myApi({
  *   paramA: false,
  *   complete: (res) => {
- *      console.log(res)
+ *      //console.log(res)
  *   }
  * });
  *

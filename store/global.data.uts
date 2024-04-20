@@ -384,5 +384,5 @@ export function storeInit() {
 		}
 	})
 
-	console.log("执行逻辑成功：仓库初始化", globalData)
+	//console.log("执行逻辑成功：仓库初始化", globalData)
 }

@@ -87,11 +87,11 @@ export type userLoginRequestOptionType = {
 
 
 // 		// 		// const user = res.data?.data!
-// 		// 		console.log("登录成功", res)
+// 		// 		//console.log("登录成功", res)
 // 		// 		resolve(res)
 
 // 		// 	}, fail(err) {
-// 		// 		console.log("登录失败", err)
+// 		// 		//console.log("登录失败", err)
 
 // 		// 		reject(err)
 // 		// 	}

@@ -11,7 +11,7 @@
 	// let firstBackTime = 0
 	export default {
 		onLaunch: function () {
-			console.log('App Launch')
+			//console.log('App Launch')
 
 			// 不是非黑即白，就是一个巨大的灰色。
 			// 钱一定要捏到最后才放
@@ -19,29 +19,32 @@
 		},
 		onShow: function () {
 			getalbums()
-			console.log('App Show')
+			//console.log('App Show')
 			getTankInfo()
 			updUserInfo()
 
 			// 最后执行
-			taskQueueInit()
+			setTimeout(function () {
+				taskQueueInit()
+			}, 1000);
+
 
 
 			// 获取系统信息
 			// const res = uni.getWindowInfo();
 			// uni.getWindowInfo()
-			// console.log("设备窗口信息", clentWindowInfo)
+			// //console.log("设备窗口信息", clentWindowInfo)
 		},
 		onHide: function () {
 			setStoTaskQueue()
-			console.log('App Hide')
+			//console.log('App Hide')
 			// uni.setStorageSync(systemConfigKeyName, appConfig.value)
 
 		},
 		onLastPageBackPress: function () {
 			setStoTaskQueue()
 			uni.exit()
-			console.log('App LastPageBackPress')
+			//console.log('App LastPageBackPress')
 			// if (firstBackTime == 0) {
 			// 	uni.showToast({
 			// 		title: '再按一次退出应用',
@@ -57,7 +60,7 @@
 			// }
 		},
 		onExit: function () {
-			// console.log('App Exit')
+			// //console.log('App Exit')
 		},
 	}
 </script>
