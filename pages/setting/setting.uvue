@@ -30,6 +30,7 @@
 	import { taskQueueType, tankTaskQueue } from "@/logic/taskQueue.logic.uts"
 	import { systemConfigKeyName } from "@/store/storage.key.uts"
 	import { albumArrayData } from "@/pages/index/index.data.uts"
+	import { locatAlbumKeyName } from "@/store/storage.key.uts"
 	// export default {
 	// 	data() {
 	// 		return {
@@ -57,12 +58,23 @@
 
 
 	onUnload(() => {
-		uni.setStorageSync(systemConfigKeyName, appConfig.value)
+		// 存储设置
+		uni.setStorage({
+			key: systemConfigKeyName,
+			data: appConfig.value
+		})
+		// 存储相册列表（已选择备份的相册）
+		uni.setStorage({
+			key: locatAlbumKeyName,
+			data: albumArrayData.tankDataOnce
+		})
+		// console.log("??????????????????????",appConfig.value);
 		// 添加任务队列
 		if (appConfig.value.backup) {
+
 			tankTaskQueue.push({
 				type: 1,
-				data: appConfig.value.bakAlbumArr
+				status: 0
 			} as taskQueueType)
 		}
 		// console.log("！！！！！设置页面卸载存储设置内容", appConfig.value);

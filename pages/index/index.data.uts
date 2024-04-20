@@ -67,9 +67,14 @@ type albumArrayDataType = {
 	tankData : Array<Array<tankAlbumType>>
 	/**
 	 * tank app使用的相册实体类 一个数组梭哈
+	 * 存储的内容同 tankData，修改此数组可以间接修改 tankData
 	 */
 	tankDataOnce : Array<tankAlbumType>
 	albumMap : HashMap<number, Array<Album>>
+	/**
+	 * 已上传了多少个文件
+	 */
+	upFileCount : number
 }
 
 
@@ -80,7 +85,8 @@ export const albumArrayData = reactive({
 	authorizationStatus: true,
 	tankData: [],
 	tankDataOnce: [],
-	albumMap: hashMapOf()
+	albumMap: hashMapOf(),
+	upFileCount: 0
 } as albumArrayDataType)
 
 
@@ -90,39 +96,39 @@ export const albumArrayData = reactive({
  * 获取相册列表
  */
 export function getalbums() {
-	// uni.getStorage({
-	// 	key: locatAlbumKeyName,
-	// 	success(res) {
-	// 		// console.log("----------------------", res.data);
-	// 		albumArrayData.tankDataOnce = JSON.parse<Array<tankAlbumType>>(JSON.stringify(res.data))!
-	// 		// const arr = albumArrayData.tankDataOnce
-	// 		// const viewArr = albumArrayData.tankData
-	// 		// for (let i = 0; i < arr.length; i++) {
-	// 		// 	const { albumClumns } = appConfig.value
-	// 		// 	const val = arr[i]
-	// 		// 	const yNum = i / albumClumns
-	// 		// 	if (i % albumClumns == 0) {
-	// 		// 		viewArr.push([])
-	// 		// 		viewArr[yNum].push(val)
-	// 		// 	} else {
-	// 		// 		viewArr[yNum].push(val)
-	// 		// 	}
-	// 		// }
+	uni.getStorage({
+		key: locatAlbumKeyName,
+		success(res) {
+			// console.log("----------------------", res.data);
+			albumArrayData.tankDataOnce = JSON.parse<Array<tankAlbumType>>(JSON.stringify(res.data))!
+			// const arr = albumArrayData.tankDataOnce
+			// const viewArr = albumArrayData.tankData
+			// for (let i = 0; i < arr.length; i++) {
+			// 	const { albumClumns } = appConfig.value
+			// 	const val = arr[i]
+			// 	const yNum = i / albumClumns
+			// 	if (i % albumClumns == 0) {
+			// 		viewArr.push([])
+			// 		viewArr[yNum].push(val)
+			// 	} else {
+			// 		viewArr[yNum].push(val)
+			// 	}
+			// }
 
-	// 		// 在一个独立线程里面进行更新
-	// 		// UTSAndroid.getDispatcher("io").async(function (_) {
-	// 		// 	console.log("gen ------------ ");
-	// 		updAlbumArray(2)
-	// 		// }, null)
+			// 在一个独立线程里面进行更新
+			// UTSAndroid.getDispatcher("io").async(function (_) {
+			// 	console.log("gen ------------ ");
+			updAlbumArray()
+			// }, null)
 
-	// 	},
-	// 	fail() {
-	// 		console.log("====获取失败");
-	updAlbumArray(1)
-	// 	}
-	// })
+		},
+		fail() {
+			console.log("====获取失败");
+			updAlbumArray()
+		}
+	})
 
-
+	// updAlbumArray()
 
 
 
@@ -132,17 +138,17 @@ export function getalbums() {
 /**
  * 更新相册列表
  */
-function updAlbumArray(type : 1 | 2) {
+function updAlbumArray() {
 	albumArrayData.authorizationStatus = xxPermissions.checkSystemPermissionGranted(permission)
 	// console.log("------", type, albumArrayData, albumArray.length);
 	if (albumArrayData.authorizationStatus) {
 		const albumArray : Array<Album> = albumUtil.getAlbum()
-		console.log("-----------------原始相册列表", albumArray.length);
+		// console.log("-----------------原始相册列表", albumArray.length);
 		// uni x 的多列布局实现性能较低，所以采用官方的组件以提高性能，但官方还有没出多列布局，所以采用这种迂回的办法（20231129）
 		const arr : Array<Array<tankAlbumType>> = []
-		const onceArr = albumArrayData.tankDataOnce
 		const newOnceArr : tankAlbumType[] = []
 		const clumnsCount = appConfig.value.albumClumns
+		const onceArr = albumArrayData.tankDataOnce
 
 
 
@@ -160,6 +166,7 @@ function updAlbumArray(type : 1 | 2) {
 				id: item.id,
 				name: item.name,
 				count: item.count,
+				uuid: bakAlbum?.uuid,
 				backups: bakAlbum == null ? 0 : bakAlbum.backups,
 				coverPicture: item.coverPicture,
 				correlationId: idArr
@@ -169,15 +176,14 @@ function updAlbumArray(type : 1 | 2) {
 			}
 			arr[yNum].push(addObj)
 			newOnceArr.push(addObj)
-
-
-
-
-
 		}
 		albumArrayData.tankDataOnce = newOnceArr
 		albumArrayData.tankData = arr
-		console.log("------------", newOnceArr.length, newOnceArr);
+		uni.setStorage({
+			key: locatAlbumKeyName,
+			data: newOnceArr
+		})
+		// console.log("------------", newOnceArr.length, newOnceArr);
 	}
 	//  else {
 	// 	// if (type == 1) {
@@ -186,9 +192,6 @@ function updAlbumArray(type : 1 | 2) {
 	// 	// } else {
 
 	// 	// }
-	// 	// uni.setStorage({
-	// 	// 	key: locatAlbumKeyName,
-	// 	// 	data: onceArr
-	// 	// })
+
 	// }
 }

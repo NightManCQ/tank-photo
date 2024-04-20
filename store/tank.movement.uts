@@ -1,8 +1,9 @@
 import { tankResponseType } from "../pages/base.entity";
 import { userInfoType } from "../pages/login/login.logic"
-import { globalData, staticData, tankSystemInfoType } from "./global.data";
+import { appConfig, globalData, staticData, tankSystemInfoType } from "./global.data";
 import { httpRequestHeader } from "@/utils/https.logic.uts"
 import { userInfoKeyName } from "@/store/storage.key.uts"
+
 
 
 
@@ -63,7 +64,7 @@ export function mkdirFileName(name : string, path : string = "root") : Promise<f
 	return new Promise((resolve, reject) => {
 		// 主动在根目录创建一个备份文件夹
 		uni.request<tankResponseType<fileDetailType>>({
-			url: staticData.server + "/api/matter/create/directory",
+			url: appConfig.value.server + "/api/matter/create/directory",
 			header: httpRequestHeader,
 			data: {
 				name: name,
@@ -142,15 +143,11 @@ export type matterPageResType = {
 /**
  * 按需查询文件和文件夹的列表
  */
-export const matterPageUrl = staticData.server + "/api/matter/page"
-/**
- * 按需查询文件和文件夹的列表
- */
 export function matterPage(param : matterPageReqType) : Promise<matterPageResType> {
 	return new Promise((resolve, reject) => {
 		// console.log("------------请求参数", param);
 		uni.request<tankResponseType<matterPageResType>>({
-			url: matterPageUrl,
+			url: appConfig.value.server + "/api/matter/page",
 			data: {
 				page: param.page,
 				pageSize: param.pageSize,
@@ -190,7 +187,7 @@ export function updUserInfo() {
 	let data = uni.getStorageSync(userInfoKeyName)!
 	if (data != "") {
 		uni.request<tankResponseType<userInfoType>>({
-			url: staticData.server + "/api/user/info",
+			url: appConfig.value.server + "/api/user/info",
 			success(res) {
 				globalData.user = res.data?.data!
 				uni.setStorage({
@@ -212,17 +209,19 @@ export function updUserInfo() {
  * 获取tank系统信息
  */
 export function getTankInfo() {
-	uni.request<tankResponseType<tankSystemInfoType>>({
-		url: staticData.server + "/api/preference/fetch",
-		method: "POST",
-		success(res) {
-			globalData.tankSystemInfo = res.data?.data!
-			console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
-		},
-		fail(err) {
-			console.log("执行逻辑成功：获取后端系统信息 失败", err)
-		}
-	})
+	if (appConfig.value.server != "") {
+		uni.request<tankResponseType<tankSystemInfoType>>({
+			url: appConfig.value.server + "/api/preference/fetch",
+			method: "POST",
+			success(res) {
+				globalData.tankSystemInfo = res.data?.data!
+				console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
+			},
+			fail(err) {
+				console.log("执行逻辑成功：获取后端系统信息 失败", err)
+			}
+		})
+	}
 }
 
 
@@ -234,7 +233,7 @@ export function getTankInfo() {
 export function tankUploadFile(url : string, spaceUuid : string, puuid : string) : Promise<fileDetailType> {
 	return new Promise((resolve, reject) => {
 		uni.uploadFile({
-			url: staticData.server + '/api/matter/upload',
+			url: appConfig.value.server + '/api/matter/upload',
 			filePath: url,
 			formData: {
 				spaceUuid: spaceUuid,
@@ -258,4 +257,41 @@ export function tankUploadFile(url : string, spaceUuid : string, puuid : string)
 		})
 	})
 
+}
+
+
+/**
+ * 用户登录
+ */
+export function tankUserLogin() : Promise<userInfoType> {
+	return new Promise((resolve, reject) => {
+		uni.request<tankResponseType<userInfoType>>({
+			url: appConfig.value.server + "/api/user/login",
+			data: {
+				username: appConfig.value.username,
+				password: appConfig.value.password
+			},
+			success(res) {
+				console.log("登录成功", res.data)
+				if (res.statusCode == 200) {
+					globalData.user = res.data?.data!
+
+
+					uni.setStorage({
+						key: userInfoKeyName,
+						data: globalData.user
+					})
+					resolve(globalData.user)
+					// uni.navigateBack()
+				}
+			}, fail(err) {
+				console.log("登录失败", err)
+				reject(err)
+			},
+			complete() {
+				// loginWorkIng = false
+				// uni.hideLoading()
+			}
+		})
+	})
 }

@@ -1,5 +1,5 @@
 import { albumArrayData } from "../pages/index/index.data";
-import { appConfig, staticData, appTaskStatus } from "../store/global.data";
+import { appConfig, staticData, appTaskStatus, globalData } from "../store/global.data";
 import { taskQueueKeyName } from "../store/storage.key";
 import { fileDetailType, matterPageReqType, matterPage, mkdirFileName, tankUploadFile } from "@/store/tank.movement.uts"
 import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
@@ -16,6 +16,13 @@ export type taskQueueType = {
 	 */
 	type : 1 | 2
 	/**
+	 * 状态
+	 * 0：等待进行
+	 * 1：正在进行
+	 * 2：已完成
+	 */
+	status : 0 | 1 | 2
+	/**
 	 * 执行该任务可能需要的数据
 	 */
 	data ?: any
@@ -31,28 +38,18 @@ export const tankTaskQueue = reactive([] as Array<taskQueueType>)
 
 
 watch(tankTaskQueue, () => {
-	console.log("---------！ 任务队列发生变化", tankTaskQueue);
+	// console.log("---------！ 任务队列发生变化", tankTaskQueue);
 	if (!appTaskStatus.taskQueueWorkIng) {
 		startTaskQueue()
 	}
-
-
-
-	// console.log("=================", typeof globalData.user.uuid, (appConfig.value.backup && appTaskStatus.backups == 0));
-	// if (appConfig.value.backup && globalData.user.uuid != "") {
-	// 	backupsIng()
+}, {
+	flush: 'post',
+	// deep: true,
+	// onTrack(e) {
+	// },
+	// onTrigger(e) {
 	// }
-}
-	, {
-		flush: 'post',
-		// deep: true,
-		// onTrack(e) {
-		// },
-		// onTrigger(e) {
-		// }
-	}
-
-)
+})
 
 
 /**
@@ -98,7 +95,8 @@ async function upFileToTank() {
 		const tqItem = tankTaskQueue[t1]
 
 		// 备份任务
-		if (tqItem.type == 1) {
+		if (tqItem.type == 1 && globalData.user.uuid != "") {
+			appTaskStatus.backups = 1
 
 
 			// 
@@ -111,12 +109,13 @@ async function upFileToTank() {
 				orderDir: 'DESC'
 			} as matterPageReqType)
 			const serverFileArr : Array<fileDetailType> = res.data
-			console.log("服务器上的所有文件夹列表", serverFileArr);
+			console.log("服务器上备份文件夹下所有文件夹、文件列表", serverFileArr);
 			const bakAlbumArr = albumArrayData.tankDataOnce
 
 			for (let i = 0; i < bakAlbumArr.length; i++) {
 				const bakAlbum = bakAlbumArr[i]
 				if (bakAlbum.backups != 0) {
+					bakAlbum.backups = 1
 					// 确定服务器上是否有该文件夹（相册）
 					const serverFile = serverFileArr.find((svf) : boolean => svf["name"] == bakAlbum.name)
 					if (serverFile == null) {
@@ -147,19 +146,19 @@ async function upFileToTank() {
 						const serFile = fileList.data.find((svf) : boolean => svf["name"] == fileVal.url.substringAfterLast('/'))
 						if (serFile == null) {
 							console.log("需要上传", fileVal);
+
 							await tankUploadFile(fileVal.url, staticData.backupFile.spaceUuid, bakAlbum.uuid!)
+							// 统计已上传数量
+							albumArrayData.upFileCount++
 						} else {
 							console.log("不需要上传", fileVal)
+							albumArrayData.upFileCount++
 						}
-						// console.log("----找到了吗", serFile);
 					}
 					bakAlbum.backups = 2
 				}
-
-
-
-
 			}
+			appTaskStatus.backups = 2
 		}
 	}
 

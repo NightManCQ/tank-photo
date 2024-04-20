@@ -24,6 +24,7 @@
 			getTankInfo()
 			updUserInfo()
 
+
 			// 获取系统信息
 			// const res = uni.getWindowInfo();
 			// uni.getWindowInfo()

@@ -6,9 +6,9 @@
 
 			<text class="app_title">Tank 相册</text>
 
-			<input placeholder="服务器地址" class="input_v" v-model="serverUrl" type="text" />
-			<input placeholder="账号" class="input_v" v-model="username" type="text" />
-			<input placeholder="密码" class="input_v" type="password" v-model="password" />
+			<input placeholder="服务器地址" class="input_v" v-model="appConfig.value.server" type="text" />
+			<input placeholder="账号" class="input_v" v-model="appConfig.value.username" type="text" />
+			<input placeholder="密码" class="input_v" type="password" v-model="appConfig.value.password" />
 
 
 			<button class="login_ing_btn" @click.stop="loginIng">
@@ -24,195 +24,49 @@
 	<!-- #endif -->
 </template>
 
-<script>
-	import { staticData, globalData } from "@/store/global.data.uts"
-	import { userInfoType } from "./login.logic.uts"
-	import { tankResponseType } from "@/pages/base.entity.uts"
-	import { userInfoKeyName } from "@/store/storage.key.uts"
+<script setup>
+	import { appConfig, globalData } from "@/store/global.data.uts"
+	import { systemConfigKeyName } from "@/store/storage.key.uts"
+	import { tankUserLogin } from "@/store/tank.movement.uts"
+
+
+	type loginPageDataType = {
+		username : string
+		password : string
+	}
 	let loginWorkIng = false
-	export default {
-		data() {
-			// globalData.windowInfo.screenWidth
-			return {
 
-				// conStyle: `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.windowHeight - 80}px;`,
-				serverUrl: "https://pan.promise.pink:442",
-				username: "bunny",
-				password: "hong123456"
-			};
-		},
-		computed: {
-			conStyle() : string {
-				return `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.windowHeight - 80}px;`
-			},
+	const conStyle = computed(() : string => {
+		return `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.windowHeight - 80}px;`
+	})
+	const pageData = reactive({
+		username: "",
+		password: ""
+	} as loginPageDataType)
 
-		},
-		onLoad() {
-
-			// this.serverUrl = uni.getStorageSync("serverUrl") as string
-			// this.password = uni.getStorageSync("password") as string
-			// this.username = uni.getStorageSync("username") as string
-			// staticData.server = this.serverUrl
-		},
-		methods: {
-			async loginIng() : Promise<void> {
-				if (loginWorkIng == true) {
-					return
-				}
-				uni.showLoading({
-					title: "登录中..."
-				})
-				loginWorkIng = true
-
-				// uni.setStorageSync("serverUrl", this.serverUrl)
-				// // staticData.server = this.serverUrl
-				// uni.setStorageSync("username", this.username)
-				// uni.setStorageSync("password", this.password)
-
-				// console.log("登录信息", staticData.server + "/api/user/login", this.username, this.password);
-				// const { username, password } = this
-
-
-				uni.request<tankResponseType<userInfoType>>({
-					url: staticData.server + "/api/user/login",
-					data: {
-						username: this.username,
-						password: this.password
-					},
-					success(res) {
-						// const cookie = res.header as UTSJSONObject
-						// const aaaaa : IRootType = {
-						// 	msg: "",
-						// 	code: res.statusCode + "",
-						// 	data: res.data!.data as userInfoType
-						// }
-
-
-						// const user = res.data?.data!
-						if (res.statusCode == 200) {
-							globalData.user = res.data?.data!
-							uni.setStorageSync(userInfoKeyName, globalData.user)
-							console.log("登录成功", globalData)
-							uni.navigateBack()
-						}
-
-					}, fail(err) {
-						console.log("登录失败", err)
-
-					},
-					complete() {
-						loginWorkIng = false
-						uni.hideLoading()
-					}
-				})
-				// const res = await userLoginFun<IRootType>(username, password)
-				// .catch((err)=>{
-				// 这样写就不是同步执行了？？？
-				// })
-
-				// console.log("----", res);
-
-				// console.log("?????", res.status, res.status == 200);
-				// if (res.status == 200) {
-				// 	console.log("进来了", res.data);
-				// }
-				// if (res.status == 200) {
-				// 	console.log("进来了",res.data.data);
-				// 	const user = res.data?.data!
-
-				// 	const { user: userInfo } = globalData
-				// 	userInfo.avatarUrl = user.avatarUrl
-				// 	userInfo.role = user.role
-				// 	userInfo.spaceUuid = user.spaceUuid
-				// 	userInfo.uuid = user.uuid
-				// 	userInfo.username = user.username
-				// 	uni.setStorageSync("userName", user.username)
-				// 	uni.setStorageSync("uuid", user.uuid)
-				// 	uni.setStorageSync("spaceUuid", user.spaceUuid)
-				// 	uni.setStorageSync("role", user.role)
-				// 	uni.setStorageSync("avatarUrl", user.avatarUrl)
-				// 	uni.setStorageSync("userInfo", user)
-
-
-				// 	console.log("登录成功", userInfo.role, userInfo.username)
-				// 	loginWorkIng = false
-				// 	uni.hideLoading()
-				// 	uni.navigateBack()
-				// } else {
-				// 	console.log("登录失败", res.data)
-				// 	loginWorkIng = false
-				// 	uni.hideLoading()
-				// }
-
-				// // 目前最优解决办法，直接写
-				// uni.request<IRootType>({
-				// 	url: staticData.server + "/api/user/login",
-				// 	data: {
-				// 		username: this.username,
-				// 		password: this.password
-				// 	},
-				// 	success(res) {
-				// 		// const cookie = res.header as UTSJSONObject
-
-				// 		// console.log("????", res)
-				// 		const user = res.data?.data!
-				// 		const { user: userInfo } = globalData
-				// 		userInfo.avatarUrl = user.avatarUrl
-				// 		userInfo.role = user.role
-				// 		userInfo.spaceUuid = user.spaceUuid
-				// 		userInfo.uuid = user.uuid
-				// 		userInfo.username = user.username
-				// 		uni.setStorageSync("userName", user.username)
-				// 		uni.setStorageSync("uuid", user.uuid)
-				// 		uni.setStorageSync("spaceUuid", user.spaceUuid)
-				// 		uni.setStorageSync("role", user.role)
-				// 		uni.setStorageSync("avatarUrl", user.avatarUrl)
-				// 		uni.setStorageSync("userInfo", user)
-
-
-				// 		console.log("登录成功", userInfo.role, userInfo.username)
-				// 		loginWorkIng = false
-				// 		uni.hideLoading()
-				// 		uni.navigateBack()
-				// 		// resolve(res)
-				// 	}, fail(err) {
-				// 		console.log("登录失败", err)
-				// 		loginWorkIng = false
-				// 		uni.hideLoading()
-				// 		// reject(err)
-				// 	}
-				// })
-
-
-
-
-				// userLogin(this.username, this.password).then<void>((res) => {
-				// 	console.log("=====", res.data instanceof UTSJSONObject)
-				// 	const data = res.data as UTSJSONObject
-				// 	console.log("登录数据", data["data"]);
-				// 	// const userInfo = data["data"] as userInfoType
-				// 	const aaaa = data["data"] as UTSJSONObject
-
-				// 	console.log("转换数据",  aaaa["data"]);
-				// 	// let data : RequestSuccess<IRootType> = res as RequestSuccess<IRootType>
-				// 	// console.log(",,,,,", data)
-				// 	// console.log("登录成功", res)
-				// 	// if (data.statusCode == 200) {
-				// 	// 	console.log("登录成功", data.data!["data"])
-				// 	// 	uni.removeStorageSync("userInfo")
-				// 	// 	// uni.setStorageSync("userInfo", data.data?.data!!)
-				// 	// 	// const userInfo = data.data
-				// 	// 	// globalData.user = data.data?.data!!
-				// 	// }
-				// 	uni.hideLoading()
-				// })
-				// .catch<void>((err : any | null) => {
-				// 	uni.hideLoading()
-				// 	console.log("======err ", err)
-				// })
-
-			}
+	async function loginIng() : Promise<void> {
+		if (loginWorkIng == true) {
+			return
 		}
+		uni.showLoading({
+			title: "登录中..."
+		})
+		loginWorkIng = true
+		uni.setStorage({
+			key: systemConfigKeyName,
+			data: appConfig.value
+		})
+		tankUserLogin().then((_) => {
+			loginWorkIng = false
+			uni.navigateBack()
+		}).catch((_) => {
+			// console.log("-----------登录失败", err);
+			uni.showToast({
+				title: "登录失败",
+				icon: "error"
+			})
+		})
+
 	}
 </script>
 
@@ -221,13 +75,14 @@
 		display: flex;
 		align-items: center;
 		// border: 1px solid red;
-		justify-content: center;
+		// justify-content: center;
 
 		.app_title {
 			font-size: 80rpx;
 			font-weight: 700;
 			color: $uni-color-primary;
-			margin-bottom: 200rpx;
+			margin-bottom: 100rpx;
+			margin-top: 100rpx;
 		}
 
 		.input_v {
