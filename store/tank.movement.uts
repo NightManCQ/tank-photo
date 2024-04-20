@@ -194,9 +194,11 @@ export function updUserInfo() {
 					key: userInfoKeyName,
 					data: globalData.user
 				})
-				//console.log("执行逻辑成功：更新用户信息", globalData.user)
-			}, fail(err) {
-				//console.log("执行逻辑失败：更新用户信息", err)
+				console.log("执行逻辑成功：更新用户信息", globalData.user)
+			}, fail(_) {
+				// 可能是cookies失效了
+				// 要么重新执行登陆
+				// 
 			}
 		})
 	}
@@ -215,9 +217,9 @@ export function getTankInfo() {
 			method: "POST",
 			success(res) {
 				globalData.tankSystemInfo = res.data?.data!
-				//console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
+				console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
 			},
-			fail(err) {
+			fail(_) {
 				//console.log("执行逻辑成功：获取后端系统信息 失败", err)
 			}
 		})
@@ -272,18 +274,15 @@ export function tankUserLogin() : Promise<userInfoType> {
 				password: appConfig.value.password
 			},
 			success(res) {
-				//console.log("登录成功", res.data)
+				console.log("登录成功", res.data)
 				if (res.statusCode == 200) {
 					globalData.user = res.data?.data!
-
-
 					uni.setStorage({
 						key: userInfoKeyName,
 						data: globalData.user
 					})
 					getTankInfo()
 					resolve(globalData.user)
-					// uni.navigateBack()
 				}
 			}, fail(err) {
 				//console.log("登录失败", err)

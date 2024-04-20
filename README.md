@@ -2,7 +2,7 @@
 
 #### 支持
 
-- [蓝眼云盘4.02](https://tank-doc.eyeblue.cn/basic/download.html)（理论上只要接口和接口数据结构没有改变是可以通用的）
+- [蓝眼云盘4.02、4.03](https://tank-doc.eyeblue.cn/basic/download.html)（理论上只要接口和接口数据结构没有改变是可以通用的）
 - 安卓
 
 #### 特色
@@ -14,5 +14,4 @@
 
 1. 用户登录
 2. 同步相册至服务端
-3. 显示服务器状态
 

@@ -87,7 +87,7 @@ function startTaskQueue() {
 }
 
 async function upFileToTank() {
-	//console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!任务队列开始工作", tankTaskQueue);
+	console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!任务队列开始工作", tankTaskQueue);
 	for (let t1 = 0; t1 < tankTaskQueue.length; t1++) {
 		const tqItem = tankTaskQueue[t1]
 
@@ -95,8 +95,7 @@ async function upFileToTank() {
 		// 1. 用户已经登录(服务端也登录，本地cookies有效)
 		// 2. 备份线程没有正在工作
 		// 3. 用户开启了备份
-
-		if (tqItem.type == 1 && globalData.user.uuid != "" && (appTaskStatus.backups != 1 || appTaskStatus.backups != 0)) {
+		if (appConfig.value.backup && tqItem.type == 1 && globalData.user.uuid != "" && (appTaskStatus.backups != 1 || appTaskStatus.backups != 0)) {
 			appTaskStatus.backups = 1
 			albumArrayData.allUpFileCount = 0
 			albumArrayData.upFileCount = 0
@@ -164,18 +163,19 @@ async function upFileToTank() {
 				}
 			}
 			appTaskStatus.backups = 2
-
-			// 完成备份任务，删除该条计划
-			tankTaskQueue.splice(t1, 1)
-			t1--
 			setTimeout(function () {
 				appTaskStatus.backups = 3
-			}, 30000);
+			}, 10000);
+
 		}
+		// 完成备份任务，删除该条计划
+		tankTaskQueue.splice(t1, 1)
+		t1--
+		
 	}
 
 	appTaskStatus.taskQueueWorkIng = false
-	//console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!队列工作完成");
+	console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!队列工作完成");
 
 }
 
