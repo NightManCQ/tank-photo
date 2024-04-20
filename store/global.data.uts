@@ -325,8 +325,9 @@ type appTaskStatusType = {
 	 * 0：没有备份任务或者备份状态停止
 	 * 1：正在备份
 	 * 2：备份任务完成
+	 * 3: 备份任务完成后 30s 确认关闭
 	 */
-	backups : 0 | 1 | 2
+	backups : 0 | 1 | 2 | 3
 	/**
 	 * 任务队列工作中？？？
 	 */
@@ -366,19 +367,11 @@ export function storeInit() {
 	if (typeof conf == "object") {
 		appConfig.value = JSON.parse<configType>(JSON.stringify(conf))!
 	}
-	// uni.getStorage({
-	// 	key: systemConfigKeyName,
-	// 	success(res) {
-	// 		appConfig.value = JSON.parse<configType>(JSON.stringify(res.data))!
-	// 		// 
-	// 	}
-	// })
 
 	// 获取备份文件夹信息
 	uni.getStorage({
 		key: backupFileKeyName,
 		success(res) {
-			// console.log("---------------？？", res);
 			staticData.backupFile = JSON.parse<fileDetailType>(JSON.stringify(res.data))!
 		}
 	})

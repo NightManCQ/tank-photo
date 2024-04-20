@@ -97,9 +97,17 @@ async function upFileToTank() {
 		// 备份任务
 		if (tqItem.type == 1 && globalData.user.uuid != "") {
 			appTaskStatus.backups = 1
+			albumArrayData.allUpFileCount = 0
+			albumArrayData.upFileCount = 0
 
+			// 先统计本次总共需要上传多少
+			const bakAlbumArr = albumArrayData.tankDataOnce
+			bakAlbumArr.forEach((val) => {
+				if (val.backups != 0) {
+					albumArrayData.allUpFileCount += val.count
+				}
+			})
 
-			// 
 			const res = await matterPage({
 				page: 0,
 				pageSize: appConfig.value.maxPageSize,
@@ -110,8 +118,6 @@ async function upFileToTank() {
 			} as matterPageReqType)
 			const serverFileArr : Array<fileDetailType> = res.data
 			console.log("服务器上备份文件夹下所有文件夹、文件列表", serverFileArr);
-			const bakAlbumArr = albumArrayData.tankDataOnce
-
 			for (let i = 0; i < bakAlbumArr.length; i++) {
 				const bakAlbum = bakAlbumArr[i]
 				if (bakAlbum.backups != 0) {
@@ -126,7 +132,6 @@ async function upFileToTank() {
 						bakAlbum.uuid = serverFile.uuid
 					}
 					// 开始查询并且上传
-					// appTaskStatus.backups = 0
 					// 1. 查询 tank 服务器上该文件夹下所有文件
 					const fileList = await matterPage({
 						page: 0,
@@ -159,6 +164,9 @@ async function upFileToTank() {
 				}
 			}
 			appTaskStatus.backups = 2
+			setTimeout(function () {
+				appTaskStatus.backups = 3
+			}, 30000);
 		}
 	}
 
@@ -175,7 +183,11 @@ async function upFileToTank() {
  */
 export function taskQueueInit() {
 	// console.log("-0-0-0-本地历史任务获取成功", tankTaskQueue);
-	startTaskQueue()
+	tankTaskQueue.push({
+		type: 1,
+		status: 0
+	} as taskQueueType)
+	// startTaskQueue()
 	// uni.getStorage({
 	// 	key: taskQueueKeyName,
 	// 	success(res) {

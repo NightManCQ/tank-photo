@@ -1,0 +1,19 @@
+export type themeType = {
+	/**
+	 * 主题颜色
+	 */
+	primaryColor : string
+	/**
+	 * 前景色
+	 */
+	fgColor : string
+}
+
+
+/**
+ * 主题
+ */
+export const theme = reactive({
+	primaryColor: "#08C360",
+	fgColor: "#ffffff"
+} as themeType)

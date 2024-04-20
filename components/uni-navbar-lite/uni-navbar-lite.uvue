@@ -1,8 +1,8 @@
 <template>
 	<view class="uni-navbar">
 		<view class="uni-navbar-inner" :style="navbarStyle">
-			<view class="left-content" @click="back">
-				<text class="uni-icons" v-if="leftIcon">{{unicode}}</text>
+			<view class="left-content">
+				<text @click="back" class="uni-icons" v-if="leftIcon">{{unicode}}</text>
 				<slot name="left"></slot>
 			</view>
 			<view class="uni-navbar-content" :class="{'is-left':isLeft}">

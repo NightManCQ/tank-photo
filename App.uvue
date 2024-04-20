@@ -20,9 +20,11 @@
 		onShow: function () {
 			getalbums()
 			console.log('App Show')
-			taskQueueInit()
 			getTankInfo()
 			updUserInfo()
+
+			// 最后执行
+			taskQueueInit()
 
 
 			// 获取系统信息

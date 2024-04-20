@@ -281,6 +281,7 @@ export function tankUserLogin() : Promise<userInfoType> {
 						key: userInfoKeyName,
 						data: globalData.user
 					})
+					getTankInfo()
 					resolve(globalData.user)
 					// uni.navigateBack()
 				}

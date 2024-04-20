@@ -75,6 +75,10 @@ type albumArrayDataType = {
 	 * 已上传了多少个文件
 	 */
 	upFileCount : number
+	/**
+	 * 总共需要上传多少个文件
+	 */
+	allUpFileCount : number
 }
 
 
@@ -86,7 +90,8 @@ export const albumArrayData = reactive({
 	tankData: [],
 	tankDataOnce: [],
 	albumMap: hashMapOf(),
-	upFileCount: 0
+	upFileCount: 0,
+	allUpFileCount: 0
 } as albumArrayDataType)
 
 

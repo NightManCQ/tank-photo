@@ -8,10 +8,10 @@
 		<view class="con_main" :class="ipData.conOpen?'tf_en':'tf_st'">
 			<uni-navbar-lite :title="ipData.pattern == 1?'Tank 相册':'选择备份的相册'" :leftIcon="false" nbStyle="height:50px;">
 				<template #left>
-					<!-- v-if="appTaskStatus.backups == 1" 备份任务进度提示 -->
-					<view class="cent" style="border: 1px solid blue;height: 100%;position: absolute;left: 12px;">
-						<text>{{albumArrayData.upFileCount}}/{{allBakFile}}</text>
-					</view>
+					<!--  备份任务进度提示 -->
+					<text v-if="appTaskStatus.backups == 1"
+						style="position: absolute;left: 12px;">{{albumArrayData.upFileCount}}/{{albumArrayData.allUpFileCount}}</text>
+					<text v-else-if="appTaskStatus.backups == 2" style="position: absolute;left: 12px;">同步完成</text>
 				</template>
 				<template #right>
 					<image v-if="ipData.pattern == 1" class="head_img" @click="drawerSwitch" :src="user.avatarUrl">
@@ -21,11 +21,9 @@
 					</view>
 				</template>
 				<template #bottom>
-					<!-- <view style="width: 100%;height: 4px;background-color: aqua;"></view>
-					 -->
+					<!-- 上传进度条 -->
 					<progress v-if="appTaskStatus.backups == 1" :stroke-width="2" :percent="percent_input"
-						activeColor="red" style="width: 100%" backgroundColor="#ffffff">
-						<text>uni-app-x</text>
+						:activeColor="theme.primaryColor" style="width: 100%" :backgroundColor="theme.fgColor">
 					</progress>
 				</template>
 			</uni-navbar-lite>
@@ -105,6 +103,8 @@
 	import { appConfig, globalData, tankSystemInfoType, appTaskStatus } from "@/store/global.data.uts";
 	import { userInfoType } from "@/pages/login/login.logic.uts";
 	import { albumArrayData, getalbums, tankAlbumType } from "./index.data.uts"
+	import { theme } from "@/store/theme.uts"
+	// import { primaryColor } from "./uni.scss"
 	// import iconpath from '@/static/icons/icons/iconfont.ttf'
 
 	type indexPageDataType = {
@@ -148,33 +148,9 @@
 	// 	// }, 1000);
 
 	// })
-	/**
-	 * 所有等待上传的文件
-	 */
-	const allBakFile = computed(() : number => {
-		let num = 0
-		albumArrayData.tankData.forEach((val) => {
-			val.forEach((album) => {
-				if (album.backups != 0) {
-					num += album.count
-				}
-			})
 
-		})
-		return num
-	})
 	const percent_input = computed(() : number => {
-		let num = 0
-		albumArrayData.tankData.forEach((val) => {
-			val.forEach((album) => {
-				if (album.backups != 0) {
-					num += album.count
-				}
-			})
-
-		})
-		// console.log("????????????????", (albumArrayData.upFileCount / num));
-		return (albumArrayData.upFileCount / num) * 100
+		return (albumArrayData.upFileCount / albumArrayData.allUpFileCount) * 100
 	})
 
 	function hfSel(item : tankAlbumType) : boolean {
