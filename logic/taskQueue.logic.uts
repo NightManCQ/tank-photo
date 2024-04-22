@@ -117,7 +117,7 @@ async function upFileToTank() {
 				orderDir: 'DESC'
 			} as matterPageReqType)
 			const serverFileArr : Array<fileDetailType> = res.data
-			// //console.log("服务器上备份文件夹下所有文件夹、文件列表", serverFileArr);
+			console.log("服务器上备份文件夹下所有文件夹、文件列表", serverFileArr);
 			for (let i = 0; i < bakAlbumArr.length; i++) {
 				const bakAlbum = bakAlbumArr[i]
 				if (bakAlbum.backups != 0) {
@@ -141,7 +141,7 @@ async function upFileToTank() {
 						deleted: false,
 						orderDir: 'DESC'
 					} as matterPageReqType)
-					//console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
+					console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
 					// 2. 查询该相册列表下所有的文件
 					// 3. 遍历文件，逐个对比，服务器没有的则上传
 					const value = albumUtil.getAlbumsData(bakAlbum.correlationId)
@@ -150,12 +150,12 @@ async function upFileToTank() {
 						const fileVal = value[i1]
 						const serFile = fileList.data.find((svf) : boolean => svf["name"] == fileVal.url.substringAfterLast('/'))
 						if (serFile == null) {
-							// //console.log("需要上传", fileVal);
+							console.log("需要上传", fileVal);
 							await tankUploadFile(fileVal.url, staticData.backupFile.spaceUuid, bakAlbum.uuid!)
 							// 统计已上传数量
 							albumArrayData.upFileCount++
 						} else {
-							// //console.log("不需要上传", fileVal)
+							console.log("不需要上传", fileVal)
 							albumArrayData.upFileCount++
 						}
 					}

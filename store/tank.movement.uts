@@ -185,20 +185,26 @@ export function matterPage(param : matterPageReqType) : Promise<matterPageResTyp
  */
 export function updUserInfo() {
 	let data = uni.getStorageSync(userInfoKeyName)!
+	console.log("---------------------开始获取用户信息", data);
 	if (data != "") {
 		uni.request<tankResponseType<userInfoType>>({
 			url: appConfig.value.server + "/api/user/info",
 			success(res) {
 				globalData.user = res.data?.data!
+
 				uni.setStorage({
 					key: userInfoKeyName,
 					data: globalData.user
 				})
 				console.log("执行逻辑成功：更新用户信息", globalData.user)
-			}, fail(_) {
+			}, fail(err) {
 				// 可能是cookies失效了
 				// 要么重新执行登陆
 				// 
+				console.log("!!! 获取任务信息失败", err);
+			},
+			complete() {
+				console.log("-=-=-=-= uni.request 完成");
 			}
 		})
 	}
