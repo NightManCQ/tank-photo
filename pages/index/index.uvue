@@ -175,7 +175,7 @@
 	})
 
 	onLoad((param) => {
-		if (param["pattern"] != "") {
+		if (param["pattern"] != null) {
 			ipData.pattern = param["pattern"]!.toInt()
 		}
 	})

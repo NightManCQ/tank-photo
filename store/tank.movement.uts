@@ -246,7 +246,7 @@ export function tankUploadFile(url : string, spaceUuid : string, puuid : string)
 			},
 			success(res) {
 				// staticData.backupFileName = mkName
-				// //console.log("------------", res);
+
 				if (res.statusCode == 200) {
 					const resObj = JSON.parse<tankResponseType<fileDetailType>>(res.data)
 					resolve(resObj?.data!)
@@ -256,6 +256,9 @@ export function tankUploadFile(url : string, spaceUuid : string, puuid : string)
 			},
 			fail(err) {
 				reject(err)
+			},
+			complete(res) {
+				console.log("------------", res);
 			}
 		})
 	})
