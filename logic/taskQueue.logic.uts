@@ -151,7 +151,9 @@ async function upFileToTank() {
 						const serFile = fileList.data.find((svf) : boolean => svf["name"] == fileVal.url.substringAfterLast('/'))
 						if (serFile == null) {
 							console.log("需要上传", fileVal);
-							await tankUploadFile(fileVal.url, staticData.backupFile.spaceUuid, bakAlbum.uuid!)
+							await tankUploadFile(fileVal.url, staticData.backupFile.spaceUuid, bakAlbum.uuid!).catch((err)=>{
+								console.log("上传api报错",err);
+							})
 							// 统计已上传数量
 							albumArrayData.upFileCount++
 						} else {
