@@ -3,6 +3,8 @@
 /dist
 /unpackage/cache
 /unpackage/dist
+/unpackage/appDist
+/unpackage/debug
 
 # IDE
 .idea/
