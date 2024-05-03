@@ -17,6 +17,7 @@ import HashMap from "java.util.HashMap";
  * 媒体文件类
  */
 export class mediaFile {
+	id : number
 	/**
 	 * url
 	 */
@@ -26,7 +27,8 @@ export class mediaFile {
 	 * 2: 视频
 	 */
 	type : number;
-	constructor(type : number, url : string) {
+	constructor(id : number, type : number, url : string) {
+		this.id = id
 		this.url = url
 		this.type = type
 	}
@@ -202,7 +204,7 @@ export class albumUtil {
 
 		const uriList : Array<mediaFile> = []
 		let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
-		const { BUCKET_ID, DATE_ADDED, DATA } = fileClumns
+		const { BUCKET_ID, DATE_ADDED, DATA, _ID } = fileClumns
 
 
 
@@ -218,16 +220,19 @@ export class albumUtil {
 			albumUtil.mediaFileOption,//列
 			// BUCKET_ID + "='" + bucketId + "'",//查询条件
 			strArr.join(" or "),
-			// `${bucketId.join()}` ,
 			null,
 			DATE_ADDED + " DESC"
 		) as Cursor
 
 		let fileUrl = cursor.getColumnIndexOrThrow(DATA)
+		let fileId = cursor.getColumnIndexOrThrow(_ID)
+		// console.log("================", id);
 		while (cursor.moveToNext()) {
 			const url = cursor.getString(fileUrl)
+			const id = cursor.getInt(fileId)
+			// console.log("==============", id);
 			// let uri : Uri = Uri.parse(url) //转换
-			uriList.push(new mediaFile(1, url))
+			uriList.push(new mediaFile(id, 1, url))
 		}
 
 
@@ -241,10 +246,14 @@ export class albumUtil {
 		) as Cursor
 
 		let fileVideoUrl = cursor.getColumnIndexOrThrow(DATA)
+
+		let vidFileId = cursor.getColumnIndexOrThrow(_ID)
 		while (cursorVideo.moveToNext()) {
 			const url = cursorVideo.getString(fileVideoUrl)
+			const id = cursor.getInt(vidFileId)
+			// console.log("==============", id);
 			// let uri : Uri = Uri.parse(url) //转换
-			uriList.push(new mediaFile(2, url))
+			uriList.push(new mediaFile(id, 2, url))
 		}
 		return uriList
 	}

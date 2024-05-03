@@ -104,6 +104,13 @@
 	import { userInfoType } from "@/pages/login/login.logic.uts";
 	import { albumArrayData, getalbums, tankAlbumType } from "./index.data.uts"
 	import { theme } from "@/store/theme.uts"
+	import { aaaaaaaaaaaaaaa, MyApiOptions } from "@/uni_modules/nn-sqlite"
+
+
+
+	aaaaaaaaaaaaaaa({
+		paramA: true
+	} as MyApiOptions)
 	// import { primaryColor } from "./uni.scss"
 	// import iconpath from '@/static/icons/icons/iconfont.ttf'
 

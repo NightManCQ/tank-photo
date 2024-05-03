@@ -1,0 +1,16 @@
+// *
+//  * 引用 Android 系统库，示例如下：
+//  * import { Context } from "android.content.Context";
+//  * [可选实现，按需引入]
+//  */
+
+import { MyApiOptions } from '../interface.uts';
+
+
+
+
+
+export function aaaaaaaaaaaaaaa(aa : MyApiOptions) {
+	console.log("??????????", aa);
+}
+

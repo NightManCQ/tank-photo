@@ -8,7 +8,14 @@ import Uri from "android.net.Uri";
  * 媒体文件实体类型
  */
 export type mediaFileType = {
-
+	/**
+	 * id
+	 */
+	id : number
+	/**
+	 * 预览状态
+	 */
+	preview ?: boolean
 	/**
 	 * 文件类型
 	 */
@@ -39,6 +46,7 @@ export function loadAlbumData(id : Array<number>) : Array<Array<mediaFileType>> 
 		const yNum = i / albumDetailClumns
 		const item = value[i]
 		const addObj : mediaFileType = {
+			id: item.id,
 			url: item.url,
 			type: item.type,
 			status: 0

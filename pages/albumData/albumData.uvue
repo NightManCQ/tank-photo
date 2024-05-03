@@ -2,23 +2,51 @@
 
 
 
-
+	<uni-navbar-lite :title="'Tank 相册'" nbStyle="height:50px;"></uni-navbar-lite>
 
 
 	<list-view ref="listView" id="ashlkjl0i3jkagpjgml1223fqfsf" class="container_al" :style="conStyle" :rebound="false"
 		:scroll-y="true" :custom-nested-scroll="true">
-		<list-item :type="4" style="margin-top: 20px;"></list-item>
+		<!-- <list-item :type="4" style="margin-top: 20px;"></list-item> -->
 		<list-item class="ab_it" v-for="(itemArr,index) in pageData.dataList" :key="index">
-			<image :style="photoStyle" class="ab_img" :src="item.url" v-for="(item,indexT) in itemArr" :key="indexT"
-				@click="imgClick(item)">
-			</image>
+			<template v-for="(item,subIndex) in itemArr">
+
+				<view class="ab_v" :style="photoStyle">
+					<image class="ab_img" v-if="item.type == 1" :src="item.url"
+						:style="item.preview == true ? preViewSty : photoStyle"
+						:mode="item.preview == true ? 'aspectFit':'aspectFill'"
+						@click="imgClick(itemArr,subIndex,index)">
+					</image>
+
+					<video v-else-if="item.type == 2" :style="photoStyle" class="ab_img" :src="item.url"
+						@click="imgClick(itemArr,subIndex,index)"></video>
+
+				</view>
+
+
+
+
+			</template>
+
 			<!-- <text class="text">{{item.name}} {{item.count}}</text> -->
 		</list-item>
 		<list-item :type="5" style="margin-bottom: 100px;"></list-item>
 	</list-view>
 
 
-
+	<view v-if="pageData.preViewShow == true" class="pre_view" :class="{pre_view_act:pageData.preViewShowTwo ==  true}"
+		:style="conStyle">
+		<view class="opt_view" style="top: 0;" @click.stop="closePreView"></view>
+		<swiper style="flex:1;width: 100%;height: 100%;" @change="swiperChange"
+			:current-item-id="pageData.swiperCurrent">
+			<swiper-item v-for="(item) in pageData.swiperArr" :item-id="item.id.toString()"
+				style="display: flex;justify-content: center;align-items: center;">
+				<image :src="item.url" style="width: 100%;height:100%;border: 1px solid red;" mode="aspectFit"></image>
+				<text style="position: absolute;bottom: 100rpx;color: red;">{{item.id.toString()}}</text>
+			</swiper-item>
+		</swiper>
+		<view class="opt_view" style="bottom: 0;"></view>
+	</view>
 
 
 </template>
@@ -30,21 +58,42 @@
 	// import [mkdirFileName] from "@/store/"
 	import { mkdirFileName } from "../../store/tank.movement.uts"
 
+	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
+
 	type albumDetailDataType = {
 		alId : string
 		dataList : Array<Array<mediaFileType>>
+		preViewShow : boolean
+		preViewShowTwo : boolean
+		swiperArr : Array<mediaFileType>
+		swiperCurrent : string
+		lasSwCurr : number
+		arrIndex : number
 	}
 
 	const pageData = reactive({
 		alId: "",
-		dataList: []
-
+		dataList: [],
+		preViewShow: false,
+		swiperArr: [],
+		lasSwCurr: 0,
+		swiperCurrent: "",
+		arrIndex: 0,
+		preViewShowTwo: false
 	} as albumDetailDataType)
 
-
+	/**
+	 * 外层容器的宽高
+	 */
 	const conStyle = computed(() : string => {
 		return `width:${globalData.windowInfo.windowWidth}px;height:${globalData.windowInfo.screenHeight}px;`
 	})
+	const preViewSty = computed(() : string => {
+		return `width:${globalData.windowInfo.windowWidth}px;height:${globalData.windowInfo.screenHeight}px;position: fixed;top:0;left:0;`
+	})
+	/**
+	 * 单个照片的宽高
+	 */
 	const photoStyle = computed(() : string => {
 		let photoStyle = uni.getStorageSync(clumn3KeyName)!
 		if (photoStyle != "") {
@@ -73,9 +122,102 @@
 			arr.push(parseInt(val))
 		})
 		pageData.dataList = loadAlbumData(arr)
+		console.log("---------------相册详情", pageData.dataList);
 	})
 
-	function imgClick(item : mediaFileType) {
+	// onBackPress(() => {
+
+	// })
+	function imgClick(arr : Array<mediaFileType>, subIndex : number, index : number) {
+		console.log("点击了某个图片或者视频", arr);
+		// uni.previewImage({
+		// 	urls: [item.url]
+		// })
+		// if (pageData.preViewShow == false) {
+
+		// }
+		const item = arr[subIndex]
+		item.preview = item.preview == true ? false : true
+		// i.preview = true
+		if (pageData.preViewShow == false) {
+			pageData.preViewShow = true
+			pageData.swiperArr = arr
+
+			pageData.arrIndex = index
+			setTimeout(() => {
+
+				pageData.swiperCurrent = item.id.toString()
+				setTimeout(() => {
+					pageData.preViewShowTwo = true
+					item.preview = false
+				}, 1000)
+
+			}, 0)
+			if (arr.length < 3) {
+				// 说明是最后一列需要往数组前面+
+				// pageData.swiperArr.unshift()
+			}
+		}
+
+	}
+	/**
+	 * 关闭预览窗口
+	 */
+	function closePreView() {
+		pageData.preViewShow = false
+
+		pageData.preViewShowTwo = false
+		pageData.swiperArr = []
+		pageData.swiperCurrent = ""
+	}
+	/**
+	 * 往数组后面追加
+	 */
+	function addSwiperArr(index : number) {
+		if (index > 0 && index < pageData.dataList.length) {
+			pageData.dataList[index].filter((item) : boolean => {
+				pageData.swiperArr.push(item)
+				return true
+			})
+
+		}
+	}
+	function unfSwiperArr(index : number) {
+		if (index >= 0 && index < pageData.dataList.length) {
+			pageData.dataList[index].filter((item) : boolean => {
+				pageData.swiperArr.unshift(item)
+				return true
+			})
+		}
+	}
+
+	/**
+	 * @param {Object} e
+	 */
+	function swiperChange(event : UniSwiperChangeEvent) {
+		let index = pageData.arrIndex
+		const lef = event.detail.current < pageData.lasSwCurr
+		const curr = event.detail.current
+		// // 前进
+		// if (pageData.swiperArr.length - curr <= 2) {
+
+		// 	index += 1
+
+		// 	console.log("__________", pageData.swiperArr.length, curr, pageData.lasSwCurr, index);
+		// 	addSwiperArr(index)
+		// }
+		// // 当处于第二个预览图，并且是往左滑的动作时
+		// else 
+		if ((curr == 1 && lef == true) || (curr == 0 && lef == true)) {
+			index -= 1
+
+			// unfSwiperArr(index)
+			console.log("__________!!!!!", pageData.swiperArr.length, curr, pageData.lasSwCurr, index);
+		}
+
+		pageData.arrIndex = index
+		pageData.lasSwCurr = curr
+
 
 	}
 </script>
@@ -87,14 +229,60 @@
 		// border: 1px solid red;
 	}
 
+	.pre_view {
+		position: fixed;
+		top: 0;
+		left: 0;
+		// border: 4px solid red;
+		z-index: 9999;
+		display: flex;
+		// flex-direction: column;
+		background-color: #fff;
+		transition-property: all;
+
+		transition-duration: 0.3s;
+		opacity: 0;
+
+		.opt_view {
+			border: 1px solid blue;
+			width: 100%;
+			height: 200rpx;
+			position: absolute;
+			background-color: #fff;
+			z-index: 999;
+			opacity: 0.5;
+		}
+	}
+
+	.pre_view_act {
+		opacity: 1;
+	}
+
 	.ab_it {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
 		margin-bottom: 10px;
+		// gap: 10px;
+		// margin-left: 10px;
 
-		.ab_img {
+		.ab_v {
+			background-color: #fff;
 			margin-left: 10px;
 		}
+
+		.ab_img {
+			width: 100%;
+			height: 100%;
+			// transition: ;
+			// transition-property: width height top left;
+			// // transition-delay: 3s;
+			// transition-duration: 0.5s;
+			transition-property: all;
+			transform-origin: center;
+			transition-duration: 0.1s;
+		}
+
+
 	}
 </style>

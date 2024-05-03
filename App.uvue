@@ -15,11 +15,8 @@
 
 			// 不是非黑即白，就是一个巨大的灰色。
 			// 钱一定要捏到最后才放
-
-		},
-		onShow: function () {
 			getalbums()
-			//console.log('App Show')
+
 			getTankInfo()
 			updUserInfo()
 
@@ -27,6 +24,9 @@
 			setTimeout(function () {
 				taskQueueInit()
 			}, 1000);
+		},
+		onShow: function () {
+			console.log('App Show')
 
 
 

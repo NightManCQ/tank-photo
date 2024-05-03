@@ -31,8 +31,7 @@
 		{
 			"path": "pages/albumData/albumData",
 			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
+				"navigationStyle": "custom"
 			}
 		},
 		{
