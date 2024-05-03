@@ -150,7 +150,7 @@
 				setTimeout(() => {
 					pageData.preViewShowTwo = true
 					item.preview = false
-				}, 1000)
+				}, 200)
 
 			}, 0)
 			if (arr.length < 3) {
