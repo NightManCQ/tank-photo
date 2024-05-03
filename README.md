@@ -23,4 +23,4 @@
 
 下列为我的蓝眼云盘服务器提供的文件下载链接，随时可能关机下线
 
-- [4.0.31](https://pan.promise.pink:442/api/alien/download/ee8c67f5-76bf-4835-72d0-cb9125122d28/tank-app 4.0.31.apk)
+- [4.0.31](https://pan.promise.pink:442/api/alien/download/ee8c67f5-76bf-4835-72d0-cb9125122d28/tank-app-4.0.31.apk)
