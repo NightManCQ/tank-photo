@@ -11,7 +11,7 @@
 		<list-item class="ab_it" v-for="(itemArr,index) in pageData.dataList" :key="index">
 			<template v-for="(item,subIndex) in itemArr">
 
-				<view class="ab_v" :style="photoStyle">
+				<!-- 				<view class="ab_v" :style="photoStyle">
 					<image class="ab_img" v-if="item.type == 1" :src="item.url"
 						:style="item.preview == true ? preViewSty : photoStyle"
 						:mode="item.preview == true ? 'aspectFit':'aspectFill'"
@@ -21,7 +21,15 @@
 					<video v-else-if="item.type == 2" :style="photoStyle" class="ab_img" :src="item.url"
 						@click="imgClick(itemArr,subIndex,index)"></video>
 
-				</view>
+				</view> -->
+				<!-- 
+					:style="item.preview == true ? preViewSty : photoStyle" -->
+				<image class="ab_img" v-if="item.type == 1" :src="item.url" :style="photoStyle"
+					@click="imgClick(itemArr,subIndex,index)">
+				</image>
+
+				<video v-else-if="item.type == 2" :style="photoStyle" class="ab_img" :src="item.url"
+					@click="imgClick(itemArr,subIndex,index)"></video>
 
 
 
@@ -274,6 +282,7 @@
 		.ab_img {
 			width: 100%;
 			height: 100%;
+			margin-left: 10px;
 			// transition: ;
 			// transition-property: width height top left;
 			// // transition-delay: 3s;
