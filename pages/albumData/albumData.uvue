@@ -155,12 +155,12 @@
 			setTimeout(() => {
 
 				pageData.swiperCurrent = item.id.toString()
-				setTimeout(() => {
-					pageData.preViewShowTwo = true
-					item.preview = false
-				}, 200)
+				// 	setTimeout(() => {
+				// 		pageData.preViewShowTwo = true
+				// 		item.preview = false
+			}, 200)
 
-			}, 0)
+			// }, 0)
 			if (arr.length < 3) {
 				// 说明是最后一列需要往数组前面+
 				// pageData.swiperArr.unshift()
@@ -249,7 +249,7 @@
 		transition-property: all;
 
 		transition-duration: 0.3s;
-		opacity: 0;
+		// opacity: 0;
 
 		.opt_view {
 			border: 1px solid blue;
