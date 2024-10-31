@@ -16,7 +16,10 @@ export function getDeviceldInfo() {
 		success(res) {
 			//console.log("执行逻辑成功：获取设备系统信息", res);
 			staticData.deviceld.brand = res.brand
-			staticData.deviceld.model = res.model
+			if (res.model != null) {
+				staticData.deviceld.model = res.model!
+			}
+
 
 
 			// 如果已经登录了，就去查询当前设备是否有备份的记录

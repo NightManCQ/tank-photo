@@ -39,7 +39,7 @@
 				<list-item :type="2" style="margin-top: 20px;"></list-item>
 				<list-item class="album_list_sub" v-for="(itArr, index) in albumArrayData.tankData" :key="index">
 					<view class="ab_it" v-for="(item, indexTwo) in itArr" :key="indexTwo  + item.id +''">
-						<image class="ab_img" :style="albumStyle" :src="item.coverPicture" @click="getAlbumData(item)">
+						<image class="ab_img" :style="albumStyle" :src="item.coverPicture" @click="getAlbumData(item)" mode="aspectFill">
 						</image>
 						<text>{{item.name}} {{item.count}}</text>
 						<!-- 选择备份相册 -->
@@ -177,7 +177,7 @@
 
 	const albumStyle = computed(() : string => {
 		const { windowInfo } = globalData
-		const res = (windowInfo.windowWidth - 48) / 2
+		const res = (windowInfo.screenWidth - 48) / 2
 		return `width: ${res}px;height: ${res}px;`
 	})
 
@@ -345,6 +345,7 @@
 			background-color: $uni-bg-color;
 			position: absolute;
 			z-index: 1;
+			border: 1rpx solid red;
 
 			transition-property: transform;
 			transition-duration: 0.2s;

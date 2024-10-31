@@ -197,7 +197,7 @@ export class albumUtil {
 	static getAlbumsData(bucketId : Array<number>) : Array<mediaFile> {
 		// const arr = [111, 3333445]
 
-
+		console.log("---------------------------------");
 
 
 
@@ -213,7 +213,6 @@ export class albumUtil {
 			strArr.push(`${BUCKET_ID} = '${val}'`)
 		})
 
-		// //console.log("??????????????????", strArr.join(" or "));
 		// 查询图片
 		let cursor : Cursor = contentResolver.query(
 			MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -223,38 +222,50 @@ export class albumUtil {
 			null,
 			DATE_ADDED + " DESC"
 		) as Cursor
-
+		console.log("图片完成", cursor.getCount());
 		let fileUrl = cursor.getColumnIndexOrThrow(DATA)
 		let fileId = cursor.getColumnIndexOrThrow(_ID)
-		// console.log("================", id);
+		// console.log("执行查询完成1", cursor.getCount());
+		// let aaa = 0
 		while (cursor.moveToNext()) {
 			const url = cursor.getString(fileUrl)
 			const id = cursor.getInt(fileId)
 			// console.log("==============", id);
 			// let uri : Uri = Uri.parse(url) //转换
+			// aaa++
+			// console.log("执行查询完成=", cursor.moveToNext(), aaa);
 			uriList.push(new mediaFile(id, 1, url))
 		}
+		console.log("图片处理完成", uriList.length);
+		// console.log("=====", uriList.length);
+		// cursor.close()
 
 
-		// 查询视频
-		let cursorVideo : Cursor = contentResolver.query(
-			MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-			albumUtil.mediaFileOption,//列
-			BUCKET_ID + "='" + bucketId + "'",//查询条件
-			null,
-			DATE_ADDED + " DESC"
-		) as Cursor
+		console.log("-----查询视频");
+		// // 查询视频
+		// let cursorVideo : Cursor = contentResolver.query(
+		// 	MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+		// 	albumUtil.mediaFileOption,//列
+		// 	BUCKET_ID + "='" + bucketId + "'",//查询条件
+		// 	null,
+		// 	DATE_ADDED + " DESC"
+		// ) as Cursor
 
-		let fileVideoUrl = cursor.getColumnIndexOrThrow(DATA)
+		// let fileVideoUrl = cursorVideo.getColumnIndexOrThrow(DATA)
 
-		let vidFileId = cursor.getColumnIndexOrThrow(_ID)
-		while (cursorVideo.moveToNext()) {
-			const url = cursorVideo.getString(fileVideoUrl)
-			const id = cursor.getInt(vidFileId)
-			// console.log("==============", id);
-			// let uri : Uri = Uri.parse(url) //转换
-			uriList.push(new mediaFile(id, 2, url))
-		}
+		// let vidFileId = cursorVideo.getColumnIndexOrThrow(_ID)
+		// console.log("-----查询视频 end", cursorVideo.getCount());
+		// let va = 0
+		// while (cursorVideo.moveToNext()) {
+		// 	const url = cursorVideo.getString(fileVideoUrl)
+		// 	const id = cursor.getInt(vidFileId)
+		// 	va++
+		// 	console.log("--", va);
+		// 	// let uri : Uri = Uri.parse(url) //转换
+		// 	uriList.push(new mediaFile(id, 2, url))
+		// }
+		// console.log("视频处理完成", uriList.length);
+		// console.log("====end", uriList.length);
 		return uriList
 	}
 
