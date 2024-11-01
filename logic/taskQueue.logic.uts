@@ -2,7 +2,7 @@ import { albumArrayData } from "../pages/index/index.data";
 import { appConfig, staticData, appTaskStatus, globalData } from "../store/global.data";
 import { taskQueueKeyName } from "../store/storage.key";
 import { fileDetailType, matterPageReqType, matterPage, mkdirFileName, tankUploadFile } from "@/store/tank.movement.uts"
-import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
+import {  albumUtil } from "@/uni_modules/photo-util";
 
 
 

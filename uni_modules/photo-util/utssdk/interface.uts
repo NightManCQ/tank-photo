@@ -1,3 +1,6 @@
+
+import Uri from "android.net.Uri";
+import HashMap from "java.util.HashMap";
 // /**
 //  * interface.uts
 //  * uts插件接口定义文件，按规范定义接口文件可以在HBuilderX中更好的做到语法提示
@@ -13,6 +16,62 @@
 //   complete ?: (res : any) => void
 // }
 
+
+
+/**
+ * 媒体文件
+ */
+export type MediaFile = {
+	id : number
+	/**
+	 * url
+	 */
+	url : string
+	/**
+	 * 1 图片 
+	 * 2: 视频
+	 */
+	type : number;
+
+	/**
+	 * Uri
+	 */
+	uri : Uri;
+
+	/**
+	 * 文件类型
+	 */
+	ty : string;
+}
+
+
+
+/**
+ * 相册
+ */
+export type Album = {
+	/**
+	 * 相册id
+	 */
+	id : number;
+	/**
+	 * 相册名称
+	 */
+	name : string;
+	/**
+	 * 封面照片途径 Url
+	 */
+	coverPicture : string
+	/**
+	 * 文件数量
+	 */
+	count : number;
+	/**
+	 * 关联的相册id
+	 */
+	correlationId : HashMap<number, number>
+
+}
 // /**
 //  * 函数返回结果
 //  * 可以是void, 基本数据类型，自定义type, 或者其他类型。

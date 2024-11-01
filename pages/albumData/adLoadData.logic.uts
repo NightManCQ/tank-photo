@@ -1,5 +1,5 @@
 
-import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
+import {  albumUtil } from "@/uni_modules/photo-util";
 import { appConfig, globalData, staticData } from "@/store/global.data"
 import Uri from "android.net.Uri";
 
@@ -24,6 +24,8 @@ export type mediaFileType = {
 	 * url
 	 */
 	url : string
+	uri : Uri
+	ty : string
 	/**
 	 * 文件上传状态
 	 * 0:未上传
@@ -50,7 +52,9 @@ export function loadAlbumData(id : Array<number>) : Array<Array<mediaFileType>> 
 			id: item.id,
 			url: item.url,
 			type: item.type,
-			status: 0
+			status: 0,
+			uri: item.uri,
+			ty: item.ty
 		}
 
 		if (i % albumDetailClumns == 0) {

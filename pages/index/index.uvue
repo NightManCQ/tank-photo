@@ -39,7 +39,8 @@
 				<list-item :type="2" style="margin-top: 20px;"></list-item>
 				<list-item class="album_list_sub" v-for="(itArr, index) in albumArrayData.tankData" :key="index">
 					<view class="ab_it" v-for="(item, indexTwo) in itArr" :key="indexTwo  + item.id +''">
-						<image class="ab_img" :style="albumStyle" :src="item.coverPicture" @click="getAlbumData(item)" mode="aspectFill">
+						<image class="ab_img" :style="albumStyle" :src="item.coverPicture" @click="getAlbumData(item)"
+							mode="aspectFill">
 						</image>
 						<text>{{item.name}} {{item.count}}</text>
 						<!-- 选择备份相册 -->
@@ -105,7 +106,10 @@
 	import { albumArrayData, getalbums, tankAlbumType } from "./index.data.uts"
 	import { theme } from "@/store/theme.uts"
 	import { aaaaaaaaaaaaaaa, MyApiOptions } from "@/uni_modules/nn-sqlite"
+	import { hideBottomBar } from "../../utils/page.utils.uts"
+	import { onMounted, onUnmounted } from "vue";
 
+	hideBottomBar()
 
 
 	aaaaaaaaaaaaaaa({

@@ -7,6 +7,10 @@
 	import { setStoTaskQueue, taskQueueInit } from "./logic/taskQueue.logic.uts"
 	import { getTankInfo, updUserInfo } from "./store/tank.movement.uts"
 	import { getalbums } from "@/pages/index/index.data.uts"
+	// import { hideBottomBar } from "./utils/page.utils.uts"
+
+
+
 
 	// let firstBackTime = 0
 	export default {

@@ -17,7 +17,7 @@
 使用：
 
 ```ts
-import { Album, albumUtil, mediaFile } from "@/uni_modules/photo-util";
+import { Album, albumUtil } from "@/uni_modules/photo-util";
 import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
 
 /**

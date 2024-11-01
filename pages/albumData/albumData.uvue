@@ -7,36 +7,10 @@
 
 	<list-view ref="listView" id="ashlkjl0i3jkagpjgml1223fqfsf" class="container_al" :style="conStyle" :rebound="false"
 		:scroll-y="true" :custom-nested-scroll="true">
-		<!-- <list-item :type="4" style="margin-top: 20px;"></list-item> -->
 		<list-item class="ab_it" v-for="(itemArr,index) in pageData.dataList" :key="index">
-			<template v-for="(item,subIndex) in itemArr">
-
-				<!-- 				<view class="ab_v" :style="photoStyle">
-					<image class="ab_img" v-if="item.type == 1" :src="item.url"
-						:style="item.preview == true ? preViewSty : photoStyle"
-						:mode="item.preview == true ? 'aspectFit':'aspectFill'"
-						@click="imgClick(itemArr,subIndex,index)">
-					</image>
-
-					<video v-else-if="item.type == 2" :style="photoStyle" class="ab_img" :src="item.url"
-						@click="imgClick(itemArr,subIndex,index)"></video>
-
-				</view> -->
-				<!-- 
-					:style="item.preview == true ? preViewSty : photoStyle" -->
-				<image class="ab_img" mode="aspectFill" v-if="item.type == 1" :src="item.url" :style="photoStyle"
-					@click="imgClick(itemArr,subIndex,index)">
-				</image>
-
-				<video v-else-if="item.type == 2" :style="photoStyle" class="ab_img" :src="item.url"
-					@click="imgClick(itemArr,subIndex,index)"></video>
-
-
-
-
-			</template>
-
-			<!-- <text class="text">{{item.name}} {{item.count}}</text> -->
+			<image v-for="(item,subIndex) in itemArr" class="ab_img" mode="aspectFill" :src="item.uri"
+				:style="photoStyle" @click="imgClick(itemArr,subIndex,index)">
+			</image>
 		</list-item>
 		<list-item :type="5" style="margin-bottom: 100px;"></list-item>
 	</list-view>
