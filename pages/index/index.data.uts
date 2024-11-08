@@ -2,7 +2,8 @@ import { xxPermissions } from "../../uni_modules/xx-XXPermissions/utssdk/app-and
 import { Album, albumUtil } from "@/uni_modules/photo-util";
 import Uri from "android.net.Uri";
 import { locatAlbumKeyName } from "@/store/storage.key.uts"
-import { appConfig, bakAlbumType } from "@/store/global.data.uts"
+import { appConfig, bakAlbumType, globalData, staticData } from "@/store/global.data.uts"
+import { fileDetailType, matterPageReqType, matterPage, mkdirFileName, tankUploadFile } from "@/store/tank.movement.uts"
 // import { UTSAndroid } from "io.dcloud.uts";
 // // import Runnable from "java.lang.Runnable";
 // import Thread from "java.lang.Thread";
@@ -101,42 +102,27 @@ export const albumArrayData = reactive({
  * 获取相册列表
  */
 export function getalbums() {
-	uni.getStorage({
-		key: locatAlbumKeyName,
-		success(res) {
-			// //console.log("----------------------", res.data);
-			albumArrayData.tankDataOnce = JSON.parse<Array<tankAlbumType>>(JSON.stringify(res.data))!
-			// const arr = albumArrayData.tankDataOnce
-			// const viewArr = albumArrayData.tankData
-			// for (let i = 0; i < arr.length; i++) {
-			// 	const { albumClumns } = appConfig.value
-			// 	const val = arr[i]
-			// 	const yNum = i / albumClumns
-			// 	if (i % albumClumns == 0) {
-			// 		viewArr.push([])
-			// 		viewArr[yNum].push(val)
-			// 	} else {
-			// 		viewArr[yNum].push(val)
-			// 	}
-			// }
-
-			// 在一个独立线程里面进行更新
-			// UTSAndroid.getDispatcher("io").async(function (_) {
-			// 	//console.log("gen ------------ ");
-			updAlbumArray()
-			// }, null)
-
-		},
-		fail() {
-			//console.log("====获取失败");
-			updAlbumArray()
-		}
-	})
-
-	// updAlbumArray()
+	// uni.getStorage({
+	// 	key: locatAlbumKeyName,
+	// 	success(res) {
+	// 		// //console.log("----------------------", res.data);
+	// 		albumArrayData.tankDataOnce = JSON.parse<Array<tankAlbumType>>(JSON.stringify(res.data))!
+	// 		updAlbumArray()
 
 
 
+
+
+
+
+	// 		// }, null)
+
+	// 	},
+	// 	fail() {
+	// 		//console.log("====获取失败");
+	updAlbumArray()
+	// 	}
+	// })
 }
 
 
@@ -188,7 +174,30 @@ function updAlbumArray() {
 			key: locatAlbumKeyName,
 			data: newOnceArr
 		})
-		// //console.log("------------", newOnceArr.length, newOnceArr);
+		console.log("------------", newOnceArr.length, albumArrayData);
+
+
+		console.log("---",globalData.user);
+		// 如果已经登录了
+		if (globalData.user.uuid != "") {
+			matterPage({
+				page: 0,
+				pageSize: appConfig.value.maxPageSize,
+				orderCreateTime: 'DESC',
+				puuid: staticData.backupFile.uuid,
+				deleted: false,
+				orderDir: 'DESC'
+			} as matterPageReqType).then((res) => {
+				const serverFileArr : Array<fileDetailType> = res.data
+				console.log("服务器上的备份文件夹", serverFileArr);
+			})
+
+
+
+		}
+
+
+
 	}
 	//  else {
 	// 	// if (type == 1) {

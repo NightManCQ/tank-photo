@@ -194,7 +194,7 @@ export function updUserInfo() {
 					tankUserLogin()
 				} else {
 					globalData.user = JSON.parse<userInfoType>(JSON.stringify(res.data!["data"]))!
-					console.log("执行逻辑成功：更新用户信息", globalData.user)
+					// console.log("执行逻辑成功：更新用户信息", globalData.user)
 				}
 			}, fail(_) {
 				uni.showToast({
@@ -218,7 +218,7 @@ export function getTankInfo() {
 			method: "POST",
 			success(res) {
 				globalData.tankSystemInfo = res.data?.data!
-				console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
+				// console.log("执行逻辑成功：获取后端系统信息", globalData.tankSystemInfo)
 			},
 			fail(_) {
 				//console.log("执行逻辑成功：获取后端系统信息 失败", err)

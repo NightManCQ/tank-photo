@@ -42,6 +42,8 @@
 
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
 
+	import { matterPage, matterPageReqType } from "@/store/tank.movement.uts"
+
 	type albumDetailDataType = {
 		alId : string
 		dataList : Array<Array<mediaFileType>>
@@ -99,13 +101,26 @@
 		pageData.alId = option["id"]!
 	})
 
-	onReady(() => {
+	onShow(async () => {
 		const arr : number[] = []
 		pageData.alId.split(",").forEach((val) => {
 			arr.push(parseInt(val))
 		})
 		pageData.dataList = loadAlbumData(arr)
 		console.log("---------------相册详情", pageData);
+
+		// const res = await matterPage({
+		// 	page: 0,
+		// 	pageSize: appConfig.value.maxPageSize,
+		// 	orderCreateTime: 'DESC',
+		// 	puuid: staticData.backupFile.uuid,
+		// 	deleted: false,
+		// 	orderDir: 'DESC'
+		// } as matterPageReqType)
+		
+		
+		
+		
 	})
 
 	// onBackPress(() => {
