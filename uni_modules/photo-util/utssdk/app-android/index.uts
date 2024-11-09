@@ -44,13 +44,20 @@ class fileClumns {
 	 */
 	static DATA = MediaStore.Files.FileColumns.DATA
 	/**
-	 * 文件名
+	 * 文件标题
 	 */
 	static TITLE = MediaStore.Files.FileColumns.TITLE
 	/**
 	 * 文件类型
 	 */
 	static MIME_TYPE = MediaStore.Files.FileColumns.MIME_TYPE
+
+
+
+	// /**
+	//  * 文件name
+	//  */
+	// static NAME = MediaStore.Files.FileColumns.NAME
 }
 
 /**
@@ -63,27 +70,12 @@ const externalContentUri : Uri = MediaStore.Files.getContentUri("external")
  * 需要的媒体文件属性
  */
 const mediaFileOption = arrayOf(
-	/**
-	 * 获取ID列的数据
-	 */
 	fileClumns._ID,
-	/**
-	 * 所属相册id
-	 */
 	fileClumns.BUCKET_ID,
-	/**
-	 * 添加日期
-	 */
 	fileClumns.DATE_ADDED,
-	/**
-	 * 磁盘路径
-	 */
 	fileClumns.DATA,
-	/**
-	 * 文件类型
-	 */
-	MediaStore.Files.FileColumns.MIME_TYPE,
-
+	fileClumns.MIME_TYPE,
+	fileClumns.TITLE,
 )
 
 
@@ -173,7 +165,7 @@ export class albumUtil {
 				photoList[bucketDisplayName]!!.count = 1
 				albums.push(photoList[bucketDisplayName]!);
 			} else {
-				item!!.count += 1
+				item.count += 1
 				item.correlationId[bucketId] = 1
 			}
 		}
@@ -190,7 +182,7 @@ export class albumUtil {
 	static getAlbumsData(bucketId : Array<number>) : Array<MediaFile> {
 		const uriList : Array<MediaFile> = []
 		let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
-		const { BUCKET_ID, DATE_ADDED, DATA, _ID, MIME_TYPE } = fileClumns
+		const { BUCKET_ID, DATE_ADDED, DATA, _ID, MIME_TYPE, TITLE } = fileClumns
 		const strArr : string[] = []
 		bucketId.forEach((val) => {
 			strArr.push(`${BUCKET_ID} = '${val}'`)
@@ -206,10 +198,12 @@ export class albumUtil {
 		let fileUrl = cursor.getColumnIndexOrThrow(DATA)
 		let fileId = cursor.getColumnIndexOrThrow(_ID)
 		let mt = cursor.getColumnIndexOrThrow(MIME_TYPE)
+		let tit = cursor.getColumnIndexOrThrow(TITLE)
 		while (cursor.moveToNext()) {
 			const url = cursor.getString(fileUrl)
 			const fileObj : MediaFile = {
 				id: cursor.getInt(fileId),
+				title: cursor.getString(tit),
 				url,
 				ty: cursor.getString(mt),
 				uri: Uri.parse(url),

@@ -3,10 +3,12 @@
 	// 	return uni.getWindowInfo();
 	// }
 
-	import { globalData, appConfig } from './store/global.data'
+	import { globalData, appConfig, storeInit } from './store/global.data'
 	import { setStoTaskQueue, taskQueueInit } from "./logic/taskQueue.logic.uts"
 	import { getTankInfo, updUserInfo } from "./store/tank.movement.uts"
 	import { getalbums } from "@/pages/index/index.data.uts"
+	import { xxPermissionsInit } from "@/uni_modules/xx-XXPermissions"
+	import { getDeviceldInfo } from "./logic/getDeviceldInfo.logic.uts"
 	// import { hideBottomBar } from "./utils/page.utils.uts"
 
 
@@ -15,20 +17,30 @@
 	// let firstBackTime = 0
 	export default {
 		onLaunch: function () {
-			//console.log('App Launch')
+
+			// 勿调整执行顺序
+			storeInit()
+			xxPermissionsInit()
+			getTankInfo()
+			// getalbums()
+			getDeviceldInfo()
+
+
+		},
+		onShow: function () {
+			console.log('App Show--------------------------------------------------')
+			getalbums()
+
+
+
+
+
 
 
 			// 最后执行
 			// setTimeout(function () {
 			// 	taskQueueInit()
 			// }, 1000);
-		},
-		onShow: function () {
-			console.log('App Show--------------------------------------------------')
-			getalbums()
-
-			getTankInfo()
-			updUserInfo()
 
 
 			// 获取系统信息
@@ -39,7 +51,7 @@
 		onHide: function () {
 			setStoTaskQueue()
 			//console.log('App Hide')
-			// uni.setStorageSync(systemConfigKeyName, appConfig.value)
+			// uni.setStorageSync(systemConfigKeyName, appConfig)
 
 		},
 		onLastPageBackPress: function () {

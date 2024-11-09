@@ -6,9 +6,9 @@
 
 			<text class="app_title">Tank 相册</text>
 
-			<input placeholder="服务器地址" class="input_v" v-model="appConfig.value.server" type="text" />
-			<input placeholder="账号" class="input_v" v-model="appConfig.value.username" type="text" />
-			<input placeholder="密码" class="input_v" type="password" v-model="appConfig.value.password" />
+			<input placeholder="服务器地址" class="input_v" v-model="appConfig.server" type="text" />
+			<input placeholder="账号" class="input_v" v-model="appConfig.username" type="text" />
+			<input placeholder="密码" class="input_v" type="password" v-model="appConfig.password" />
 
 
 			<button class="login_ing_btn" @click.stop="loginIng">
@@ -54,7 +54,7 @@
 		loginWorkIng = true
 		uni.setStorage({
 			key: systemConfigKeyName,
-			data: appConfig.value
+			data: JSON.stringify(appConfig)
 		})
 		tankUserLogin().then((_) => {
 			loginWorkIng = false

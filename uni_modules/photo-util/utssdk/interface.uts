@@ -22,6 +22,10 @@ import HashMap from "java.util.HashMap";
  * 媒体文件
  */
 export type MediaFile = {
+	/**
+	 * 标题
+	 */
+	title : string
 	id : number
 	/**
 	 * url

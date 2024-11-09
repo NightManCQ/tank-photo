@@ -1,6 +1,6 @@
-import { userInfoType } from "../pages/login/login.logic.uts"
-import { fileDetailType } from "@/store/tank.movement.uts"
-import { userInfoKeyName, systemConfigKeyName, backupFileKeyName } from "@/store/storage.key.uts"
+import { userInfoType } from "../pages/login/login.logic"
+import { fileDetailType, updUserInfo } from "@/store/tank.movement"
+import { userInfoKeyName, systemConfigKeyName, backupFileKeyName } from "@/store/storage.key"
 // import { getalbums } from "@/pages/index/index.data.uts"
 
 
@@ -259,7 +259,7 @@ export type bakAlbumType = {
 /**
  * tank 程序设置内容
  */
-type configType = {
+export type configType = {
 	/**
 	 * 是否开启备份，默认false
 	 */
@@ -293,27 +293,20 @@ type configType = {
 	 */
 	password : string
 }
-/**
- * 应用配置
- */
-export type appConfigType = {
-	value : configType
-}
+
 /**
  * tank 应用设置 
  */
 export const appConfig = reactive({
-	value: {
-		backup: false,
-		mobileNetworkBackup: false,
-		albumClumns: 2,
-		albumDetailClumns: 3,
-		maxPageSize: 500,
-		server: "",
-		username: "",
-		password: ""
-	}
-} as appConfigType)
+	backup: false,
+	mobileNetworkBackup: false,
+	albumClumns: 2,
+	albumDetailClumns: 3,
+	maxPageSize: 5000,
+	server: "",
+	username: "",
+	password: ""
+} as configType)
 
 
 /**
@@ -364,8 +357,11 @@ export function storeInit() {
 
 	// 获取 tank app设置 必须要同步
 	const conf = uni.getStorageSync(systemConfigKeyName)
-	if (typeof conf == "object") {
-		appConfig.value = JSON.parse<configType>(JSON.stringify(conf))!
+	if (conf != null) {
+		const cobj = JSON.parse<configType>(conf as string)!!
+		for (val in appConfig) {
+			appConfig[val] = cobj[val]
+		}
 	}
 
 	// 获取备份文件夹信息
@@ -377,12 +373,13 @@ export function storeInit() {
 	})
 
 	// 获取用户信息
-	uni.getStorage({
-		key: userInfoKeyName,
-		success(res) {
-			globalData.user = JSON.parse<userInfoType>(JSON.stringify(res.data))!
-		}
-	})
+	const lUinfo = uni.getStorageSync(userInfoKeyName)
+	if (lUinfo != null) {
+		const uifo = JSON.parse<userInfoType>(lUinfo as string)
+		globalData.user = uifo as userInfoType
+		// console.log("本地的用户信息", globalData.user);
+		updUserInfo()
+	}
 
-	//console.log("执行逻辑成功：仓库初始化", globalData)
+	console.log("执行逻辑成功：仓库初始化", appConfig, globalData)
 }

@@ -95,7 +95,7 @@ async function upFileToTank() {
 		// 1. 用户已经登录(服务端也登录，本地cookies有效)
 		// 2. 备份线程没有正在工作
 		// 3. 用户开启了备份
-		if (appConfig.value.backup && tqItem.type == 1 && globalData.user.uuid != "" && (appTaskStatus.backups != 1 || appTaskStatus.backups != 0)) {
+		if (appConfig.backup && tqItem.type == 1 && globalData.user.uuid != "" && (appTaskStatus.backups != 1 || appTaskStatus.backups != 0)) {
 			appTaskStatus.backups = 1
 			albumArrayData.allUpFileCount = 0
 			albumArrayData.upFileCount = 0
@@ -110,7 +110,7 @@ async function upFileToTank() {
 
 			const res = await matterPage({
 				page: 0,
-				pageSize: appConfig.value.maxPageSize,
+				pageSize: appConfig.maxPageSize,
 				orderCreateTime: 'DESC',
 				puuid: staticData.backupFile.uuid,
 				deleted: false,

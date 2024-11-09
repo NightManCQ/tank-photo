@@ -5,7 +5,7 @@
 
 		<view class="set_item">
 			<text>自动备份</text>
-			<switch class="switch-checked" :checked="appConfig.value.backup" @change="backupSwitch" />
+			<switch class="switch-checked" :checked="appConfig.backup" @change="backupSwitch" />
 		</view>
 		<view class="set_item btn_cli_anm_1" @click="navTo">
 			<text>备份的相册</text>
@@ -47,7 +47,7 @@
 	 * 修改设置是否备份
 	 */
 	function backupSwitch(e : UniSwitchChangeEvent) {
-		appConfig.value.backup = e.detail.value
+		appConfig.backup = e.detail.value
 	}
 
 	function navTo() {
@@ -61,23 +61,23 @@
 		// 存储设置
 		uni.setStorage({
 			key: systemConfigKeyName,
-			data: appConfig.value
+			data: JSON.stringify(appConfig)
 		})
 		// 存储相册列表（已选择备份的相册）
 		uni.setStorage({
 			key: locatAlbumKeyName,
 			data: albumArrayData.tankDataOnce
 		})
-		// console.log("??????????????????????",appConfig.value);
+		// console.log("??????????????????????",appConfig);
 		// 添加任务队列
-		if (appConfig.value.backup) {
+		if (appConfig.backup) {
 
 			tankTaskQueue.push({
 				type: 1,
 				status: 0
 			} as taskQueueType)
 		}
-		// console.log("！！！！！设置页面卸载存储设置内容", appConfig.value);
+		// console.log("！！！！！设置页面卸载存储设置内容", appConfig);
 	})
 	// 	}
 	// }

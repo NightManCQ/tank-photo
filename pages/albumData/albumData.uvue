@@ -7,11 +7,24 @@
 
 	<list-view ref="listView" id="ashlkjl0i3jkagpjgml1223fqfsf" class="container_al" :style="conStyle" :rebound="false"
 		:scroll-y="true" :custom-nested-scroll="true">
-		<list-item class="ab_it" v-for="(itemArr,index) in pageData.dataList" :key="index">
-			<image v-for="(item,subIndex) in itemArr" class="ab_img" mode="aspectFill" :src="item.uri"
-				:style="photoStyle" @click="imgClick(itemArr,subIndex,index)">
-			</image>
-		</list-item>
+
+
+
+		<template v-for="(itobj,index) in pageData.dataList">
+			<list-item class="ab_it" :key="`pd-in-${index}`" v-if="getViewArr(itobj,index,pageData.dataList).length>0">
+				<view class="ab_v" v-for="(item, indexTwo) in getViewArr(itobj,index,pageData.dataList)">
+					<image class="ab_img" mode="aspectFill" :key="indexTwo" :style="photoStyle" :src="item.url">
+					</image>
+					<text class="ab_st">完成</text>
+				</view>
+
+			</list-item>
+		</template>
+
+
+
+
+
 		<list-item :type="5" style="margin-bottom: 100px;"></list-item>
 	</list-view>
 
@@ -40,22 +53,36 @@
 	// import [mkdirFileName] from "@/store/"
 	import { mkdirFileName } from "../../store/tank.movement.uts"
 
+	import { albumArrayData, tankAlbumType } from "../index/index.data.uts"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
 
 	import { matterPage, matterPageReqType } from "@/store/tank.movement.uts"
 
 	type albumDetailDataType = {
+		/**
+		 * 相册id集合
+		 */
 		alId : string
-		dataList : Array<Array<mediaFileType>>
+		/**
+		 * 相册所在相册列表的索引
+		 */
+		index : number
+		dataList : Array<mediaFileType>
 		preViewShow : boolean
 		preViewShowTwo : boolean
 		swiperArr : Array<mediaFileType>
 		swiperCurrent : string
 		lasSwCurr : number
 		arrIndex : number
+		/**
+		 * 相册名称
+		 */
+		name : string
 	}
 
 	const pageData = reactive({
+		index: -1,
+		name: "",
 		alId: "",
 		dataList: [],
 		preViewShow: false,
@@ -66,39 +93,84 @@
 		preViewShowTwo: false
 	} as albumDetailDataType)
 
+
+
+	/**
+	 * 缓存
+	 */
+	const cacheMap = new Map<number, mediaFileType[]>();
+
+	/**
+	 * 确定页面渲染的数组位置
+	 */
+	const getViewArr = (item : mediaFileType, index : number, arr : mediaFileType[]) : mediaFileType[] => {
+		const cached = cacheMap.get(index);
+		if (cached != null) {
+			return cached;
+		}
+		if (index % 3 === 0) {
+			let viewArr : mediaFileType[] = [item];
+			if (index + 1 < arr.length) {
+				viewArr.push(arr[index + 1]);
+			}
+			if (index + 2 < arr.length) {
+				viewArr.push(arr[index + 2]);
+			}
+			cacheMap.set(index, viewArr);
+			return viewArr;
+		}
+		return [];
+	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * 外层容器的宽高
 	 */
 	const conStyle = computed(() : string => {
-		return `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.screenHeight}px;`
+		const { screenWidth, screenHeight } = globalData.windowInfo
+		return `width:${screenWidth}px;height:${screenHeight}px;`
 	})
 	const preViewSty = computed(() : string => {
-		return `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.screenHeight}px;position: fixed;top:0;left:0;`
+		const { screenWidth, screenHeight } = globalData.windowInfo
+		return `width:${screenWidth}px;height:${screenHeight}px;position: fixed;top:0;left:0;`
 	})
 	/**
 	 * 单个照片的宽高
 	 */
 	const photoStyle = computed(() : string => {
 		let photoStyle = ""
-		// let photoStyle = uni.getStorageSync(clumn3KeyName)!
-		// if (photoStyle != "") {
-		// 	return photoStyle as string
-		// }
-		// let photoStyle = ""
 		const { windowInfo } = globalData
-		const { albumDetailClumns } = appConfig.value
+		const { albumDetailClumns } = appConfig
 		const res = (windowInfo.screenWidth - (albumDetailClumns + 1) * 10) / 3
 		photoStyle = `width: ${res}px;height: ${res}px;`
 		// uni.setStorageSync(clumn3KeyName, photoStyle)
 		return photoStyle
 	})
 
-
 	onLoad((option) => {
+		const name = option["name"] as string
+		const index = parseInt(option['index'] as string)
 		uni.setNavigationBarTitle({
-			title: option["name"] as string,
+			title: name
 		})
 		pageData.alId = option["id"]!
+		pageData.name = name
 	})
 
 	onShow(async () => {
@@ -107,20 +179,62 @@
 			arr.push(parseInt(val))
 		})
 		pageData.dataList = loadAlbumData(arr)
-		console.log("---------------相册详情", pageData);
+		const hf = albumArrayData.tankDataOnce.find((item) : boolean => {
+			return item.name == pageData.name
+		})
+		console.log("==== loc", pageData.dataList);
+		if (hf != null) {
+			console.log("---------------相册详情", hf);
+			if (hf.uuid != null) {
+				matterPage({
+					page: 0,
+					pageSize: appConfig.maxPageSize,
+					orderCreateTime: 'DESC',
+					puuid: hf.uuid as string,
+					deleted: false,
+					orderDir: 'DESC'
+				} as matterPageReqType).then((res) => {
+					console.log('服务器上的相册数据', res.data);
+					const { dataList } = pageData
+					// res.data.filter()
+					for (let item in res.data) {
 
-		// const res = await matterPage({
-		// 	page: 0,
-		// 	pageSize: appConfig.value.maxPageSize,
-		// 	orderCreateTime: 'DESC',
-		// 	puuid: staticData.backupFile.uuid,
-		// 	deleted: false,
-		// 	orderDir: 'DESC'
-		// } as matterPageReqType)
-		
-		
-		
-		
+						const locHf = dataList.find((v) : boolean => { return v.url.substringAfterLast('/') == item.name })
+						if (locHf != null) {
+							locHf.status = 2
+							// console.log("匹配唱功");
+						} else {
+							// dataList.push({
+							// 	id: item.id,
+							// 	url: `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_100_100`,
+							// 	type: 1,
+							// 	status: 0,
+							// 	// uri: item.uri,
+							// 	ty: item.ty,
+							// 	name: item.title,
+							// 	uuid: ""
+							// })
+						}
+					}
+
+				})
+
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	})
 
 	// onBackPress(() => {
@@ -171,23 +285,23 @@
 	/**
 	 * 往数组后面追加
 	 */
-	function addSwiperArr(index : number) {
-		if (index > 0 && index < pageData.dataList.length) {
-			pageData.dataList[index].filter((item) : boolean => {
-				pageData.swiperArr.push(item)
-				return true
-			})
+	// function addSwiperArr(index : number) {
+	// 	if (index > 0 && index < pageData.dataList.length) {
+	// 		pageData.dataList[index].filter((item) : boolean => {
+	// 			pageData.swiperArr.push(item)
+	// 			return true
+	// 		})
 
-		}
-	}
-	function unfSwiperArr(index : number) {
-		if (index >= 0 && index < pageData.dataList.length) {
-			pageData.dataList[index].filter((item) : boolean => {
-				pageData.swiperArr.unshift(item)
-				return true
-			})
-		}
-	}
+	// 	}
+	// }
+	// function unfSwiperArr(index : number) {
+	// 	if (index >= 0 && index < pageData.dataList.length) {
+	// 		pageData.dataList[index].filter((item) : boolean => {
+	// 			pageData.swiperArr.unshift(item)
+	// 			return true
+	// 		})
+	// 	}
+	// }
 
 	/**
 	 * @param {Object} e
@@ -257,30 +371,35 @@
 	}
 
 	.ab_it {
+		margin-bottom: 10px;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		margin-bottom: 10px;
-		// gap: 10px;
-		// margin-left: 10px;
+
 
 		.ab_v {
-			background-color: #fff;
-			margin-left: 10px;
+			// width: 100%;
+			// height: 100%;
+			position: relative;
+			// border: 1rpx solid red;
+
+
+			.ab_img {
+				width: 100%;
+				height: 100%;
+				margin-left: 10px;
+				// border: 1rpx solid blue;
+
+			}
+
+			.ab_st {
+				position: absolute;
+				top: 10rpx;
+				right: 10rpx;
+			}
 		}
 
-		.ab_img {
-			width: 100%;
-			height: 100%;
-			margin-left: 10px;
-			// transition: ;
-			// transition-property: width height top left;
-			// // transition-delay: 3s;
-			// transition-duration: 0.5s;
-			transition-property: all;
-			transform-origin: center;
-			transition-duration: 0.1s;
-		}
+
 
 
 	}

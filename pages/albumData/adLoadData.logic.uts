@@ -1,5 +1,5 @@
 
-import {  albumUtil } from "@/uni_modules/photo-util";
+import { albumUtil } from "@/uni_modules/photo-util";
 import { appConfig, globalData, staticData } from "@/store/global.data"
 import Uri from "android.net.Uri";
 
@@ -17,14 +17,20 @@ export type mediaFileType = {
 	 */
 	preview ?: boolean
 	/**
-	 * 文件类型
+	 * 文件类型 我定义的类型
 	 */
 	type : number
 	/**
 	 * url
 	 */
 	url : string
+	/**
+	 * uri
+	 */
 	uri : Uri
+	/**
+	 * 文件的类型 通用的类型
+	 */
 	ty : string
 	/**
 	 * 文件上传状态
@@ -33,6 +39,17 @@ export type mediaFileType = {
 	 * 2：上传完成
 	 */
 	status : 0 | 1 | 2
+
+	/**
+	 * 文件名
+	 */
+	name : string
+	/**
+	 * uuid
+	 */
+	uuid : string
+
+
 }
 
 
@@ -40,11 +57,15 @@ export type mediaFileType = {
 /**
  * 根据相册id查询相册所有内容
  */
-export function loadAlbumData(id : Array<number>) : Array<Array<mediaFileType>> {
-	const arr : Array<Array<mediaFileType>> = []
-	const { albumDetailClumns } = appConfig.value
+export function loadAlbumData(id : Array<number>) : Array<mediaFileType> {
+	const arr : Array<mediaFileType> = []
+	const { albumDetailClumns } = appConfig
 	const value = albumUtil.getAlbumsData(id)
-	console.log("00000000000-----");
+
+
+
+
+
 	for (let i = 0; i < value.length; i++) {
 		const yNum = i / albumDetailClumns
 		const item = value[i]
@@ -54,22 +75,18 @@ export function loadAlbumData(id : Array<number>) : Array<Array<mediaFileType>> 
 			type: item.type,
 			status: 0,
 			uri: item.uri,
-			ty: item.ty
+			ty: item.ty,
+			name: item.title,
+			uuid: ""
 		}
-
-		if (i % albumDetailClumns == 0) {
-			arr.push([])
-
-		}
-
-		arr[yNum].push(addObj)
 
 		// if (i % albumDetailClumns == 0) {
 		// 	arr.push([])
-		// 	arr[yNum].push(addObj)
-		// } else {
-		// 	arr[yNum].push(addObj)
+
 		// }
+
+		arr.push(addObj)
+
 	}
 	return arr
 }

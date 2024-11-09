@@ -37,23 +37,26 @@
 			<list-view style="flex:1;" ref="listView" :id="ipData.id" :rebound="false" :scroll-y="true"
 				:custom-nested-scroll="true">
 				<list-item :type="2" style="margin-top: 20px;"></list-item>
-				<list-item class="album_list_sub" v-for="(itArr, index) in albumArrayData.tankData" :key="index">
-					<view class="ab_it" v-for="(item, indexTwo) in itArr" :key="indexTwo  + item.id +''">
-						<image class="ab_img" :style="albumStyle" :src="item.coverPicture" @click="getAlbumData(item)"
-							mode="aspectFill">
-						</image>
-						<text>{{item.name}} {{item.count}}</text>
-						<!-- 选择备份相册 -->
-						<view v-if="ipData.pattern == 2" class="sel_bak cent" :class="hfSel(item) ? 'pr_bg':''">
-							<text v-if="hfSel(item)" class="col_fg">√</text>
+				<template v-for="(itobj, index) in albumArrayData.tankDataOnce">
+					<list-item class="album_list_sub" :key="`li-k-${index}`"
+						v-if="getViewArr(itobj,index,albumArrayData.tankDataOnce).length>0">
+						<view class="ab_it"
+							v-for="(item, indexTwo) in getViewArr(itobj,index,albumArrayData.tankDataOnce)"
+							:key="indexTwo">
+							<image class="ab_img" :style="albumStyle" :src="item.coverPicture"
+								@click="getAlbumData(item,index,indexTwo)" mode="aspectFill">
+							</image>
+							<text>{{item.name}} {{item.count}}</text>
+							<view v-if="ipData.pattern == 2" class="sel_bak cent" :class="hfSel(item) ? 'pr_bg':''">
+								<text v-if="hfSel(item)" class="col_fg">√</text>
+							</view>
+							<view v-else-if="bakYes && item.backups != 0" class="bak_state cent">
+								<text class="col_fg " v-if="item.backups == 1">...</text>
+								<text class="col_fg " v-if="item.backups == 2">√</text>
+							</view>
 						</view>
-						<!-- 相册同步状态 -->
-						<view v-else-if="bakYes && item.backups != 0" class="bak_state cent">
-							<text class="col_fg " v-if="item.backups == 1">...</text>
-							<text class="col_fg " v-if="item.backups == 2">√</text>
-						</view>
-					</view>
-				</list-item>
+					</list-item>
+				</template>
 				<list-item :type="99" style="height: 20px;"></list-item>
 			</list-view>
 		</view>
@@ -146,7 +149,17 @@
 		return globalData.tankSystemInfo
 	})
 
-
+	const getViewArr = (item : tankAlbumType, index : number, arr : Array<tankAlbumType>) : Array<tankAlbumType> => {
+		if (index % 2 == 0) {
+			const num = index + 1
+			if (index + 1 < arr.length) {
+				return [item, arr[num]]
+			} else {
+				return [item]
+			}
+		}
+		return []
+	}
 
 	// const upLoadFileStatus = computed(() : boolean => {
 	// 	// setTimeout(function () {
@@ -171,7 +184,7 @@
 		ipData.conOpen = !ipData.conOpen
 	}
 	const bakYes = computed(() : boolean => {
-		return appConfig.value.backup
+		return appConfig.backup
 	})
 
 	const albumStyle = computed(() : string => {
@@ -259,12 +272,12 @@
 	/**
 	 * 前往相册详情页
 	 */
-	function getAlbumData(album : tankAlbumType) {
+	function getAlbumData(album : tankAlbumType, in1 : number, in2 : number) {
 		if (ipData.pattern == 1) {
 			uni.navigateTo({
 				animationType: "pop-in",
 				animationDuration: 50,
-				url: `/pages/albumData/albumData?id=${album.correlationId.join(",")}&name=${album.name}`
+				url: `/pages/albumData/albumData?id=${album.correlationId.join(",")}&name=${album.name}&index=${in1 + in2}`
 			})
 		} else if (ipData.pattern == 2) {
 			if (album.backups == 0) {
@@ -285,15 +298,10 @@
 		xxPermissions.requestSystemPermission(permission, "", function (allRight : boolean, grantedList : string[]) {
 			if (allRight) {
 				// 用户同意了全部权限
-				//console.log("用户同意了全部权限", grantedList);
 				getalbums()
 				albumArrayData.authorizationStatus = true
-				// this.
-				// albumListLoadData.getalbums()
-				// that.albumArray = albumListLoadData.albumArray
 			} else {
 				// 用户仅同意了 grantedList中的权限
-				//console.log("用户仅同意了 grantedList中的权限");
 			}
 		}, function (doNotAskAgain : boolean, grantedList : string[]) {
 			// 用户拒绝了部分权限，仅允许了grantedList中的权限
