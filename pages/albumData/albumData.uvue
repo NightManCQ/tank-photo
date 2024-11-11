@@ -15,7 +15,8 @@
 				<view class="ab_v" v-for="(item, indexTwo) in getViewArr(itobj,index,pageData.dataList)">
 					<image class="ab_img" mode="aspectFill" :key="indexTwo" :style="photoStyle" :src="item.url">
 					</image>
-					<text class="ab_st">完成</text>
+					<text class="ab_st" v-if="item.status == 2">好</text>
+					<text class="ab_st" v-else-if="item.status == 1">等</text>
 				</view>
 
 			</list-item>
@@ -182,9 +183,9 @@
 		const hf = albumArrayData.tankDataOnce.find((item) : boolean => {
 			return item.name == pageData.name
 		})
-		console.log("==== loc", pageData.dataList);
+
 		if (hf != null) {
-			console.log("---------------相册详情", hf);
+			// console.log("---------------相册详情", hf);
 			if (hf.uuid != null) {
 				matterPage({
 					page: 0,
@@ -194,51 +195,28 @@
 					deleted: false,
 					orderDir: 'DESC'
 				} as matterPageReqType).then((res) => {
-					console.log('服务器上的相册数据', res.data);
+					console.log('服务器上的相册数据', res);
 					const { dataList } = pageData
 					// res.data.filter()
-					for (let item in res.data) {
-
-						const locHf = dataList.find((v) : boolean => { return v.url.substringAfterLast('/') == item.name })
-						if (locHf != null) {
-							locHf.status = 2
-							// console.log("匹配唱功");
-						} else {
-							// dataList.push({
-							// 	id: item.id,
-							// 	url: `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_100_100`,
-							// 	type: 1,
-							// 	status: 0,
-							// 	// uri: item.uri,
-							// 	ty: item.ty,
-							// 	name: item.title,
-							// 	uuid: ""
-							// })
+					for (let inx1 = 0; inx1 < res.data.length; inx1++) {
+						const item = res.data[inx1]
+						for (let inx2 = 0; inx2 < dataList.length; inx2++) {
+							const lci = dataList[inx2]
+							if (lci.url.substringAfterLast('/') == item.name) {
+								dataList[inx2].status = 2
+								dataList[inx2].url = `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_200_200`
+								console.log("成功", inx2, dataList[inx2]);
+								break
+							}
 						}
 					}
-
+					console.log("==== loc", pageData.dataList);
 				})
-
 			}
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	})
 
 	// onBackPress(() => {
-
 	// })
 	function imgClick(arr : Array<mediaFileType>, subIndex : number, index : number) {
 		console.log("点击了某个图片或者视频", arr);

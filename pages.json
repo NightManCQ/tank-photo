@@ -56,7 +56,7 @@
 		}
 	],
 	"globalStyle": {
-		"hideBottomNavigationIndicator": true,
+		"hideBottomNavigationIndicator": false,
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app x",
 		"navigationBarBackgroundColor": "#FFFFFF",
