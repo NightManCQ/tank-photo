@@ -25,24 +25,18 @@
 </template>
 
 <script setup>
-	import { appConfig, globalData } from "@/store/global.data.uts"
-	import { systemConfigKeyName } from "@/store/storage.key.uts"
-	import { tankUserLogin } from "@/store/tank.movement.uts"
+	import { globalData } from "@/store/global.data.uts"
+	import { appConfig } from "@/store/app.config.uts"
+	import { setAppConfig } from "@/store/storage.key.uts"
+	import { tankUserLogin } from "@/logic/tank.movement.uts"
 
 
-	type loginPageDataType = {
-		username : string
-		password : string
-	}
 	let loginWorkIng = false
 
 	const conStyle = computed(() : string => {
 		return `width:${globalData.windowInfo.screenWidth}px;height:${globalData.windowInfo.windowHeight - 80}px;`
 	})
-	const pageData = reactive({
-		username: "",
-		password: ""
-	} as loginPageDataType)
+
 
 	async function loginIng() : Promise<void> {
 		if (loginWorkIng == true) {
@@ -52,10 +46,7 @@
 			title: "登录中..."
 		})
 		loginWorkIng = true
-		uni.setStorage({
-			key: systemConfigKeyName,
-			data: JSON.stringify(appConfig)
-		})
+		setAppConfig(appConfig)
 		tankUserLogin().then((_) => {
 			loginWorkIng = false
 			uni.navigateBack()

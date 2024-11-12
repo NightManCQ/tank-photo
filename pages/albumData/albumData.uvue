@@ -13,10 +13,13 @@
 		<template v-for="(itobj,index) in pageData.dataList">
 			<list-item class="ab_it" :key="`pd-in-${index}`" v-if="getViewArr(itobj,index,pageData.dataList).length>0">
 				<view class="ab_v" v-for="(item, indexTwo) in getViewArr(itobj,index,pageData.dataList)">
-					<image class="ab_img" mode="aspectFill" :key="indexTwo" :style="photoStyle" :src="item.url">
+					<image class="ab_img" mode="aspectFill" :key="indexTwo" :style="photoStyle" :src="item.url"
+						@click="imgClick(index,indexTwo,pageData.dataList)">
 					</image>
-					<text class="ab_st" v-if="item.status == 2">好</text>
-					<text class="ab_st" v-else-if="item.status == 1">等</text>
+					<template v-if="bakYes != null">
+						<text class="ab_st" v-if="item.status == 2">好</text>
+						<text class="ab_st" v-else>等</text>
+					</template>
 				</view>
 
 			</list-item>
@@ -30,7 +33,7 @@
 	</list-view>
 
 
-	<view v-if="pageData.preViewShow == true" class="pre_view" :class="{pre_view_act:pageData.preViewShowTwo ==  true}"
+	<!-- <view v-if="pageData.preViewShow == true" class="pre_view" :class="{pre_view_act:pageData.preViewShowTwo ==  true}"
 		:style="conStyle">
 		<view class="opt_view" style="top: 0;" @click.stop="closePreView"></view>
 		<swiper style="flex:1;width: 100%;height: 100%;" @change="swiperChange"
@@ -42,22 +45,22 @@
 			</swiper-item>
 		</swiper>
 		<view class="opt_view" style="bottom: 0;"></view>
-	</view>
+	</view> -->
 
 
 </template>
 
 <script setup>
-	import { appConfig, globalData, staticData } from "@/store/global.data";
-	import { clumn3KeyName } from "@/store/storage.key";
+	import { globalData } from "@/store/global.data";
+	import { appConfig } from "@/store/app.config";
 	import { loadAlbumData, mediaFileType } from "./adLoadData.logic"
 	// import [mkdirFileName] from "@/store/"
-	import { mkdirFileName } from "../../store/tank.movement.uts"
+	import { mkdirFileName } from "../../logic/tank.movement.uts"
 
 	import { albumArrayData, tankAlbumType } from "../index/index.data.uts"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
 
-	import { matterPage, matterPageReqType } from "@/store/tank.movement.uts"
+	import { matterPage, matterPageReqType } from "@/logic/tank.movement.uts"
 
 	type albumDetailDataType = {
 		/**
@@ -160,8 +163,65 @@
 		const { albumDetailClumns } = appConfig
 		const res = (windowInfo.screenWidth - (albumDetailClumns + 1) * 10) / 3
 		photoStyle = `width: ${res}px;height: ${res}px;`
-		// uni.setStorageSync(clumn3KeyName, photoStyle)
 		return photoStyle
+	})
+
+	const bakYes = computed(() : tankAlbumType | null => {
+		if (appConfig.backup == true) {
+			const hf = albumArrayData.tankDataOnce.find((item) : boolean => {
+				return item.name == pageData.name
+			})
+
+			if (hf != null) {
+				if (hf.uuid != null) {
+					return hf
+				}
+			}
+		}
+		return null
+	})
+
+	watch(bakYes, (res : tankAlbumType | null) => {
+		console.log("有东西改变了", res);
+		if (res != null) {
+			matterPage({
+				page: 0,
+				pageSize: appConfig.maxPageSize,
+				orderCreateTime: 'DESC',
+				puuid: res.uuid as string,
+				deleted: false,
+				orderDir: 'DESC'
+			} as matterPageReqType).then((res) => {
+				console.log('服务器上的相册数据', res.data.length);
+				const { dataList } = pageData
+				// res.data.filter()
+				for (let inx1 = 0; inx1 < res.data.length; inx1++) {
+					const item = res.data[inx1]
+					for (let inx2 = 0; inx2 < dataList.length; inx2++) {
+						const lci = dataList[inx2]
+						if (lci.url.substringAfterLast('/') == item.name) {
+							dataList[inx2].status = 2
+							dataList[inx2].url = `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_100_100`
+							// console.log("成功", inx2, dataList[inx2]);
+							break
+						} else {
+							// dataList.push({
+							// 	id: item.sort,
+							// 	url: `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_200_200`,
+							// 	type: 1,
+							// 	status: 3,
+							// 	// uri: item.uri,
+							// 	ty: "",
+							// 	name: item.name,
+							// 	uuid: item.uuid
+							// } as mediaFileType)
+						}
+					}
+				}
+				console.log("==== loc", pageData.dataList);
+			})
+
+		}
 	})
 
 	onLoad((option) => {
@@ -180,74 +240,19 @@
 			arr.push(parseInt(val))
 		})
 		pageData.dataList = loadAlbumData(arr)
-		const hf = albumArrayData.tankDataOnce.find((item) : boolean => {
-			return item.name == pageData.name
-		})
 
-		if (hf != null) {
-			// console.log("---------------相册详情", hf);
-			if (hf.uuid != null) {
-				matterPage({
-					page: 0,
-					pageSize: appConfig.maxPageSize,
-					orderCreateTime: 'DESC',
-					puuid: hf.uuid as string,
-					deleted: false,
-					orderDir: 'DESC'
-				} as matterPageReqType).then((res) => {
-					console.log('服务器上的相册数据', res);
-					const { dataList } = pageData
-					// res.data.filter()
-					for (let inx1 = 0; inx1 < res.data.length; inx1++) {
-						const item = res.data[inx1]
-						for (let inx2 = 0; inx2 < dataList.length; inx2++) {
-							const lci = dataList[inx2]
-							if (lci.url.substringAfterLast('/') == item.name) {
-								dataList[inx2].status = 2
-								dataList[inx2].url = `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_200_200`
-								console.log("成功", inx2, dataList[inx2]);
-								break
-							}
-						}
-					}
-					console.log("==== loc", pageData.dataList);
-				})
-			}
-		}
+
+
 	})
 
 	// onBackPress(() => {
 	// })
-	function imgClick(arr : Array<mediaFileType>, subIndex : number, index : number) {
-		console.log("点击了某个图片或者视频", arr);
-		// uni.previewImage({
-		// 	urls: [item.url]
-		// })
-		// if (pageData.preViewShow == false) {
-
-		// }
-		const item = arr[subIndex]
-		item.preview = item.preview == true ? false : true
-		// i.preview = true
-		if (pageData.preViewShow == false) {
-			pageData.preViewShow = true
-			pageData.swiperArr = arr
-
-			pageData.arrIndex = index
-			setTimeout(() => {
-
-				pageData.swiperCurrent = item.id.toString()
-				// 	setTimeout(() => {
-				// 		pageData.preViewShowTwo = true
-				// 		item.preview = false
-			}, 200)
-
-			// }, 0)
-			if (arr.length < 3) {
-				// 说明是最后一列需要往数组前面+
-				// pageData.swiperArr.unshift()
-			}
-		}
+	function imgClick(index : number, in2 : number, arr : Array<mediaFileType>) {
+		console.log("点击了某个图片或者视频", arr[index + in2]);
+		uni.previewImage({
+			urls: arr.map(i => i.url),
+			current: index + in2
+		})
 
 	}
 	/**
@@ -260,26 +265,7 @@
 		pageData.swiperArr = []
 		pageData.swiperCurrent = ""
 	}
-	/**
-	 * 往数组后面追加
-	 */
-	// function addSwiperArr(index : number) {
-	// 	if (index > 0 && index < pageData.dataList.length) {
-	// 		pageData.dataList[index].filter((item) : boolean => {
-	// 			pageData.swiperArr.push(item)
-	// 			return true
-	// 		})
 
-	// 	}
-	// }
-	// function unfSwiperArr(index : number) {
-	// 	if (index >= 0 && index < pageData.dataList.length) {
-	// 		pageData.dataList[index].filter((item) : boolean => {
-	// 			pageData.swiperArr.unshift(item)
-	// 			return true
-	// 		})
-	// 	}
-	// }
 
 	/**
 	 * @param {Object} e
@@ -288,21 +274,9 @@
 		let index = pageData.arrIndex
 		const lef = event.detail.current < pageData.lasSwCurr
 		const curr = event.detail.current
-		// // 前进
-		// if (pageData.swiperArr.length - curr <= 2) {
 
-		// 	index += 1
-
-		// 	console.log("__________", pageData.swiperArr.length, curr, pageData.lasSwCurr, index);
-		// 	addSwiperArr(index)
-		// }
-		// // 当处于第二个预览图，并且是往左滑的动作时
-		// else 
 		if ((curr == 1 && lef == true) || (curr == 0 && lef == true)) {
 			index -= 1
-
-			// unfSwiperArr(index)
-			console.log("__________!!!!!", pageData.swiperArr.length, curr, pageData.lasSwCurr, index);
 		}
 
 		pageData.arrIndex = index

@@ -1,35 +1,31 @@
 <script lang="uts">
-	// function jest_getWindowInfo() : GetWindowInfoResult {
-	// 	return uni.getWindowInfo();
-	// }
-
-	import { globalData, appConfig, storeInit } from './store/global.data'
+	import { globalData, storeInit } from './store/global.data'
 	import { setStoTaskQueue, taskQueueInit } from "./logic/taskQueue.logic.uts"
-	import { getTankInfo, updUserInfo } from "./store/tank.movement.uts"
-	import { getalbums } from "@/pages/index/index.data.uts"
+	import { getTankInfo, updUserInfo } from "./logic/tank.movement.uts"
+	import { updAlbumArray } from "@/pages/index/index.data.uts"
 	import { xxPermissionsInit } from "@/uni_modules/xx-XXPermissions"
-	import { getDeviceldInfo } from "./logic/getDeviceldInfo.logic.uts"
-	// import { hideBottomBar } from "./utils/page.utils.uts"
 
 
 
-
-	// let firstBackTime = 0
 	export default {
 		onLaunch: function () {
 
+			console.log('App Launch----------------------------------------------------------------------------------------------------------------------------------------')
 			// 勿调整执行顺序
 			storeInit()
 			xxPermissionsInit()
-			getTankInfo()
-			// getalbums()
-			getDeviceldInfo()
 
+			getTankInfo()
+			updAlbumArray()
 
 		},
+		/**
+		 * uni.previewImage 关闭后会触发 onShow 事件，导致更新相册列表不能写在onshow里
+		 */
 		onShow: function () {
-			console.log('App Show--------------------------------------------------')
-			getalbums()
+			console.log('App Show----------------------------------------------------------------------------------------------------------------------------------------')
+
+			//
 
 
 
@@ -50,8 +46,7 @@
 		},
 		onHide: function () {
 			setStoTaskQueue()
-			//console.log('App Hide')
-			// uni.setStorageSync(systemConfigKeyName, appConfig)
+
 
 		},
 		onLastPageBackPress: function () {

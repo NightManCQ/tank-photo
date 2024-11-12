@@ -1,8 +1,9 @@
 import { tankResponseType } from "../pages/base.entity";
 import { userInfoType } from "../pages/login/login.logic"
-import { appConfig, globalData, staticData, tankSystemInfoType } from "./global.data";
+import { globalData,  tankSystemInfoType } from "@/store/global.data";
+import { appConfig } from "@/store/app.config.uts"
 import { httpRequestHeader } from "@/utils/https.logic.uts"
-import { userInfoKeyName } from "@/store/storage.key.uts"
+import { setUserInfo } from "@/store/storage.key.uts"
 
 
 
@@ -62,7 +63,6 @@ export type fileDetailType = {
  */
 export function mkdirFileName(name : string, path : string = "root") : Promise<fileDetailType> {
 	return new Promise((resolve, reject) => {
-		// 主动在根目录创建一个备份文件夹
 		uni.request<tankResponseType<fileDetailType>>({
 			url: appConfig.server + "/api/matter/create/directory",
 			header: httpRequestHeader,
@@ -73,8 +73,7 @@ export function mkdirFileName(name : string, path : string = "root") : Promise<f
 			},
 			method: "POST",
 			success(res) {
-				// //console.log("创建备份文件夹成功", crRes.data?.data)
-				// staticData.backupFileName = mkName
+		
 				if (res.statusCode == 200) {
 					resolve(res.data?.data!)
 				} else {
@@ -140,6 +139,16 @@ export type matterPageResType = {
 	data : fileDetailType[]
 }
 
+
+
+
+export const mtPage = {
+	url: "/api/matter/page",
+
+}
+
+
+
 /**
  * 按需查询文件和文件夹的列表
  */
@@ -160,14 +169,11 @@ export function matterPage(param : matterPageReqType) : Promise<matterPageResTyp
 			,
 			method: "GET",
 			success(res) {
-				// //console.log(`--------------------------查询 ${param.puuid} ￥${param.name} 成功： `, res)
-				// staticData.backupFileName = mkName
 				if (res.statusCode == 200) {
 					resolve(res.data?.data!)
 				} else {
 					reject(false)
 				}
-
 			},
 			fail(crErr) {
 				// //console.log("创建备份文件夹失败", crErr);
@@ -184,26 +190,21 @@ export function matterPage(param : matterPageReqType) : Promise<matterPageResTyp
  * 已登录 获取用户信息
  */
 export function updUserInfo() {
-	let data = uni.getStorageSync(userInfoKeyName)!
-	if (data != "") {
-		// <tankResponseType<userInfoType>>
-		uni.request<UTSJSONObject>({
-			url: appConfig.server + "/api/user/info",
-			success(res) {
-				if (res.data!["msg"] == "not login") {
-					tankUserLogin()
-				} else {
-					globalData.user = JSON.parse<userInfoType>(JSON.stringify(res.data!["data"]))!
-					console.log("执行逻辑成功：更新用户信息", globalData.user)
-				}
-			}, fail(_) {
-				uni.showToast({
-					title: "获取用户信息失败"
-				})
+	uni.request<UTSJSONObject>({
+		url: appConfig.server + "/api/user/info",
+		success(res) {
+			if (res.data!["msg"] == "not login") {
+				tankUserLogin()
+			} else {
+				globalData.user = JSON.parse<userInfoType>(JSON.stringify(res.data!["data"]))!
+				console.log("执行逻辑成功：更新用户信息", globalData.user)
 			}
-		})
-	}
-
+		}, fail(_) {
+			uni.showToast({
+				title: "获取用户信息失败"
+			})
+		}
+	})
 }
 
 
@@ -246,8 +247,6 @@ export function tankUploadFile(url : string, spaceUuid : string, puuid : string)
 				privacy: true
 			},
 			success(res) {
-				// staticData.backupFileName = mkName
-
 				if (res.statusCode == 200) {
 					const resObj = JSON.parse<tankResponseType<fileDetailType>>(res.data)
 					resolve(resObj?.data!)
@@ -281,13 +280,11 @@ export function tankUserLogin() : Promise<userInfoType> {
 			success(res) {
 				if (res.statusCode == 200) {
 					globalData.user = res.data?.data!
-					uni.setStorage({
-						key: userInfoKeyName,
-						data: JSON.stringify(globalData.user)
-					})
+					const { user } = globalData
+					setUserInfo(user)
 					getTankInfo()
-					console.log("登录成功", globalData.user)
-					resolve(globalData.user)
+					console.log("登录成功", user)
+					resolve(user)
 				}
 			}, fail(err) {
 				//console.log("登录失败", err)

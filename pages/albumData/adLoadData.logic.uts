@@ -1,6 +1,8 @@
 
 import { albumUtil } from "@/uni_modules/photo-util";
-import { appConfig, globalData, staticData } from "@/store/global.data"
+import { globalData } from "@/store/global.data";
+
+import { appConfig } from "@/store/app.config";
 import Uri from "android.net.Uri";
 
 
@@ -27,7 +29,7 @@ export type mediaFileType = {
 	/**
 	 * uri
 	 */
-	uri : Uri
+	uri ?: Uri
 	/**
 	 * 文件的类型 通用的类型
 	 */
@@ -37,8 +39,9 @@ export type mediaFileType = {
 	 * 0:未上传
 	 * 1：等待上传
 	 * 2：上传完成
+	 * 3：在云上
 	 */
-	status : 0 | 1 | 2
+	status : 0 | 1 | 2 | 3
 
 	/**
 	 * 文件名
@@ -59,7 +62,7 @@ export type mediaFileType = {
  */
 export function loadAlbumData(id : Array<number>) : Array<mediaFileType> {
 	const arr : Array<mediaFileType> = []
-	const { albumDetailClumns } = appConfig
+	// const { albumDetailClumns } = appConfig
 	const value = albumUtil.getAlbumsData(id)
 
 
@@ -67,7 +70,7 @@ export function loadAlbumData(id : Array<number>) : Array<mediaFileType> {
 
 
 	for (let i = 0; i < value.length; i++) {
-		const yNum = i / albumDetailClumns
+		// const yNum = i / albumDetailClumns
 		const item = value[i]
 		const addObj : mediaFileType = {
 			id: item.id,

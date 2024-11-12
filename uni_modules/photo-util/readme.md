@@ -15,39 +15,3 @@
 2. 使用前需要申请权限
 
 使用：
-
-```ts
-import { Album, albumUtil } from "@/uni_modules/photo-util";
-import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
-
-/**
-*获取相册列表
-*/
-getalbums() {
-    //相册列表
-    const albumArray : Array<Album> = albumUtil.getAlbum()
-
-    const { permission } = albumListLoadData
-    if (albumArray.length == 0) {
-        // 判断有无权限，xx-XXPermissions是我另一个权限申请的插件，可自行搭配使用
-        albumListLoadData.authorizationStatus = xxPermissions.checkSystemPermissionGranted(permission)
-    } else {
-        //业务代码
-    }
-}
-
-
-
-/**
-*获取相册里面的视频和图片
-id: 相册id
-*/
-loadAlbumData(id:number) {
-    const value:Array<mediaFile> = albumUtil.getAlbumsData(id)
-}
-
-
-
-
-```
-

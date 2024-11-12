@@ -1,0 +1,93 @@
+
+import { fileDetailType } from "@/logic/tank.movement.uts"
+/**
+ * tank 程序设置内容
+ */
+export type configType = {
+	/**
+	 * 是否开启备份，默认false
+	 */
+	backup : boolean
+
+	/**
+	 * 释放本地空间
+	 * true 将导致本地文件删除，保留服务器上的文件
+	 */
+	releaseSpace : boolean
+	/**
+	 * 是否使用移动网络进行备份，默认false
+	 */
+	mobileNetworkBackup : boolean
+	/**
+	 * 相册列表展示多少列
+	 */
+	albumClumns : 1 | 2 | 3
+	/**
+	 * 相册详情页展示多少列
+	 */
+	albumDetailClumns : 1 | 2 | 3
+	/**
+	 * tank 相册目前最大支持500相册列表的同步
+	 */
+	maxPageSize : number
+	/**
+	 * 服务器地址
+	 */
+	server : string
+	/**
+	 * 登录名
+	 */
+	username : string
+	/**
+	 * 登录密码
+	 */
+	password : string
+
+
+	/**
+	 * 备份文件夹
+	 */
+	backupFile : fileDetailType
+}
+
+/**
+ * tank 应用设置 
+ */
+export const appConfig = reactive({
+	backupFile: {
+		"createTime": "",
+		"deleteTime": "",
+		"deleted": false,
+		"dir": true,
+		"md5": "",
+		"name": "",
+		"path": "",
+		"privacy": false,
+		"prop": "{}",
+		"puuid": "",
+		"size":
+			//‍[number]‍
+			0,
+		"sort":
+			//‍[number]‍
+			1711696034273,
+		"spaceUuid": "",
+		"space_name": "",
+		"times":
+			//‍[number]‍
+			0,
+		"updateTime": "",
+		"userUuid": "",
+		"uuid": "",
+		"visitTime": ""
+	} as fileDetailType,
+	backup: false,
+	releaseSpace: false,
+	mobileNetworkBackup: false,
+	albumClumns: 2,
+	albumDetailClumns: 3,
+	maxPageSize: 500,
+	server: "",
+	username: "",
+	password: ""
+} as configType)

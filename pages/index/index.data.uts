@@ -1,16 +1,25 @@
 import { xxPermissions } from "../../uni_modules/xx-XXPermissions/utssdk/app-android";
 import { Album, albumUtil } from "@/uni_modules/photo-util";
 import Uri from "android.net.Uri";
-import { locatAlbumKeyName } from "@/store/storage.key.uts"
-import { appConfig, bakAlbumType, globalData, staticData } from "@/store/global.data.uts"
-import { fileDetailType, matterPageReqType, matterPage, mkdirFileName, tankUploadFile } from "@/store/tank.movement.uts"
+import { setLocatAlbum, getLocatAlbum } from "@/store/storage.key.uts"
+import { globalData } from "@/store/global.data.uts"
+import { appConfig } from "../../store/app.config";
+import { fileDetailType, matterPageReqType, matterPage, mkdirFileName, tankUploadFile } from "@/logic/tank.movement.uts"
 // import { UTSAndroid } from "io.dcloud.uts";
 // // import Runnable from "java.lang.Runnable";
 // import Thread from "java.lang.Thread";
 
 
 
-const permission = ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO", "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
+const permission = [
+	"android.permission.READ_MEDIA_IMAGES",
+	// "android.permission.WRITE_MEDIA_IMAGES",
+	"android.permission.READ_MEDIA_VIDEO",
+	"android.permission.WRITE_EXTERNAL_STORAGE"
+	// "android.permission.WRITE_MEDIA_VIDEO",
+	// "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"
+]
+//   
 
 
 
@@ -51,6 +60,7 @@ export type tankAlbumType = {
 	 * 使用名称进行相册分类会造成一个相册拥有多个本地相册的id
 	 */
 	correlationId : Array<number>
+
 }
 
 /**
@@ -98,127 +108,88 @@ export const albumArrayData = reactive({
 
 
 
-/**
- * 获取相册列表
- */
-export function getalbums() {
-	// uni.getStorage({
-	// 	key: locatAlbumKeyName,
-	// 	success(res) {
-	// 		// //console.log("----------------------", res.data);
-	// 		albumArrayData.tankDataOnce = JSON.parse<Array<tankAlbumType>>(JSON.stringify(res.data))!
-	// 		updAlbumArray()
 
-
-
-
-
-
-
-	// 		// }, null)
-
-	// 	},
-	// 	fail() {
-	// 		//console.log("====获取失败");
-	updAlbumArray()
-	// 	}
-	// })
-}
 
 
 /**
  * 更新相册列表
  */
-function updAlbumArray() {
+export function updAlbumArray() {
 	albumArrayData.authorizationStatus = xxPermissions.checkSystemPermissionGranted(permission)
-	// //console.log("------", type, albumArrayData, albumArray.length);
+	console.log("///", albumArrayData.authorizationStatus);
 	if (albumArrayData.authorizationStatus) {
 		const albumArray : Array<Album> = albumUtil.getAlbum()
-		// //console.log("-----------------原始相册列表", albumArray.length);
-		// uni x 的多列布局实现性能较低，所以采用官方的组件以提高性能，但官方还有没出多列布局，所以采用这种迂回的办法（20231129）
-		// const arr : Array<Array<tankAlbumType>> = []
-		const newOnceArr : tankAlbumType[] = []
-		const clumnsCount = appConfig.albumClumns
-		const onceArr = albumArrayData.tankDataOnce
-
-
-
+		const { tankDataOnce } = albumArrayData
 		for (let i = 0; i < albumArray.length; i++) {
-			// const yNum = i / clumnsCount
 			const item : Album = albumArray[i]
-			// const bakAlbum = onceArr.find((val) : boolean => val["name"] == item.name)
-
-			// 获取关联的相册
+			// 关联相册
 			const idArr : number[] = []
 			item.correlationId.forEach((idVal) => {
 				idArr.push(idVal.key)
 			})
-			const addObj : tankAlbumType = {
-				id: item.id,
-				name: item.name,
-				count: item.count,
-				// uuid: "",
-				// backups: bakAlbum == null ? 0 : bakAlbum.backups,
-				backups: 0,
-				coverPicture: item.coverPicture,
-				correlationId: idArr
-			}
-			// if (i % clumnsCount == 0) {
-			// 	arr.push([])
-			// }
-			// arr[yNum].push(addObj)
-			newOnceArr.push(addObj)
-		}
-		albumArrayData.tankDataOnce = newOnceArr
-		// albumArrayData.tankData = arr
-		uni.setStorage({
-			key: locatAlbumKeyName,
-			data: newOnceArr
-		})
-		// console.log("用户信息更新", newOnceArr.length);
-		// 如果已经登录了
-		if (globalData.user.uuid != "") {
-			matterPage({
-				page: 0,
-				pageSize: appConfig.maxPageSize,
-				orderCreateTime: 'DESC',
-				puuid: staticData.backupFile.uuid,
-				deleted: false,
-				orderDir: 'DESC'
-			} as matterPageReqType).then((res) => {
-				const serverFileArr : Array<fileDetailType> = res.data
-				const { tankDataOnce } = albumArrayData
-				serverFileArr.forEach((sf : fileDetailType) => {
-					const hf = tankDataOnce.find((no : tankAlbumType) : boolean => {
-						return no.name == sf.name
-					})
-					if (hf != null) {
-						hf.uuid = sf.uuid
-					} else {
-						// tankDataOnce.push({
-						// 	id: item.id,
-						// 	name: item.name,
-						// 	count: item.count,
-						// 	uuid: bakAlbum?.uuid,
-						// 	backups: bakAlbum == null ? 0 : bakAlbum.backups,
-						// 	coverPicture: item.coverPicture,
-						// 	correlationId: idArr
-						// } as tankAlbumType)
-					}
-				})
-				console.log("服务器上的备份文件夹", albumArrayData);
+			const locAlbum = tankDataOnce.find((val, inx) : boolean => {
+				if (val["name"] == item.name) {
+					tankDataOnce[inx].coverPicture = item.coverPicture
+					tankDataOnce[inx].correlationId = idArr
+					return true
+				}
+				return false
 			})
+			if (locAlbum == null) {
+				tankDataOnce.push({
+					id: item.id,
+					name: item.name,
+					count: item.count,
+					backups: 0,
+					coverPicture: item.coverPicture,
+					correlationId: idArr
+				} as tankAlbumType)
+			}
 		}
-
-
+		// 如果已经登录了 并且打开了备份
+		if (globalData.user.uuid != "" && appConfig.backup) {
+			getServerAlbumList()
+		} else {
+			setLocatAlbum(tankDataOnce)
+		}
 	}
-	//  else {
-	// 	// if (type == 1) {
+}
 
 
-	// 	// } else {
 
-	// 	// }
-
-	// }
+/**
+ * 获取服务器上的备份相册列表
+ */
+export function getServerAlbumList() {
+	matterPage({
+		page: 0,
+		pageSize: appConfig.maxPageSize,
+		orderCreateTime: 'DESC',
+		puuid: appConfig.backupFile.uuid,
+		deleted: false,
+		orderDir: 'DESC'
+	} as matterPageReqType).then((res) => {
+		const serverFileArr : Array<fileDetailType> = res.data
+		const { tankDataOnce } = albumArrayData
+		serverFileArr.forEach((sf : fileDetailType) => {
+			const hf = tankDataOnce.find((no : tankAlbumType) : boolean => {
+				return no.name == sf.name
+			})
+			if (hf != null) {
+				hf.uuid = sf.uuid
+			} else {
+				// tankDataOnce.push({
+				// 	id: item.id,
+				// 	name: item.name,
+				// 	count: item.count,
+				// 	uuid: bakAlbum?.uuid,
+				// 	backups: bakAlbum == null ? 0 : bakAlbum.backups,
+				// 	coverPicture: item.coverPicture,
+				// 	correlationId: idArr
+				// } as tankAlbumType)
+			}
+		})
+		setLocatAlbum(tankDataOnce)
+		console.log("从服务器更新本地相册列表", albumArrayData);
+	})
 }

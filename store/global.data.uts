@@ -1,27 +1,15 @@
 import { userInfoType } from "../pages/login/login.logic"
-import { fileDetailType, updUserInfo } from "@/store/tank.movement"
-import { userInfoKeyName, systemConfigKeyName, backupFileKeyName } from "@/store/storage.key"
-// import { getalbums } from "@/pages/index/index.data.uts"
+import { fileDetailType, updUserInfo } from "@/logic/tank.movement"
+import { getAppConfig, getUserInfo, getLocatAlbum } from "@/store/storage.key"
+import { appConfig } from "@/store/app.config";
+import { albumArrayData } from "@/pages/index/index.data.uts"
+// import {uts.sdk.modules.DCloudUniGetSystemInfo.SafeArea} from "uts.sdk.modules.DCloudUniGetSystemInfo.SafeArea"
 
 
 
 
 
-type SafeArea = {
-	bottom : number;
-	height : number;
-	left : number;
-	right : number;
-	top : number;
-	width : number;
-}
 
-type SafeAreaInsets = {
-	bottom : number;
-	left : number;
-	right : number;
-	top : number;
-}
 
 
 /**
@@ -102,6 +90,7 @@ type staticDataTyep = {
 	 * 备份文件夹
 	 */
 	backupFile : fileDetailType
+	systemInfo : GetSystemInfoResult
 }
 
 /**
@@ -138,7 +127,118 @@ export const staticData : staticDataTyep = {
 	deviceld: {
 		model: "",
 		brand: ""
-	}
+	},
+	systemInfo: {
+		"SDKVersion": "",
+		"appId": "__UNI__F508DB9",
+		"appLanguage": "zh-Hans",
+		"appName": "Tank 相册",
+		"appTheme": "light",
+		"appVersion": "4.0.31",
+		"appVersionCode": "403",
+		"appWgtVersion": null,
+		"brand": "xiaomi",
+		"browserName": "",
+		"browserVersion": "",
+		"deviceBrand": "xiaomi",
+		"deviceId": "4e6765c6-4863-4867-931a-df1ea3b26b69",
+		"deviceModel": "24129PN74C",
+		"deviceOrientation": "portrait",
+		"devicePixelRatio":
+			//‍[number]‍
+			3.25,
+		"deviceType": "phone",
+		"language": "zh",
+		"model": "24129PN74C",
+		"osAndroidAPILevel":
+			//‍[Int]‍
+			35,
+		"osLanguage": "zh",
+		"osName": "android",
+		"osTheme": "light",
+		"osVersion": "15",
+		"pixelRatio":
+			//‍[number]‍
+			3.25,
+		"platform": "android",
+		"romName": "MIUI",
+		"romVersion": "V816",
+		"safeArea":
+			//‍[⁠uts.sdk.modules.DCloudUniGetSystemInfo.SafeArea⁠]‍
+			{
+				"bottom":
+					//‍[number]‍
+					0,
+				"height":
+					//‍[number]‍
+					-37,
+				"left":
+					//‍[number]‍
+					0,
+				"right":
+					//‍[number]‍
+					0,
+				"top":
+					//‍[number]‍
+					37,
+				"width":
+					//‍[number]‍
+					0
+			} as SafeArea,
+		"safeAreaInsets":
+			//‍[⁠uts.sdk.modules.DCloudUniGetSystemInfo.SafeAreaInsets⁠]‍
+			{
+				"bottom":
+					//‍[number]‍
+					0,
+				"left":
+					//‍[number]‍
+					0,
+				"right":
+					//‍[number]‍
+					0,
+				"top":
+					//‍[number]‍
+					37
+			} as SafeAreaInsets,
+		"screenHeight":
+			//‍[number]‍
+			822,
+		"screenWidth":
+			//‍[number]‍
+			370,
+		"statusBarHeight":
+			//‍[number]‍
+			37,
+		"system": "Android 15",
+		"ua": "uni-app-x/4.32",
+		"uniCompileVersion": "4.32",
+		"uniCompileVersionCode":
+			//‍[number]‍
+			4.32,
+		"uniCompilerVersion": "4.32",
+		"uniCompilerVersionCode":
+			//‍[number]‍
+			4.32,
+		"uniPlatform": "app",
+		"uniRuntimeVersion": "4.32",
+		"uniRuntimeVersionCode":
+			//‍[number]‍
+			4.32,
+		"version": "12486",
+		"windowBottom":
+			//‍[number]‍
+			0,
+		"windowHeight":
+			//‍[number]‍
+			806,
+		"windowTop":
+			//‍[number]‍
+			0,
+		"windowWidth":
+			//‍[number]‍
+			0
+	} as GetSystemInfoResult
 }
 
 
@@ -232,81 +332,9 @@ export const globalData = reactive({
 
 
 
-/**
- * 备份的相册列表
- * 本地所有相册列表
- */
-export type bakAlbumType = {
-	/**
-	 * tank 服务器上的id
-	 */
-	uuid ?: string
-	/**
-	 * 名称
-	 */
-	name : string
-	/**
-	 * 本地相册id
-	 */
-	id : number
-	/**
-	 * 释放本地空间
-	 * true 将导致本地文件删除，保留服务器上的文件
-	 */
-	releaseSpace : boolean
-}
 
-/**
- * tank 程序设置内容
- */
-export type configType = {
-	/**
-	 * 是否开启备份，默认false
-	 */
-	backup : boolean
-	/**
-	 * 是否使用移动网络进行备份，默认false
-	 */
-	mobileNetworkBackup : boolean
-	/**
-	 * 相册列表展示多少列
-	 */
-	albumClumns : 1 | 2 | 3
-	/**
-	 * 相册详情页展示多少列
-	 */
-	albumDetailClumns : 1 | 2 | 3
-	/**
-	 * tank 相册目前最大支持500相册列表的同步
-	 */
-	maxPageSize : number
-	/**
-	 * 服务器地址
-	 */
-	server : string
-	/**
-	 * 登录名
-	 */
-	username : string
-	/**
-	 * 登录密码
-	 */
-	password : string
-}
 
-/**
- * tank 应用设置 
- */
-export const appConfig = reactive({
-	backup: false,
-	mobileNetworkBackup: false,
-	albumClumns: 2,
-	albumDetailClumns: 3,
-	maxPageSize: 5000,
-	server: "",
-	username: "",
-	password: ""
-} as configType)
+
 
 
 /**
@@ -355,31 +383,23 @@ export function storeInit() {
 	windowInfo.screenWidth = res.screenWidth
 	windowInfo.pixelRatio = res.pixelRatio
 
-	// 获取 tank app设置 必须要同步
-	const conf = uni.getStorageSync(systemConfigKeyName)
-	if (conf != null) {
-		const cobj = JSON.parse<configType>(conf as string)!!
-		for (val in appConfig) {
-			appConfig[val] = cobj[val]
-		}
-	}
+	staticData.systemInfo = uni.getSystemInfoSync()
+	console.log(" 设备信息", staticData.systemInfo);
 
-	// 获取备份文件夹信息
-	uni.getStorage({
-		key: backupFileKeyName,
-		success(res) {
-			staticData.backupFile = JSON.parse<fileDetailType>(JSON.stringify(res.data))!
-		}
-	})
 
-	// 获取用户信息
-	const lUinfo = uni.getStorageSync(userInfoKeyName)
-	if (lUinfo != null) {
-		const uifo = JSON.parse<userInfoType>(lUinfo as string)
-		globalData.user = uifo as userInfoType
-		// console.log("本地的用户信息", globalData.user);
+	getAppConfig()
+	const { brand, model } = staticData.systemInfo
+	appConfig.backupFile.name = `${brand}_${model}`
+	if (getUserInfo() != null) {
 		updUserInfo()
 	}
 
-	console.log("执行逻辑成功：仓库初始化", appConfig, globalData)
+
+
+
+	albumArrayData.tankDataOnce = getLocatAlbum()
+	console.log("执行逻辑成功：仓库初始化", appConfig)
+	console.log("执行逻辑成功：仓库初始化", globalData)
+	console.log("相册列表", albumArrayData.tankDataOnce);
+
 }

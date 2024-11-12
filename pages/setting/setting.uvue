@@ -7,6 +7,12 @@
 			<text>自动备份</text>
 			<switch class="switch-checked" :checked="appConfig.backup" @change="backupSwitch" />
 		</view>
+
+		<view class="set_item">
+			<text>释放空间</text>
+			<switch class="switch-checked" :checked="appConfig.releaseSpace"
+				@change="appConfig.releaseSpace = !appConfig.releaseSpace" />
+		</view>
 		<view class="set_item btn_cli_anm_1" @click="navTo">
 			<text>备份的相册</text>
 			<!-- <switch class="switch-checked" :checked="globalData.config.backup" @change="backupSwitch" />
@@ -26,11 +32,10 @@
 </template>
 
 <script setup>
-	import { appConfig } from '../../store/global.data';
+	import { appConfig } from '../../store/app.config.uts';
 	import { taskQueueType, tankTaskQueue } from "@/logic/taskQueue.logic.uts"
-	import { systemConfigKeyName } from "@/store/storage.key.uts"
+	import { setAppConfig } from "@/store/storage.key.uts"
 	import { albumArrayData } from "@/pages/index/index.data.uts"
-	import { locatAlbumKeyName } from "@/store/storage.key.uts"
 	// export default {
 	// 	data() {
 	// 		return {
@@ -59,25 +64,21 @@
 
 	onUnload(() => {
 		// 存储设置
-		uni.setStorage({
-			key: systemConfigKeyName,
-			data: JSON.stringify(appConfig)
-		})
-		// 存储相册列表（已选择备份的相册）
-		uni.setStorage({
-			key: locatAlbumKeyName,
-			data: albumArrayData.tankDataOnce
-		})
-		// console.log("??????????????????????",appConfig);
+		setAppConfig(appConfig)
+
 		// 添加任务队列
 		if (appConfig.backup) {
+
+			// 确认备份，就在服务器上创建一个根目录
+
+
+
 
 			tankTaskQueue.push({
 				type: 1,
 				status: 0
 			} as taskQueueType)
 		}
-		// console.log("！！！！！设置页面卸载存储设置内容", appConfig);
 	})
 	// 	}
 	// }

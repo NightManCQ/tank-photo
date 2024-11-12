@@ -104,9 +104,11 @@
 <script setup>
 	import { xxPermissions } from "@/uni_modules/xx-XXPermissions"
 	import uniNavbarLite from "@/components/uni-navbar-lite/uni-navbar-lite.uvue"
-	import { appConfig, globalData, tankSystemInfoType, appTaskStatus } from "@/store/global.data.uts";
+	import { globalData, tankSystemInfoType, appTaskStatus } from "@/store/global.data.uts";
+
+	import { appConfig } from "@/store/app.config";
 	import { userInfoType } from "@/pages/login/login.logic.uts";
-	import { albumArrayData, getalbums, tankAlbumType } from "./index.data.uts"
+	import { albumArrayData, updAlbumArray, tankAlbumType } from "./index.data.uts"
 	import { theme } from "@/store/theme.uts"
 	import { onMounted, onUnmounted } from "vue";
 
@@ -263,7 +265,7 @@
 						// ipData.conOpen = false
 						setTimeout(function () {
 							ipData.optLabCheck = 9
-						}, 400);
+						}, 900);
 					}
 				})
 				break;
@@ -273,13 +275,14 @@
 	 * 前往相册详情页
 	 */
 	function getAlbumData(album : tankAlbumType, in1 : number, in2 : number) {
-		if (ipData.pattern == 1) {
+		const { pattern } = ipData
+		if (pattern == 1) {
 			uni.navigateTo({
 				animationType: "pop-in",
 				animationDuration: 50,
 				url: `/pages/albumData/albumData?id=${album.correlationId.join(",")}&name=${album.name}&index=${in1 + in2}`
 			})
-		} else if (ipData.pattern == 2) {
+		} else if (pattern == 2) {
 			if (album.backups == 0) {
 				album.backups = 1
 			} else if (album.backups == 1) {
@@ -294,22 +297,30 @@
 	 * 权限申请
 	 */
 	function requestPermissions() {
-		let permission = ["android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"]
-		xxPermissions.requestSystemPermission(permission, "", function (allRight : boolean, grantedList : string[]) {
+		xxPermissions.requestSystemPermission([
+			"android.permission.READ_MEDIA_IMAGES",
+			"android.permission.READ_MEDIA_VIDEO",
+			"android.permission.WRITE_EXTERNAL_STORAGE",
+			// "android.permission.WRITE_MEDIA_IMAGES",
+			// "android.permission.WRITE_MEDIA_VIDEO",
+			// "android.permission.READ_EXTERNAL_STORAGE",
+			// "android.permission.WRITE_EXTERNAL_STORAGE"
+		], "", function (allRight : boolean, grantedList : string[]) {
 			if (allRight) {
 				// 用户同意了全部权限
-				getalbums()
+				updAlbumArray()
 				albumArrayData.authorizationStatus = true
 			} else {
 				// 用户仅同意了 grantedList中的权限
+				console.log("用户仅同意了 grantedList中的权限", grantedList);
 			}
 		}, function (doNotAskAgain : boolean, grantedList : string[]) {
 			// 用户拒绝了部分权限，仅允许了grantedList中的权限
 			if (doNotAskAgain) {
 				// 用户拒绝了权限，并且选择不再询问
-				//console.log("用户拒绝了权限，并且选择不再询问");
+				console.log("用户拒绝了权限，并且选择不再询问");
 			}
-			//console.log("用户拒绝了部分权限，仅允许了grantedList中的权限", grantedList);
+			console.log("用户拒绝了部分权限，仅允许了grantedList中的权限", grantedList);
 		})
 	}
 </script>

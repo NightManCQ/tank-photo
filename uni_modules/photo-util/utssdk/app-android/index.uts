@@ -109,11 +109,23 @@ export class albumUtil {
 
 
 
+	static contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver()
 
 
+	/**
+	 * 根据id删除文件
+	 */
+	static delFil(mediaId : number) : boolean {
 
-
-
+		// 构建文件的 URI
+		const mediaUri = Uri.withAppendedPath(externalContentUri, mediaId.toString())
+		console.log("???---", mediaId, mediaUri);
+		// 执行删除操作
+		const rowsDeleted = this.contentResolver.delete(mediaUri, null, null)
+		console.log("删除结果===", rowsDeleted);
+		// 检查删除是否成功
+		return rowsDeleted > 0
+	}
 
 
 
@@ -127,9 +139,8 @@ export class albumUtil {
 		// const { albums } = albumUtil
 		const albums : Array<Album> = []
 		const photoList : photoListType = hashMapOf()
-		let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
-		albumUtil.queryAlbumsPro(contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, albums, photoList)
-		albumUtil.queryAlbumsPro(contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI, albums, photoList)
+		albumUtil.queryAlbumsPro(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, albums, photoList)
+		albumUtil.queryAlbumsPro(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, albums, photoList)
 		return albums
 	}
 
@@ -138,8 +149,8 @@ export class albumUtil {
 	/**
 	 * 分析出相册列表
 	 */
-	static queryAlbumsPro(contentResolver : ContentResolver, uri : Uri, albums : Array<Album>, photoList : photoListType) {
-		const cursor : Cursor = contentResolver.query(
+	static queryAlbumsPro(uri : Uri, albums : Array<Album>, photoList : photoListType) {
+		const cursor : Cursor = this.contentResolver.query(
 			uri,
 			albumsOption,//列
 			"",//查询条件
@@ -181,14 +192,13 @@ export class albumUtil {
 	 */
 	static getAlbumsData(bucketId : Array<number>) : Array<MediaFile> {
 		const uriList : Array<MediaFile> = []
-		let contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver();
 		const { BUCKET_ID, DATE_ADDED, DATA, _ID, MIME_TYPE, TITLE } = fileClumns
 		const strArr : string[] = []
 		bucketId.forEach((val) => {
 			strArr.push(`${BUCKET_ID} = '${val}'`)
 		})
 
-		let cursor : Cursor = contentResolver.query(
+		let cursor : Cursor = this.contentResolver.query(
 			externalContentUri,
 			mediaFileOption,
 			strArr.join(" or "),
