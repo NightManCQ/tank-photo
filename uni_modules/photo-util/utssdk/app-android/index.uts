@@ -5,6 +5,10 @@ import Cursor from "android.database.Cursor";
 import Uri from "android.net.Uri";
 import HashMap from "java.util.HashMap";
 import { MediaFile, Album } from "../interface.uts"
+import File from "java.io.File"
+import Paths from "java.nio.file.Paths"
+import IOException from "java.io.IOException"
+import Files from "java.nio.file.Files"
 // import WindowManager from "android.view.WindowManager";
 // import ContentUris from "android.content.ContentUris";
 
@@ -102,6 +106,13 @@ const albumsOption = arrayOf(
 )
 
 
+function isUriValid(contentResolver : ContentResolver, uri : Uri) : boolean {
+	const cursor = contentResolver.query(uri, null, null, null, null)
+	const isValid = cursor != null && cursor.count > 0
+	cursor?.close()
+	return isValid
+}
+
 /**
  * 相册工具类
  */
@@ -109,24 +120,74 @@ export class albumUtil {
 
 
 
+
+
+
 	static contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver()
+
+	static saveFile() {
+
+	}
+
+	/**
+	 * 根据id删除文件
+	 */
+	static delFil(mediaId : Uri) : boolean {
+
+		// // 构建文件的 URI
+		// const mediaUri = Uri.withAppendedPath(externalContentUri, mediaId.toString())
+		// console.log("???---", mediaId, mediaUri, isUriValid(mediaUri));
+		// // 执行删除操作
+		try {
+			const rowsDeleted = this.contentResolver.delete(mediaId, null, null)
+			console.log("删除结果===", rowsDeleted);
+			// 检查删除是否成功
+			return rowsDeleted > 0
+		} catch (error) {
+			//TODO handle the exception
+			console.log("报错了", error);
+			return false
+		}
+
+	}
 
 
 	/**
 	 * 根据id删除文件
 	 */
-	static delFil(mediaId : number) : boolean {
+	static delFilUrl(mediaId : string) : boolean {
 
-		// 构建文件的 URI
-		const mediaUri = Uri.withAppendedPath(externalContentUri, mediaId.toString())
-		console.log("???---", mediaId, mediaUri);
-		// 执行删除操作
-		const rowsDeleted = this.contentResolver.delete(mediaUri, null, null)
-		console.log("删除结果===", rowsDeleted);
-		// 检查删除是否成功
-		return rowsDeleted > 0
+		// // 构建文件的 URI
+		// const mediaUri = Uri.parse(mediaId)
+		// console.log("???---", mediaId, mediaUri);
+		// // 执行删除操作
+
+		const file = File(mediaId)
+		if (file.exists()) {
+			const uri = Uri.fromFile(file)
+			const rowsDeleted = this.contentResolver.delete(uri, null, null)
+			console.log("删除结果===", rowsDeleted);
+			// 检查删除是否成功
+			return rowsDeleted > 0
+		} else {
+			return false
+		}
+
+		// const path = Paths.get(mediaId)
+		// try {
+		// 	const result = Files.deleteIfExists(path)
+		// 	if (result) {
+		// 		return true
+		// 	}
+		// 	console.log("=====", mediaId, result);
+		// 	return false
+		// } catch (e : IOException) {
+		// 	console.log("报错", e);
+		// 	e.printStackTrace()
+		// 	return false
+		// }
+
 	}
-
 
 
 
@@ -211,6 +272,7 @@ export class albumUtil {
 		let tit = cursor.getColumnIndexOrThrow(TITLE)
 		while (cursor.moveToNext()) {
 			const url = cursor.getString(fileUrl)
+			// console.log("url", url);
 			const fileObj : MediaFile = {
 				id: cursor.getInt(fileId),
 				title: cursor.getString(tit),

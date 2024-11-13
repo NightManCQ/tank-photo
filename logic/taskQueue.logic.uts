@@ -181,14 +181,15 @@ async function upFileToTank() {
 
 							// 删除这个文件
 							if (releaseSpace) {
-								albumUtil.delFil(fileVal.id)
+								albumUtil.delFil(fileVal.uri)
 
 							}
 						} else {
 							// console.log("不需要上传", fileVal)
 							albumArrayData.upFileCount++
 							if (releaseSpace) {
-								console.log("删除结果", albumUtil.delFil(fileVal.id));
+								console.log("删除结果", albumUtil.delFil(fileVal.uri));
+								// console.log("???", fileVal);
 							}
 						}
 					}

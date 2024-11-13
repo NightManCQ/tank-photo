@@ -4,7 +4,16 @@
 	<!--permissions-->
 	<uses-permission android:name="android.permission.INTERNET" />
 
-	<application>
+	<queries>
+		<package android:name="com.example.uni.UNIF508DB9" />
+	</queries>
+
+
+	<provider android:name="androidx.core.content.FileProvider" android:authorities="uni.UNIF508DB9.provider"
+		android:exported="true" android:grantUriPermissions="true">
+	</provider>
+
+	<application android:requestLegacyExternalStorage="true">
 		<!--meta-data-->
 		<!-- <meta-data android:name="My_Custom_Key" android:value="My_Custom_Value"/> -->
 

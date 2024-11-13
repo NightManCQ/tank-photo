@@ -382,7 +382,7 @@ export function storeInit() {
 	windowInfo.screenHeight = res.screenHeight
 	windowInfo.screenWidth = res.screenWidth
 	windowInfo.pixelRatio = res.pixelRatio
-
+	
 	staticData.systemInfo = uni.getSystemInfoSync()
 	console.log(" 设备信息", staticData.systemInfo);
 
