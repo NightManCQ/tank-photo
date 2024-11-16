@@ -4,13 +4,25 @@
 	<!--permissions-->
 	<uses-permission android:name="android.permission.INTERNET" />
 
+	<!-- 
+	android.permission.MANAGE_MEDIA 是一个特殊的权限，用于管理设备上的媒体文件。这个权限允许应用执行以下操作：
+	读取和写入媒体文件：访问存储在设备上的所有媒体文件，包括图片、视频和音频文件。
+	修改媒体元数据：更改媒体文件的元数据，例如文件名、日期、标签等。
+	删除媒体文件：从设备上删除媒体文件。
+	移动媒体文件：将媒体文件移动到不同的文件夹或位置。
+ -->
+	<uses-permission android:name="android.permission.MANAGE_MEDIA" />
+	<uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	
 
 
-<!-- 	<provider android:name="androidx.core.content.FileProvider" android:authorities="uni.UNIF508DB9.provider"
+
+	<!-- 	<provider android:name="androidx.core.content.FileProvider" android:authorities="uni.UNIF508DB9.provider"
 		android:exported="true" android:grantUriPermissions="true">
 	</provider> -->
 
-	<application android:requestLegacyExternalStorage="true">
+	<application>
 		<!--meta-data-->
 		<!-- <meta-data android:name="My_Custom_Key" android:value="My_Custom_Value"/> -->
 	</application>

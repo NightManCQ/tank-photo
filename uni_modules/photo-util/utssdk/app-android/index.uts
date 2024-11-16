@@ -9,6 +9,11 @@ import File from "java.io.File"
 import Paths from "java.nio.file.Paths"
 import IOException from "java.io.IOException"
 import Files from "java.nio.file.Files"
+
+import IntentSenderRequest from 'androidx.activity.result.IntentSenderRequest'
+import ActivityResultContracts from "androidx.activity.result.contract.ActivityResultContracts"
+// import "androidx.activity.result.IntentSenderRequest"
+import ActivityResultLauncher from "androidx.activity.result.ActivityResultLauncher"
 // import WindowManager from "android.view.WindowManager";
 // import ContentUris from "android.content.ContentUris";
 
@@ -132,22 +137,32 @@ export class albumUtil {
 	/**
 	 * 根据id删除文件
 	 */
-	static delFil(mediaId : Uri) : boolean {
+	static delFil(mediaId : number) : boolean {
 
 		// // 构建文件的 URI
-		// const mediaUri = Uri.withAppendedPath(externalContentUri, mediaId.toString())
+		const mediaUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mediaId.toString())
 		// console.log("???---", mediaId, mediaUri, isUriValid(mediaUri));
 		// // 执行删除操作
-		try {
-			const rowsDeleted = this.contentResolver.delete(mediaId, null, null)
-			console.log("删除结果===", rowsDeleted);
-			// 检查删除是否成功
-			return rowsDeleted > 0
-		} catch (error) {
-			//TODO handle the exception
-			console.log("报错了", error);
-			return false
-		}
+
+		const mediaStore = MediaStore
+			.createTrashRequest(this.contentResolver, listOf(mediaUri), false)
+		this.contentResolver.applyBatch("",MediaStore.AUTHORITY)
+		// .use((result) => {
+
+		// })
+		// const intentSenderRequest = IntentSenderRequest.Builder(mediaStore.intentSender).build()
+
+		// const startIntentSenderLauncher : ActivityResultLauncher<IntentSenderRequest> = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult())
+		// startIntentSenderLauncher.launch(intentSenderRequest)
+		// startIntentSenderForResult(mediaStore, 101, null, 0, 0, 0);
+		// .setOnCompleteListener((result : any) => {
+		// 	if (result.isSuccessful) {
+		// 		console.log("MediaStore", "照片已移入回收站")
+		// 	} else {
+		// 		console.log(`MediaStore", "照片移入回收站失败: ${result.errorMessage}`)
+		// 	}
+		// }).start();
+		return false
 
 	}
 
