@@ -16,7 +16,7 @@
 				<template #right>
 					<image v-if="ipData.pattern == 1" class="head_img" @click="drawerSwitch" :src="user.avatarUrl">
 					</image>
-					<view v-else-if="ipData.pattern == 2" class="head_bakcif_btn cent" @click="bakPage">
+					<view v-else-if="ipData.pattern == 2" class="head_bakcif_btn cent" @click="backPage">
 						<text class="col_fg">返回</text>
 					</view>
 				</template>
@@ -43,16 +43,18 @@
 						<view class="ab_it"
 							v-for="(item, indexTwo) in getViewArr(itobj,index,albumArrayData.tankDataOnce)"
 							:key="indexTwo">
-							<image class="ab_img" :style="albumStyle" :src="item.coverPicture"
-								@click="getAlbumData(item,index,indexTwo)" mode="aspectFill">
+							<image class="ab_img" :src="item.coverPicture" @click="getAlbumData(item,index,indexTwo)"
+								mode="aspectFill">
 							</image>
-							<text>{{item.name}} {{item.count}}</text>
+
+							<text>{{item.name}} <text v-if="item.count > 0">{{item.count}}</text></text>
+
 							<view v-if="ipData.pattern == 2" class="sel_bak cent" :class="hfSel(item) ? 'pr_bg':''">
 								<text v-if="hfSel(item)" class="col_fg">√</text>
 							</view>
 							<view v-else-if="bakYes && item.backups != 0" class="bak_state cent">
 								<text class="col_fg " v-if="item.backups == 1">...</text>
-								<text class="col_fg " v-if="item.backups == 2">√</text>
+								<text class="col_fg " v-else-if="item.backups == 2">√</text>
 							</view>
 						</view>
 					</list-item>
@@ -110,6 +112,7 @@
 	import { userInfoType } from "@/pages/login/login.logic.uts";
 	import { albumArrayData, updAlbumArray, tankAlbumType } from "./index.data.uts"
 	import { theme } from "@/store/theme.uts"
+	import { backPage } from "@/utils/utils.router.uts"
 	import { onMounted, onUnmounted } from "vue";
 
 
@@ -163,12 +166,6 @@
 		return []
 	}
 
-	// const upLoadFileStatus = computed(() : boolean => {
-	// 	// setTimeout(function () {
-	// 	// 	return appTaskStatus.backups == 1
-	// 	// }, 1000);
-
-	// })
 
 	const percent_input = computed(() : number => {
 		return (albumArrayData.upFileCount / albumArrayData.allUpFileCount) * 100
@@ -185,14 +182,12 @@
 	function drawerSwitch() {
 		ipData.conOpen = !ipData.conOpen
 	}
+
+	/**
+	 * 备份
+	 */
 	const bakYes = computed(() : boolean => {
 		return appConfig.backup
-	})
-
-	const albumStyle = computed(() : string => {
-		const { windowInfo } = globalData
-		const res = (windowInfo.screenWidth - 48) / 2
-		return `width: ${res}px;height: ${res}px;`
 	})
 
 	onLoad((param) => {
@@ -200,20 +195,8 @@
 			ipData.pattern = param["pattern"]!.toInt()
 		}
 	})
-	// onCreated(() => {
-	// 	uni.loadFontFace({
-	// 		global: false,
-	// 		family: 'AliYunIconsFontFamily',
-	// 		source: iconpath,
-	// 		success() { },
-	// 		fail(err) {
-	// 			//console.log(err);
-	// 		},
-	// 	})
-	// })
-	function bakPage() {
-		uni.navigateBack()
-	}
+
+
 	/**
 	 * 抽屉导航
 	 */
@@ -300,12 +283,6 @@
 		xxPermissions.requestSystemPermission([
 			"android.permission.READ_MEDIA_IMAGES",
 			"android.permission.READ_MEDIA_VIDEO",
-			// "android.permission.MANAGE_MEDIA",
-			// "android.permission.WRITE_EXTERNAL_STORAGE",
-			// "android.permission.WRITE_MEDIA_IMAGES",
-			// "android.permission.WRITE_MEDIA_VIDEO",
-			// "android.permission.READ_EXTERNAL_STORAGE",
-			// "android.permission.WRITE_EXTERNAL_STORAGE"
 		], "", function (allRight : boolean, grantedList : string[]) {
 			if (allRight) {
 				// 用户同意了全部权限
@@ -410,6 +387,8 @@
 					flex-direction: column;
 					align-items: center;
 					position: relative;
+					// border: 1rpx solid red;
+					// width: 50%;
 
 					.sel_bak {
 						width: 40rpx;
@@ -433,11 +412,12 @@
 
 
 					.ab_img {
+						width: 326rpx;
+						height: 326rpx;
 						border-radius: 35rpx;
 						margin-bottom: 10px;
 						overflow: hidden;
-						// padding-right: 16px;
-						margin-left: 16px;
+						margin-left: 32rpx;
 					}
 
 					.icon-yunduanshuaxin {

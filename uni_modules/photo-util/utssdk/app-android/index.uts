@@ -14,6 +14,13 @@ import IntentSenderRequest from 'androidx.activity.result.IntentSenderRequest'
 import ActivityResultContracts from "androidx.activity.result.contract.ActivityResultContracts"
 // import "androidx.activity.result.IntentSenderRequest"
 import ActivityResultLauncher from "androidx.activity.result.ActivityResultLauncher"
+import AppCompatActivity from "androidx.appcompat.app.AppCompatActivity"
+
+
+
+
+
+import ContentUris from "android.content.ContentUris"
 // import WindowManager from "android.view.WindowManager";
 // import ContentUris from "android.content.ContentUris";
 
@@ -111,99 +118,40 @@ const albumsOption = arrayOf(
 )
 
 
-function isUriValid(contentResolver : ContentResolver, uri : Uri) : boolean {
-	const cursor = contentResolver.query(uri, null, null, null, null)
-	const isValid = cursor != null && cursor.count > 0
-	cursor?.close()
-	return isValid
-}
+
 
 /**
  * 相册工具类
  */
 export class albumUtil {
 
-
-
-
-
-
 	static contentResolver : ContentResolver = UTSAndroid.getAppContext()!.getContentResolver()
-
-	static saveFile() {
-
-	}
 
 	/**
 	 * 根据id删除文件
 	 */
 	static delFil(mediaId : number) : boolean {
+		// 启动删除请求
+		try {
+			// 构建文件的 URI
+			const mediaUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mediaId.toString())
 
-		// // 构建文件的 URI
-		const mediaUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mediaId.toString())
-		// console.log("???---", mediaId, mediaUri, isUriValid(mediaUri));
-		// // 执行删除操作
-
-		const mediaStore = MediaStore
-			.createTrashRequest(this.contentResolver, listOf(mediaUri), false)
-		this.contentResolver.applyBatch("",MediaStore.AUTHORITY)
-		// .use((result) => {
-
-		// })
-		// const intentSenderRequest = IntentSenderRequest.Builder(mediaStore.intentSender).build()
-
-		// const startIntentSenderLauncher : ActivityResultLauncher<IntentSenderRequest> = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult())
-		// startIntentSenderLauncher.launch(intentSenderRequest)
-		// startIntentSenderForResult(mediaStore, 101, null, 0, 0, 0);
-		// .setOnCompleteListener((result : any) => {
-		// 	if (result.isSuccessful) {
-		// 		console.log("MediaStore", "照片已移入回收站")
-		// 	} else {
-		// 		console.log(`MediaStore", "照片移入回收站失败: ${result.errorMessage}`)
-		// 	}
-		// }).start();
-		return false
-
-	}
-
-
-	/**
-	 * 根据id删除文件
-	 */
-	static delFilUrl(mediaId : string) : boolean {
-
-		// // 构建文件的 URI
-		// const mediaUri = Uri.parse(mediaId)
-		// console.log("???---", mediaId, mediaUri);
-		// // 执行删除操作
-
-		const file = File(mediaId)
-		if (file.exists()) {
-			const uri = Uri.fromFile(file)
-			const rowsDeleted = this.contentResolver.delete(uri, null, null)
-			console.log("删除结果===", rowsDeleted);
-			// 检查删除是否成功
-			return rowsDeleted > 0
-		} else {
+			const mediaStore = MediaStore
+				.createDeleteRequest(this.contentResolver, listOf(mediaUri))
+			// 虽然有回调，但是不管他
+			UTSAndroid.getUniActivity()!.startIntentSenderForResult(
+				mediaStore.intentSender,
+				1,
+				null,
+				0,
+				0,
+				0
+			)
+			return true
+		} catch (_) {
 			return false
 		}
-
-		// const path = Paths.get(mediaId)
-		// try {
-		// 	const result = Files.deleteIfExists(path)
-		// 	if (result) {
-		// 		return true
-		// 	}
-		// 	console.log("=====", mediaId, result);
-		// 	return false
-		// } catch (e : IOException) {
-		// 	console.log("报错", e);
-		// 	e.printStackTrace()
-		// 	return false
-		// }
-
 	}
-
 
 
 	/**
@@ -281,20 +229,18 @@ export class albumUtil {
 			null,
 			DATE_ADDED + " DESC"
 		) as Cursor
-		let fileUrl = cursor.getColumnIndexOrThrow(DATA)
 		let fileId = cursor.getColumnIndexOrThrow(_ID)
 		let mt = cursor.getColumnIndexOrThrow(MIME_TYPE)
 		let tit = cursor.getColumnIndexOrThrow(TITLE)
+		let data = cursor.getColumnIndexOrThrow(DATA)
 		while (cursor.moveToNext()) {
-			const url = cursor.getString(fileUrl)
-			// console.log("url", url);
+			const id = cursor.getLong(fileId)
 			const fileObj : MediaFile = {
-				id: cursor.getInt(fileId),
+				id,
+				url: cursor.getString(data),
 				title: cursor.getString(tit),
-				url,
-				ty: cursor.getString(mt),
-				uri: Uri.parse(url),
-				type: 1
+				type: cursor.getString(mt),
+				uri: ContentUris.withAppendedId(externalContentUri, id),
 			} as MediaFile
 			uriList.push(fileObj)
 		}

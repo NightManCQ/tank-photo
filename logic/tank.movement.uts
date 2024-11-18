@@ -197,6 +197,7 @@ export function updUserInfo() {
 				tankUserLogin()
 			} else {
 				globalData.user = JSON.parse<userInfoType>(JSON.stringify(res.data!["data"]))!
+				setUserInfo(globalData.user)
 				console.log("执行逻辑成功：更新用户信息", globalData.user)
 			}
 		}, fail(_) {

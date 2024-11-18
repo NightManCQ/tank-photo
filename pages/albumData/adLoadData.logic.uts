@@ -21,7 +21,7 @@ export type mediaFileType = {
 	/**
 	 * 文件类型 我定义的类型
 	 */
-	type : number
+	type : string
 	/**
 	 * url
 	 */
@@ -30,10 +30,7 @@ export type mediaFileType = {
 	 * uri
 	 */
 	uri ?: Uri
-	/**
-	 * 文件的类型 通用的类型
-	 */
-	ty : string
+
 	/**
 	 * 文件上传状态
 	 * 0:未上传
@@ -78,7 +75,7 @@ export function loadAlbumData(id : Array<number>) : Array<mediaFileType> {
 			type: item.type,
 			status: 0,
 			uri: item.uri,
-			ty: item.ty,
+			// ty: item.ty,
 			name: item.title,
 			uuid: ""
 		}

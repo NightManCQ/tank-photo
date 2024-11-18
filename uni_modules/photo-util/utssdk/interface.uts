@@ -32,20 +32,19 @@ export type MediaFile = {
 	 */
 	url : string
 	/**
-	 * 1 图片 
-	 * 2: 视频
+	 * 文件类型
 	 */
-	type : number;
+	type : string;
 
 	/**
 	 * Uri
 	 */
 	uri : Uri;
 
-	/**
-	 * 文件类型
-	 */
-	ty : string;
+	// /**
+	//  * 文件类型
+	//  */
+	// ty : string;
 }
 
 

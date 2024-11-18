@@ -1,51 +1,46 @@
 <template>
 
 
-
-	<uni-navbar-lite :title="'Tank 相册'" nbStyle="height:50px;"></uni-navbar-lite>
-
-
-	<list-view ref="listView" id="ashlkjl0i3jkagpjgml1223fqfsf" class="container_al" :style="conStyle" :rebound="false"
-		:scroll-y="true" :custom-nested-scroll="true">
+	<view>
+		<uni-navbar-lite :title="pageData.name" nbStyle="height:50px;"></uni-navbar-lite>
 
 
+		<list-view ref="listView" id="ashlkjl0i3jkagpjgml1223fqfsf" class="container_al" :style="conStyle"
+			:rebound="false" :scroll-y="true" :custom-nested-scroll="true">
+			<template v-for="(itobj,index) in pageData.dataList">
+				<list-item class="ab_it" :key="`pd-in-${index}`"
+					v-if="getViewArr(itobj,index,pageData.dataList).length>0">
+					<view class="ab_v" v-for="(item, indexTwo) in getViewArr(itobj,index,pageData.dataList)">
+						<image class="ab_img" mode="aspectFill" :key="indexTwo"
+							:src="item.uri != null ? item.uri : item.url"
+							@click="imgClick(index,indexTwo,pageData.dataList)">
+						</image>
+						<template v-if="bakYes != null">
+							<text class="ab_st" v-if="item.status == 2">好</text>
+							<text class="ab_st" v-else>等</text>
+						</template>
+					</view>
+				</list-item>
+			</template>
+			<list-item :type="5" style="margin-bottom: 100px;"></list-item>
+		</list-view>
 
-		<template v-for="(itobj,index) in pageData.dataList">
-			<list-item class="ab_it" :key="`pd-in-${index}`" v-if="getViewArr(itobj,index,pageData.dataList).length>0">
-				<view class="ab_v" v-for="(item, indexTwo) in getViewArr(itobj,index,pageData.dataList)">
-					<image class="ab_img" mode="aspectFill" :key="indexTwo" :style="photoStyle" :src="item.url"
-						@click="imgClick(index,indexTwo,pageData.dataList)">
-					</image>
-					<template v-if="bakYes != null">
-						<text class="ab_st" v-if="item.status == 2">好</text>
-						<text class="ab_st" v-else>等</text>
-					</template>
-				</view>
+		<!-- <view class="prv_cont" :style="conStyle" v-if="prvShow">
+			<swiper class="prv_sw" @click="prvShow = false" @change="prvSwChange" :current="startInx"
+				:skip-hidden-item-layout="true">
+				<swiper-item v-for="(item,inx) of pageData.dataList" :key="`sw-key-${inx}`" class="prv_sit">
+					<image mode="widthFix" class="prv_img" :src="item.uri != null ? item.uri : item.url"></image>
+				</swiper-item>
+			</swiper>
+		</view> -->
 
-			</list-item>
-		</template>
+
+
+	</view>
 
 
 
 
-
-		<list-item :type="5" style="margin-bottom: 100px;"></list-item>
-	</list-view>
-
-
-	<!-- <view v-if="pageData.preViewShow == true" class="pre_view" :class="{pre_view_act:pageData.preViewShowTwo ==  true}"
-		:style="conStyle">
-		<view class="opt_view" style="top: 0;" @click.stop="closePreView"></view>
-		<swiper style="flex:1;width: 100%;height: 100%;" @change="swiperChange"
-			:current-item-id="pageData.swiperCurrent">
-			<swiper-item v-for="(item) in pageData.swiperArr" :item-id="item.id.toString()"
-				style="display: flex;justify-content: center;align-items: center;">
-				<image :src="item.url" style="width: 100%;height:100%;border: 1px solid red;" mode="aspectFit"></image>
-				<text style="position: absolute;bottom: 100rpx;color: red;">{{item.id.toString()}}</text>
-			</swiper-item>
-		</swiper>
-		<view class="opt_view" style="bottom: 0;"></view>
-	</view> -->
 
 
 </template>
@@ -98,6 +93,20 @@
 	} as albumDetailDataType)
 
 
+	/**
+	 * 预览组件
+	 */
+	const prvShow = ref(false)
+	/**
+	 * 预览数组
+	 */
+	const prvArr = ref([] as Array<mediaFileType>)
+	/**
+	 * 预览组件change
+	 */
+	function prvSwChange(e : UniSwiperChangeEvent) {
+		console.log("e", e);
+	}
 
 	/**
 	 * 缓存
@@ -150,21 +159,7 @@
 		const { screenWidth, screenHeight } = globalData.windowInfo
 		return `width:${screenWidth}px;height:${screenHeight}px;`
 	})
-	const preViewSty = computed(() : string => {
-		const { screenWidth, screenHeight } = globalData.windowInfo
-		return `width:${screenWidth}px;height:${screenHeight}px;position: fixed;top:0;left:0;`
-	})
-	/**
-	 * 单个照片的宽高
-	 */
-	const photoStyle = computed(() : string => {
-		let photoStyle = ""
-		const { windowInfo } = globalData
-		const { albumDetailClumns } = appConfig
-		const res = (windowInfo.screenWidth - (albumDetailClumns + 1) * 10) / 3
-		photoStyle = `width: ${res}px;height: ${res}px;`
-		return photoStyle
-	})
+
 
 	const bakYes = computed(() : tankAlbumType | null => {
 		if (appConfig.backup == true) {
@@ -197,26 +192,50 @@
 				// res.data.filter()
 				for (let inx1 = 0; inx1 < res.data.length; inx1++) {
 					const item = res.data[inx1]
-					for (let inx2 = 0; inx2 < dataList.length; inx2++) {
-						const lci = dataList[inx2]
+
+					const hf = dataList.find((lci, inx2) : boolean => {
 						if (lci.url.substringAfterLast('/') == item.name) {
 							dataList[inx2].status = 2
 							dataList[inx2].url = `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_100_100`
 							// console.log("成功", inx2, dataList[inx2]);
-							break
-						} else {
-							// dataList.push({
-							// 	id: item.sort,
-							// 	url: `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_200_200`,
-							// 	type: 1,
-							// 	status: 3,
-							// 	// uri: item.uri,
-							// 	ty: "",
-							// 	name: item.name,
-							// 	uuid: item.uuid
-							// } as mediaFileType)
+							return true
 						}
+						return false
+					})
+					if (hf == null) {
+						dataList.push({
+							id: item.sort,
+							url: `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_200_200`,
+							type: "",
+							status: 2,
+							// uri: item.uri,
+							// ty: "",
+							name: item.name,
+							uuid: item.uuid
+						} as mediaFileType)
 					}
+
+					// for (let inx2 = 0; inx2 < dataList.length; inx2++) {
+					// 	const lci = dataList[inx2]
+					// 	if (lci.url.substringAfterLast('/') == item.name) {
+					// 		dataList[inx2].status = 2
+					// 		dataList[inx2].url = `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_100_100`
+					// 		console.log("成功", inx2, dataList[inx2]);
+					// 		break
+					// 	} else {
+					// 		console.log("进来了", item);
+					// 		dataList.push({
+					// 			id: item.sort,
+					// 			url: `${appConfig.server}/api/alien/preview/${item.uuid}/${item.name}?ir=fill_200_200`,
+					// 			type: "",
+					// 			status: 3,
+					// 			// uri: item.uri,
+					// 			// ty: "",
+					// 			name: item.name,
+					// 			uuid: item.uuid
+					// 		} as mediaFileType)
+					// 	}
+					// }
 				}
 				console.log("==== loc", pageData.dataList);
 			})
@@ -234,7 +253,7 @@
 		pageData.name = name
 	})
 
-	onShow(async () => {
+	onReady(() => {
 		const arr : number[] = []
 		pageData.alId.split(",").forEach((val) => {
 			arr.push(parseInt(val))
@@ -245,43 +264,46 @@
 
 	})
 
-	// onBackPress(() => {
+	// function extractFiveElements(arr : Array<mediaFileType>, index : number) {
+
+
+	// }
+
+
+	const startInx = ref(0)
+
+	// const prvMftArr = computed(() : Array<mediaFileType> => {
+	// 	const { dataList: arr } = pageData
+	// 	// 计算起始索引和结束索引
+	// 	let start = startInx.value - 2;
+	// 	let end = startInx.value + 3;
+
+	// 	// 确保起始索引不小于0
+	// 	if (start < 0) {
+	// 		start = 0;
+	// 	}
+
+	// 	// 确保结束索引不大于数组长度
+	// 	if (end > arr.length) {
+	// 		end = arr.length;
+	// 	}
+
+	// 	// 截取指定范围的元素
+	// 	return arr.slice(start, end);
 	// })
 	function imgClick(index : number, in2 : number, arr : Array<mediaFileType>) {
 		console.log("点击了某个图片或者视频", arr[index + in2]);
-		uni.previewImage({
-			urls: arr.map(i => i.url),
-			current: index + in2
-		})
-
-	}
-	/**
-	 * 关闭预览窗口
-	 */
-	function closePreView() {
-		pageData.preViewShow = false
-
-		pageData.preViewShowTwo = false
-		pageData.swiperArr = []
-		pageData.swiperCurrent = ""
-	}
+		startInx.value = index + in2
 
 
-	/**
-	 * @param {Object} e
-	 */
-	function swiperChange(event : UniSwiperChangeEvent) {
-		let index = pageData.arrIndex
-		const lef = event.detail.current < pageData.lasSwCurr
-		const curr = event.detail.current
 
-		if ((curr == 1 && lef == true) || (curr == 0 && lef == true)) {
-			index -= 1
-		}
-
-		pageData.arrIndex = index
-		pageData.lasSwCurr = curr
-
+		// prvArr.value = extractFiveElements(arr, prvInx)
+		prvShow.value = true
+		// uni.previewImage({
+		// 	indicator: "none",
+		// 	urls: arr.map(i => i.url),
+		// 	current: index + in2
+		// })
 
 	}
 </script>
@@ -293,41 +315,35 @@
 		// border: 1px solid red;
 	}
 
-	.pre_view {
+	.prv_cont {
 		position: fixed;
 		top: 0;
-		left: 0;
-		// border: 4px solid red;
-		z-index: 9999;
-		display: flex;
-		// flex-direction: column;
-		background-color: #fff;
-		transition-property: all;
+		bottom: 0;
+		background-color: #000;
 
-		transition-duration: 0.3s;
-		// opacity: 0;
-
-		.opt_view {
-			border: 1px solid blue;
+		.prv_sw {
 			width: 100%;
-			height: 200rpx;
-			position: absolute;
-			background-color: #fff;
-			z-index: 999;
-			opacity: 0.5;
+			height: 100%;
+
+			.prv_sit {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				.prv_img {
+					width: 100%;
+				}
+			}
 		}
 	}
 
-	.pre_view_act {
-		opacity: 1;
-	}
+
 
 	.ab_it {
 		margin-bottom: 10px;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-
 
 		.ab_v {
 			// width: 100%;
@@ -337,9 +353,9 @@
 
 
 			.ab_img {
-				width: 100%;
-				height: 100%;
-				margin-left: 10px;
+				width: 223rpx;
+				height: 223rpx;
+				margin-left: 20rpx;
 				// border: 1rpx solid blue;
 
 			}

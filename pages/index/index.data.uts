@@ -50,8 +50,9 @@ export type tankAlbumType = {
 	 * 0：不备份
 	 * 1：正在备份
 	 * 2：所有文件备份完成
+	 * 3：云相册
 	 */
-	backups : 0 | 1 | 2
+	backups : 0 | 1 | 2 | 3
 	/**
 	 * 如果开启备份，且已经上传至 tank 服务器。就会有该id
 	 */
@@ -73,10 +74,7 @@ type albumArrayDataType = {
 	 * 读取外部存储需要请求的权限
 	 */
 	authorizationStatus : boolean
-	/**
-	 * tank app使用的相册实体类
-	 */
-	tankData : Array<Array<tankAlbumType>>
+
 	/**
 	 * tank app使用的相册实体类 一个数组梭哈
 	 * 存储的内容同 tankData，修改此数组可以间接修改 tankData
@@ -99,7 +97,6 @@ type albumArrayDataType = {
  */
 export const albumArrayData = reactive({
 	authorizationStatus: true,
-	tankData: [],
 	tankDataOnce: [],
 	albumMap: hashMapOf(),
 	upFileCount: 0,
@@ -117,7 +114,7 @@ export const albumArrayData = reactive({
  */
 export function updAlbumArray() {
 	albumArrayData.authorizationStatus = xxPermissions.checkSystemPermissionGranted(permission)
-	console.log("///", albumArrayData.authorizationStatus);
+	// console.log("///", albumArrayData.authorizationStatus);
 	if (albumArrayData.authorizationStatus) {
 		const albumArray : Array<Album> = albumUtil.getAlbum()
 		const { tankDataOnce } = albumArrayData
@@ -178,13 +175,17 @@ export function getServerAlbumList() {
 			})
 			if (hf != null) {
 				hf.uuid = sf.uuid
+				hf.name = sf.name
+				hf.count = 0
+				hf.backups = 0
+				hf.coverPicture = "https://img-bsy.txrpic.com/preview/element/00/01/30/18/E-1301899-D7EB351E.jpg?imageMogr2/quality/90/thumbnail/!800x%3E"
 			} else {
 				// tankDataOnce.push({
-				// 	id: item.id,
-				// 	name: item.name,
+				// 	id: sf.sort,
+				// 	name: sf.name,
 				// 	count: item.count,
-				// 	uuid: bakAlbum?.uuid,
-				// 	backups: bakAlbum == null ? 0 : bakAlbum.backups,
+				// 	uuid: item.uuid,
+				// 	backups: 0,
 				// 	coverPicture: item.coverPicture,
 				// 	correlationId: idArr
 				// } as tankAlbumType)
