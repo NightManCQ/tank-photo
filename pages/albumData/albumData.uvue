@@ -298,12 +298,12 @@
 
 
 		// prvArr.value = extractFiveElements(arr, prvInx)
-		prvShow.value = true
-		// uni.previewImage({
-		// 	indicator: "none",
-		// 	urls: arr.map(i => i.url),
-		// 	current: index + in2
-		// })
+		// prvShow.value = true
+		uni.previewImage({
+			indicator: "none",
+			urls: arr.map(i => i.url),
+			current: index + in2
+		})
 
 	}
 </script>

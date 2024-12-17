@@ -101,22 +101,9 @@ async function upFileToTank() {
 
 
 
-			// 检查是否有备份文件夹
-			if (appConfig.backupFile.uuid == "") {
-				mkdirFileName(appConfig.backupFile.name).then((crResData) => {
-					const { backupFile } = appConfig
-					backupFile.deleted = crResData.deleted
-					backupFile.path = crResData.path
-					backupFile.name = crResData.name
-					backupFile.privacy = crResData.privacy
-					backupFile.puuid = crResData.puuid
-					backupFile.size = crResData.size
-					backupFile.uuid = crResData.uuid
-					console.log("执行逻辑成功：创建备份文件夹", backupFile)
-				})
-				setAppConfig(appConfig)
-			}
+			
 			const { uuid, spaceUuid } = appConfig.backupFile
+			console.log("???????????", uuid);
 			const { releaseSpace } = appConfig
 			appTaskStatus.backups = 1
 			albumArrayData.allUpFileCount = 0
@@ -163,7 +150,7 @@ async function upFileToTank() {
 						deleted: false,
 						orderDir: 'DESC'
 					} as matterPageReqType)
-					// console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
+					console.log(` ----- 文件夹 ${bakAlbum.name} ${bakAlbum.uuid}`, fileList);
 					// 2. 查询该相册列表下所有的文件
 					// 3. 遍历文件，逐个对比，服务器没有的则上传
 					const value = albumUtil.getAlbumsData(bakAlbum.correlationId)
